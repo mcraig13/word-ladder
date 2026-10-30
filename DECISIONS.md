@@ -99,6 +99,12 @@ Evidence (spike, before exclusion and blocklist):
 - Some words stay outside the cloud at any sensible size (`evil`, `exam`, `hymn`, `opal/oral/oval`). They can't be reached in any puzzle, so leaving them out costs nothing.
 - From `cold`, most words are 4–6 moves away, which fits the suggested par range (D16). `cold → warm` is par 4.
 
+## D18 — Pin TypeScript 6.0 for now
+**Decided** · 2026-10-30 · amends D2
+TypeScript 7.0 ships without the JavaScript API that typescript-eslint uses, and typescript-eslint only supports TypeScript below 6.1. Microsoft expects a new API in 7.1. Pinning `typescript@~6.0` keeps one compiler and standard ESLint working; at this project's size, TypeScript 7's speed makes no visible difference.
+- Considered: running 6 and 7 side by side via npm aliases (two TypeScripts to explain); oxlint or Biome (fewer rules, no type-aware linting).
+- **Revisit when** TypeScript 7.1 ships and typescript-eslint supports it.
+
 ---
 
 ## Ideas for later (not scheduled)

@@ -40,7 +40,8 @@ If a task seems to need a rule change, stop and ask. Don't change rules inside a
 
 ## Stack
 
-- TypeScript (strict mode)
+- TypeScript 6.0 (strict mode). Pinned below 6.1 until typescript-eslint supports TypeScript 7 (D18)
+- ESLint with typescript-eslint (`strict` rules)
 - Vite for dev server and build
 - Vitest for tests
 - Static hosting; no server, no database in v1
@@ -67,7 +68,7 @@ DECISIONS.md   # Short log of decisions and why
 - `npm test` — run tests once
 - `npm run test:watch` — run tests on change
 - `npm run build` — type-check, then production build to `dist/`
-- `npm run lint` — lint and type-check (added in chunk 0.2)
+- `npm run lint` — type-check, then ESLint; fails on any error or warning
 
 Until the first real tests land (chunk 1.1), `vite.config.ts` sets `passWithNoTests` so an empty suite passes. Remove it in 1.1.
 

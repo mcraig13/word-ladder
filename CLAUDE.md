@@ -70,6 +70,8 @@ DECISIONS.md   # Short log of decisions and why
 - `npm run build` — type-check, then production build to `dist/`
 - `npm run lint` — type-check, then ESLint; fails on any error or warning
 
+CI (`.github/workflows/ci.yml`) runs lint, tests and build on every pull request and push to `main`. A pull request can only merge when CI is green.
+
 Until the first real tests land (chunk 1.1), `vite.config.ts` sets `passWithNoTests` so an empty suite passes. Remove it in 1.1.
 
 ## How we work

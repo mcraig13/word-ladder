@@ -2,6 +2,8 @@
 
 A daily word ladder game: get from the start word to the target by changing one letter at a time, in as few moves as possible.
 
+Live: https://mcraig13.github.io/word-ladder/ (deployed from `main` by GitHub Actions)
+
 ## Getting started
 
 Requires Node.js 20 or later.

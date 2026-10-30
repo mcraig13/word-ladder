@@ -9,7 +9,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 
 | Milestone | Chunks | Outcome |
 |-----------|--------|---------|
-| M0 Walking skeleton | 0.1–0.5 | Empty app deployed to a live URL with CI |
+| M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI |
 | M1 Rules engine | 1.1–1.11 | All game rules enforced and tested; solver and scoring work |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date |
 | **M3 Soft launch** | 3.1–3.8 | Friends can play today's puzzle from a link |
@@ -36,13 +36,10 @@ Out of scope: UI framework, styling.
 - A PR with a failing test cannot merge
 - A PR with a lint error cannot merge
 
-**0.4 Test helpers (S)** · Depends: 0.1
-`dictionaryOf(...words)` fixture helper. Commit `DECISIONS.md` alongside.
-- `dictionaryOf` builds a dictionary containing exactly the given words
-
 **0.5 Deploy (S)** · Depends: 0.3
-Static hosting, auto-deploy on merge to main. The page just says "Word Ladder — coming soon".
+GitHub Pages, auto-deploy on merge to main. The page just says "Word Ladder — coming soon". Live at https://mcraig13.github.io/word-ladder/
 - Merging to main updates the live URL
+- The live page loads its script and styles (no broken asset paths)
 
 ---
 
@@ -55,12 +52,13 @@ Static hosting, auto-deploy on merge to main. The page just says "Word Ladder �
 - rejects an empty string
 
 **1.2 `createDictionary` (S)** · Depends: 1.1
-Builds a lookup from a word list. No file I/O here.
+Builds a lookup from a word list. No file I/O here. Also adds the `dictionaryOf(...words)` test helper (moved from 0.4, which needed a dictionary before one existed).
 - recognises a word that is in the list
 - does not recognise a word that is not in the list
 - recognises a word regardless of case
 - ignores entries that are not valid words
 - lists only words of a requested length
+- `dictionaryOf` builds a dictionary containing exactly the given words
 
 **1.3 `isOneLetterApart` (S)** · Depends: 0.1
 - accepts words that differ in exactly one position

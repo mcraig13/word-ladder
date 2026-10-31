@@ -43,19 +43,34 @@ describe("giveUp", () => {
 
   it("giving up leaves the game it was given as it was", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    };
 
     // Act
     giveUp(game);
 
     // Assert
-    expect(game).toEqual({ start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" });
+    expect(game).toEqual({
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    });
   });
 
   it("no moves are accepted after giving up", () => {
     // Arrange
     // "card" would be a valid next move if the game were still in progress.
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    };
     const givenUp = giveUp(game);
     if (!givenUp.ok) {
       throw new Error("Arrange failed: giving up was rejected");
@@ -86,7 +101,12 @@ describe("giveUp", () => {
 
   it("cannot give up a game that has already been given up", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "given-up" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "given-up",
+    };
 
     // Act
     const result = giveUp(game);

@@ -6,8 +6,7 @@
  * never silently changed into a different word.
  */
 export type NormaliseResult =
-  | { ok: true; word: string }
-  | { ok: false; reason: "empty" | "not-letters" };
+  { ok: true; word: string } | { ok: false; reason: "empty" | "not-letters" };
 
 const LETTERS_ONLY = /^[a-z]+$/;
 

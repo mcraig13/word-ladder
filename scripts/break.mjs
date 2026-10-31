@@ -57,7 +57,10 @@ try {
       continue;
     }
 
-    writeFileSync(file, original.replace(find, () => replace));
+    writeFileSync(
+      file,
+      original.replace(find, () => replace),
+    );
     try {
       const failures = runTestsAndListFailures();
       if (failures.length === 0) {

@@ -78,7 +78,12 @@ describe("applyMove", () => {
   it("an invalid move leaves the chain unchanged", () => {
     // Arrange
     // "word" is one letter from "cord", but not in the dictionary.
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    };
 
     // Act
     const result = applyMove(game, "word", dictionary);

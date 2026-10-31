@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { createDictionary } from "../../src/core/createDictionary";
+import { createDictionaryFromWords } from "../../src/core/createDictionaryFromWords";
 
 // Chunk 1.2. Rules: every word in a chain must be an accepted word; words are
 // compared in lowercase; a word contains only a–z (CLAUDE.md, D17).
 
-describe("createDictionary", () => {
+describe("createDictionaryFromWords", () => {
   it("recognises a word that is in the list", () => {
     // Arrange
-    const dictionary = createDictionary(["cold", "cord"]);
+    const dictionary = createDictionaryFromWords(["cold", "cord"]);
 
     // Act
-    const result = dictionary.has("cord");
+    const result = dictionary.containsWord("cord");
 
     // Assert
     expect(result).toBe(true);
@@ -18,10 +18,10 @@ describe("createDictionary", () => {
 
   it("does not recognise a word that is not in the list", () => {
     // Arrange
-    const dictionary = createDictionary(["cold", "cord"]);
+    const dictionary = createDictionaryFromWords(["cold", "cord"]);
 
     // Act
-    const result = dictionary.has("card");
+    const result = dictionary.containsWord("card");
 
     // Assert
     expect(result).toBe(false);
@@ -29,10 +29,10 @@ describe("createDictionary", () => {
 
   it("recognises a word whatever case it is looked up in", () => {
     // Arrange
-    const dictionary = createDictionary(["cold"]);
+    const dictionary = createDictionaryFromWords(["cold"]);
 
     // Act
-    const result = dictionary.has("COLD");
+    const result = dictionary.containsWord("COLD");
 
     // Assert
     expect(result).toBe(true);
@@ -40,10 +40,10 @@ describe("createDictionary", () => {
 
   it("recognises a word whatever case it was listed in", () => {
     // Arrange
-    const dictionary = createDictionary(["Cold"]);
+    const dictionary = createDictionaryFromWords(["Cold"]);
 
     // Act
-    const result = dictionary.has("cold");
+    const result = dictionary.containsWord("cold");
 
     // Assert
     expect(result).toBe(true);
@@ -51,10 +51,10 @@ describe("createDictionary", () => {
 
   it("ignores entries that are not valid words", () => {
     // Arrange
-    const dictionary = createDictionary(["cold", "c0ld", "co-d", "co d", ""]);
+    const dictionary = createDictionaryFromWords(["cold", "c0ld", "co-d", "co d", ""]);
 
     // Act
-    const result = dictionary.wordsOfLength(4);
+    const result = dictionary.getWordsOfLength(4);
 
     // Assert
     expect(result).toEqual(["cold"]);
@@ -62,10 +62,10 @@ describe("createDictionary", () => {
 
   it("lists only words of the requested length", () => {
     // Arrange
-    const dictionary = createDictionary(["cat", "cold", "cord", "colds"]);
+    const dictionary = createDictionaryFromWords(["cat", "cold", "cord", "colds"]);
 
     // Act
-    const result = dictionary.wordsOfLength(4);
+    const result = dictionary.getWordsOfLength(4);
 
     // Assert
     expect(result).toEqual(["cold", "cord"]);
@@ -73,10 +73,10 @@ describe("createDictionary", () => {
 
   it("lists each word once even when the list repeats it", () => {
     // Arrange
-    const dictionary = createDictionary(["cold", "COLD", "cord", "cold"]);
+    const dictionary = createDictionaryFromWords(["cold", "COLD", "cord", "cold"]);
 
     // Act
-    const result = dictionary.wordsOfLength(4);
+    const result = dictionary.getWordsOfLength(4);
 
     // Assert
     expect(result).toEqual(["cold", "cord"]);
@@ -84,10 +84,10 @@ describe("createDictionary", () => {
 
   it("lists words in alphabetical order whatever order they were given in", () => {
     // Arrange
-    const dictionary = createDictionary(["warm", "cord", "cold"]);
+    const dictionary = createDictionaryFromWords(["warm", "cord", "cold"]);
 
     // Act
-    const result = dictionary.wordsOfLength(4);
+    const result = dictionary.getWordsOfLength(4);
 
     // Assert
     expect(result).toEqual(["cold", "cord", "warm"]);

@@ -51,16 +51,17 @@ GitHub Pages, auto-deploy on merge to main. The page just says "Word Ladder — 
 - rejects a word containing non-letters
 - rejects an empty string
 
-**1.2 `createDictionary` (S)** · Depends: 1.1
-Builds a lookup from a word list. No file I/O here. Also adds the `dictionaryOf(...words)` test helper (moved from 0.4, which needed a dictionary before one existed).
+**1.2 `createDictionaryFromWords` (S)** · Depends: 1.1
+Builds a lookup from a word list, with `containsWord` and `getWordsOfLength`. No file I/O here. (0.4's planned `dictionaryOf` helper was dropped: tests call `createDictionaryFromWords` directly.)
 - recognises a word that is in the list
 - does not recognise a word that is not in the list
 - recognises a word regardless of case
 - ignores entries that are not valid words
 - lists only words of a requested length
-- `dictionaryOf` builds a dictionary containing exactly the given words
+- lists each word once even when the list repeats it
+- lists words in alphabetical order whatever order they were given in
 
-**1.3 `isOneLetterApart` (S)** · Depends: 0.1
+**1.3 `areWordsOneLetterApart` (S)** · Depends: 0.1
 - accepts words that differ in exactly one position
 - rejects identical words
 - rejects words that differ in two positions
@@ -68,14 +69,14 @@ Builds a lookup from a word list. No file I/O here. Also adds the `dictionaryOf(
 - ignores case when comparing
 - rejects empty strings
 
-**1.4 `neighbours` (S)** · Depends: 1.2, 1.3
+**1.4 `getWordsOneLetterAway` (S)** · Depends: 1.2, 1.3
 All dictionary words one letter away from a given word.
 - returns every dictionary word one letter away
 - excludes the word itself
 - excludes words that are not in the dictionary
-- returns nothing for a word with no neighbours
+- returns nothing for a word with no words one letter away
 
-**1.5 `validateMove` (M)** · Depends: 1.2, 1.3
+**1.5 `checkMove` (M)** · Depends: 1.2, 1.3
 Given the current chain and a proposed next word, return OK or a specific reason.
 - accepts a valid one-letter change to an accepted word
 - rejects a word of a different length with reason `wrong-length`
@@ -85,7 +86,7 @@ Given the current chain and a proposed next word, return OK or a specific reason
 - rejects a word already in the chain with reason `repeated-word`
 - reports `wrong-length` before other reasons (precedence: length → change → word → repeat)
 
-**1.6 Game state: `createGame`, `applyMove`, status (M)** · Depends: 1.5
+**1.6 Game state: `createGame`, `applyMove`, game status (M)** · Depends: 1.5
 - a new game's chain contains only the start word
 - applying a valid move extends the chain
 - an invalid move leaves the chain unchanged and returns the reason
@@ -95,7 +96,7 @@ Given the current chain and a proposed next word, return OK or a specific reason
 - no moves are accepted after the game is won
 - rejects creating a game where start and target differ in length
 
-**1.7 `undo` (S)** · Depends: 1.6
+**1.7 `undoLastMove` (S)** · Depends: 1.6
 - removes the last word from the chain
 - cannot undo past the start word
 - an undone word can be played again
@@ -106,7 +107,7 @@ Given the current chain and a proposed next word, return OK or a specific reason
 - no moves are accepted after giving up
 - cannot give up a game that is already won
 
-**1.9 Solver: `shortestPath` (M)** · Depends: 1.4
+**1.9 Solver: `findShortestPath` (M)** · Depends: 1.4
 Breadth-first search.
 - finds a path whose length is the fewest moves between two words
 - every step of the path is one letter apart and in the dictionary
@@ -114,7 +115,7 @@ Breadth-first search.
 - returns no path when the target is unreachable
 - returns a single-word path when start equals target
 
-**1.10 `par` and `score` (S)** · Depends: 1.9, 1.6
+**1.10 `getPar` and `getScore` (S)** · Depends: 1.9, 1.6
 - par counts moves, not words (`cold → cord → card → ward → warm` is par 4)
 - a win in par moves scores 0
 - a win in two moves over par scores +2

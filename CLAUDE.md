@@ -93,12 +93,25 @@ Backlog and chunk IDs live in `backlog.md`. Decisions and their reasons live in 
 - No new dependencies without saying why in the PR description.
 - Every exported function has tests covering its acceptance criteria and edge cases (empty strings, different lengths, mixed case). See Testing below.
 
+## Naming
+
+Readable beats short. A name should make sense on first read to someone who doesn't know the codebase, and read like a sentence where it's used: `dictionary.containsWord(nextWord)`, `areWordsOneLetterApart(firstWord, secondWord)`.
+
+- `create…` builds something new from what's passed in: `createDictionaryFromWords`, `createGame`.
+- `get…` looks up or works out a value: `getWordsOfLength`, `getPar`.
+- `find…` searches and may find nothing: `findShortestPath`.
+- `check…` returns a result with a reason: `checkMove`.
+- `is…` / `are…` / `contains…` answer yes or no.
+- Plain verbs for actions that change game state: `applyMove`, `undoLastMove`, `giveUp`.
+- No abbreviations or single-letter names, including parameters and loop variables (`word`, not `w`).
+- If a name needs explaining in review, rename it.
+
 ## Testing: meaningful, not tautological
 
 Every test must check a game rule or a behaviour a player would notice. A test earns its place only if it would fail when that rule is broken.
 
 **Each test must:**
-- Be named after the rule it protects, in plain language: `rejects a move that changes two letters`, not `validateMove test 3`.
+- Be named after the rule it protects, in plain language: `rejects a move that changes two letters`, not `checkMove test 3`.
 - Use expected values worked out by hand from the rules, written as literals. `COLD → CARD` is invalid because two letters change, so the test says `false`.
 - Test through the public function's inputs and outputs, not its internals.
 - Use small, purpose-built fixture dictionaries (a handful of words) so the reason for each result is visible in the test itself.
@@ -109,16 +122,16 @@ Every test must check a game rule or a behaviour a player would notice. A test e
 - **Assert** — check the outcome that the rule predicts.
 - Mark each section with a `// Arrange`, `// Act`, `// Assert` comment and separate them with a blank line.
 - One behaviour per test. If you need a second Act, write a second test.
-- Keep Arrange inside the test where possible, so a reader sees the whole story without scrolling. Use shared helpers only for setup that is noise, and name them for what they create (`dictionaryOf("cold", "cord")`).
+- Keep Arrange inside the test where possible, so a reader sees the whole story without scrolling. Use shared helpers only for setup that is noise, and name them for what they create.
 
 ```ts
 it("rejects a move that changes two letters", () => {
   // Arrange
-  const current = "cold";
-  const next = "card";
+  const currentWord = "cold";
+  const nextWord = "card";
 
   // Act
-  const result = isOneLetterApart(current, next);
+  const result = areWordsOneLetterApart(currentWord, nextWord);
 
   // Assert
   expect(result).toBe(false);

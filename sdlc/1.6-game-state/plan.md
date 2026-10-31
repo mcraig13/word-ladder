@@ -39,4 +39,14 @@ Dictionary for all: cold, cord, card, ward, warm, worm. Target `warm`.
 `worm` is a legal move from `warm`, so only the game-over rule can reject it. The diff will be about 300 lines, mostly tests (as in 1.5).
 
 ## Self-review
-- To do after implementation
+- Break: store the start as given, not normalised → red: `stores the start and target in lowercase…`
+- Break: drop the same-word check → red: `…are the same word`
+- Break: drop the length check → red: `…differ in length`
+- Break: only check that the start is a word → red: `…a target that is not a word`
+- Break: start with an empty chain → red: `a new game's chain contains only the start word`, `stores…`
+- Break: drop the game-over check → red: both `game-over` tests
+- Break: pass only the current word to `checkMove` → red: `…checks repeats against the whole chain`
+- Break: compare the raw input with the target → red: `…target is typed in a different case`
+- Break: always set status `won` → red: `…still in progress…`
+- Break: also push the move onto the given game's chain → red: `…leaves the game it was given as it was` and two others
+- Break: append the word before checking and keep it on failure → red: `an invalid move leaves the chain unchanged` and six others

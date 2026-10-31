@@ -8,7 +8,7 @@ export interface Game {
   readonly start: string;
   readonly target: string;
   readonly chain: readonly string[];
-  readonly status: "in-progress" | "won";
+  readonly status: "in-progress" | "won" | "given-up";
 }
 
 export type CreateGameResult =

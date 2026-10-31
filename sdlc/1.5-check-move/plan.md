@@ -12,6 +12,7 @@ Trim and lowercase the proposed word, then run the checks in precedence order, r
 | Test | Dictionary | Chain | Next word | Expected | Rule |
 |---|---|---|---|---|---|
 | accepts a valid one-letter change to an accepted word | cold, cord | cold | `cord` | ok, `cord` | A legal move is accepted |
+| checks the move from the last word in the chain, not the start word | cold, cord, card | cold, cord | `card` | ok, `card` | Moves are from the current word *(added in self-review)* |
 | returns the accepted word in lowercase without surrounding spaces | cold, cord | cold | ` CORD ` | ok, `cord` | Words are stored lowercase |
 | rejects a word of a different length with reason `wrong-length` | cold, colds | cold | `colds` | `wrong-length` | No adding letters |
 | rejects an empty word with reason `wrong-length` | cold | cold | `` | `wrong-length` | No removing letters |
@@ -29,4 +30,10 @@ Trim and lowercase the proposed word, then run the checks in precedence order, r
 Every rejecting fixture contains only the reason under test where possible: `colds`, `card` and `load` are in the dictionary, so a lone dictionary check can't pass those tests. The unchanged-word test also guards precedence: `cold` is in the chain, so checking repeats first would give `repeated-word`.
 
 ## Self-review
-- To do after implementation
+- Break: check repeats before the one-letter change → red: `rejects an unchanged word…`
+- Break: skip the dictionary check → red: both `not-a-word` tests
+- Break: check the move from the start word, not the last word → only `rejects the start word…` went red, and only by accident. Added `checks the move from the last word in the chain…`, which goes red on this break.
+- Break: don't trim → red: `returns the accepted word in lowercase…`
+- Break: don't lowercase → red: that test and `ignores the case…`
+- Break: check repeats against the last word only → red: both `repeated-word` tests
+- Break: skip the length check → red: all three `wrong-length` tests (they fall through to `not-one-change`)

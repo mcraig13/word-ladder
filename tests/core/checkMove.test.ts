@@ -20,6 +20,19 @@ describe("checkMove", () => {
     expect(result).toEqual({ ok: true, word: "cord" });
   });
 
+  it("checks the move from the last word in the chain, not the start word", () => {
+    // Arrange
+    // "card" is one letter from the current word "cord", but two from the start word "cold".
+    const dictionary = createDictionaryFromWords(["cold", "cord", "card"]);
+    const chain = ["cold", "cord"];
+
+    // Act
+    const result = checkMove(chain, "card", dictionary);
+
+    // Assert
+    expect(result).toEqual({ ok: true, word: "card" });
+  });
+
   it("returns the accepted word in lowercase without surrounding spaces", () => {
     // Arrange
     const dictionary = createDictionaryFromWords(["cold", "cord"]);

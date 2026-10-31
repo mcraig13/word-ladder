@@ -15,6 +15,8 @@ export interface Game {
   readonly target: string;
   readonly chain: Chain;
   readonly status: "in-progress" | "won" | "given-up";
+  /** Undos used so far; each adds one to the score (D26, chunk 1.13). */
+  readonly undoCount: number;
 }
 
 export type CreateGameResult =
@@ -48,6 +50,7 @@ export function createGame(start: string, target: string): CreateGameResult {
       target: normalisedTarget.word,
       chain: [normalisedStart.word],
       status: "in-progress",
+      undoCount: 0,
     },
   };
 }

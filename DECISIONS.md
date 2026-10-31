@@ -113,7 +113,7 @@ Each chunk gets `sdlc/<id>-<name>/` with `intent.md`, `plan.md` and `review.md`,
 - Cost: a few minutes and three short files per chunk. Keep the files short so the process doesn't become the work.
 
 ## D20 — Coverage gate in CI
-**Decided** · 2026-10-31
+**Decided** · 2026-10-31 · branches raised to 100 in 1.12, which removed the empty-chain fallback instead of testing it
 CI runs the tests with V8 coverage (`@vitest/coverage-v8`) over `src/` and `scripts/` and fails below 100% statements, lines and functions, and 97% branches: the level on main when this was added.
 - Why: break-the-code checks show a test protects its rule, but only for code someone thinks to break. Coverage catches code no test runs at all, such as a new untested file, at no review cost.
 - Coverage is a floor, not the goal: a covered line can still be untested in any meaningful sense. The testing rules and break-the-code checks still apply.

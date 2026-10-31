@@ -10,7 +10,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | Milestone | Chunks | Outcome | Status |
 |-----------|--------|---------|--------|
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
-| M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | 1.13, 1.10 left |
+| M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | 1.10 left |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | Not started |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | Not started; 2.2 blocked by D24 |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
@@ -245,7 +245,7 @@ Browser storage only; no backend.
 
 *Carried forward:* restoring a saved game must reject a saved chain that is empty or doesn't start with the start word. `Chain` (1.12) checks only code, not JSON read from storage, so the restore code must check it at runtime, with a test. Without that check, an empty chain now makes `checkMove` throw rather than return a reason (1.6 review 6, 1.12 review 2). Once that test exists, D20's branch threshold note no longer applies.
 
-*Carried forward:* the saved game must keep its undo count (1.13), or a reload would clear the undos from the score (D26).
+*Carried forward:* the saved game must keep its undo count (1.13), or a reload would clear the undos from the score (D26). As with the chain, `Game`'s type checks only code, not JSON read from storage, so restore must also reject a saved count that isn't a whole number of 0 or more, with a test (1.13 intent choice 4).
 
 ---
 

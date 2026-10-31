@@ -4,10 +4,10 @@ import { createDictionaryFromWords } from "../../src/core/createDictionaryFromWo
 import type { Game } from "../../src/core/createGame";
 import { undoLastMove } from "../../src/core/undoLastMove";
 
-// Chunk 1.7. Rules: undo removes the last word at no cost, cannot go past the
-// start word, and an undone word can be played again (D12). Undo is not
-// available once the game has ended (backlog 1.7). The game passed in never
-// changes.
+// Chunk 1.7. Rules: undo removes the last word, cannot go past the start word,
+// and an undone word can be played again (D12, kept by D26). Each undo adds one
+// to the undo count (D26, chunk 1.13). Undo is not available once the game has
+// ended (backlog 1.7). The game passed in never changes.
 
 const dictionary = createDictionaryFromWords(["cold", "cord", "card", "ward", "warm"]);
 
@@ -19,6 +19,7 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -27,8 +28,32 @@ describe("undoLastMove", () => {
     // Assert
     expect(result).toEqual({
       ok: true,
-      game: { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" },
+      game: {
+        start: "cold",
+        target: "warm",
+        chain: ["cold", "cord"],
+        status: "in-progress",
+        undoCount: 1,
+      },
     });
+  });
+
+  it("each undo adds one to the undo count", () => {
+    // Arrange
+    // Two undos already used, so the count must go up from 2, not be set to 1.
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord", "card"],
+      status: "in-progress",
+      undoCount: 2,
+    };
+
+    // Act
+    const result = undoLastMove(game);
+
+    // Assert
+    expect(result).toMatchObject({ ok: true, game: { undoCount: 3 } });
   });
 
   it("can undo the first move back to the start word", () => {
@@ -38,6 +63,7 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -54,6 +80,7 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -65,12 +92,19 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     });
   });
 
   it("cannot undo past the start word", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     const result = undoLastMove(game);
@@ -87,6 +121,7 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card"],
       status: "in-progress",
+      undoCount: 0,
     };
     const undone = undoLastMove(game);
     if (!undone.ok) {
@@ -107,6 +142,7 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
+      undoCount: 0,
     };
 
     // Act
@@ -124,6 +160,7 @@ describe("undoLastMove", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "given-up",
+      undoCount: 0,
     };
 
     // Act
@@ -136,7 +173,13 @@ describe("undoLastMove", () => {
   it("undo is not available after giving up at the start word", () => {
     // Arrange
     // Both reasons apply here; the game being over is reported first.
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "given-up" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "given-up",
+      undoCount: 0,
+    };
 
     // Act
     const result = undoLastMove(game);

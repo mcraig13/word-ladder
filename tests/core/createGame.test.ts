@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createGame } from "../../src/core/createGame";
 
 // Chunk 1.6. Rules: the chain begins with the start word, start and target
-// are the same length (D4), and words are stored lowercase (CLAUDE.md).
+// are the same length (D4), and words are stored lowercase (CLAUDE.md). A new
+// game has used no undos (D26, chunk 1.13).
 
 describe("createGame", () => {
   it("a new game's chain contains only the start word", () => {
@@ -27,6 +28,18 @@ describe("createGame", () => {
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { status: "in-progress" } });
+  });
+
+  it("a new game has used no undos", () => {
+    // Arrange
+    const start = "cold";
+    const target = "warm";
+
+    // Act
+    const result = createGame(start, target);
+
+    // Assert
+    expect(result).toMatchObject({ ok: true, game: { undoCount: 0 } });
   });
 
   it("stores the start and target in lowercase without surrounding spaces", () => {

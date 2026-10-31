@@ -12,7 +12,13 @@ const dictionary = createDictionaryFromWords(["cold", "cord", "card", "ward", "w
 describe("applyMove", () => {
   it("applying a valid move extends the chain", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     const result = applyMove(game, "cord", dictionary);
@@ -20,13 +26,25 @@ describe("applyMove", () => {
     // Assert
     expect(result).toEqual({
       ok: true,
-      game: { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" },
+      game: {
+        start: "cold",
+        target: "warm",
+        chain: ["cold", "cord"],
+        status: "in-progress",
+        undoCount: 0,
+      },
     });
   });
 
   it("stores the played word in lowercase without surrounding spaces", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     const result = applyMove(game, " CORD ", dictionary);
@@ -37,19 +55,37 @@ describe("applyMove", () => {
 
   it("applying a move leaves the game it was given as it was", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     applyMove(game, "cord", dictionary);
 
     // Assert
-    expect(game).toEqual({ start: "cold", target: "warm", chain: ["cold"], status: "in-progress" });
+    expect(game).toEqual({
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    });
   });
 
   it("an invalid move returns the reason from checkMove", () => {
     // Arrange
     // "card" changes two letters of "cold".
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     const result = applyMove(game, "card", dictionary);
@@ -66,6 +102,7 @@ describe("applyMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -83,6 +120,7 @@ describe("applyMove", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -100,6 +138,7 @@ describe("applyMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card", "ward"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -119,6 +158,7 @@ describe("applyMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card", "ward"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -130,13 +170,53 @@ describe("applyMove", () => {
 
   it("the game is still in progress before the target is reached", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     const result = applyMove(game, "cord", dictionary);
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { status: "in-progress" } });
+  });
+
+  it("a move does not change the undo count", () => {
+    // Arrange
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 2,
+    };
+
+    // Act
+    const result = applyMove(game, "cord", dictionary);
+
+    // Assert
+    expect(result).toMatchObject({ ok: true, game: { chain: ["cold", "cord"], undoCount: 2 } });
+  });
+
+  it("the undo count is kept when the game is won", () => {
+    // Arrange
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord", "card", "ward"],
+      status: "in-progress",
+      undoCount: 2,
+    };
+
+    // Act
+    const result = applyMove(game, "warm", dictionary);
+
+    // Assert
+    expect(result).toMatchObject({ ok: true, game: { status: "won", undoCount: 2 } });
   });
 
   it("no moves are accepted after the game is won", () => {
@@ -147,6 +227,7 @@ describe("applyMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
+      undoCount: 0,
     };
 
     // Act
@@ -164,6 +245,7 @@ describe("applyMove", () => {
       target: "warm",
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
+      undoCount: 0,
     };
 
     // Act

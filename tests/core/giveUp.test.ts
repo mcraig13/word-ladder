@@ -18,6 +18,7 @@ describe("giveUp", () => {
       target: "warm",
       chain: ["cold", "cord", "card"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -26,19 +27,48 @@ describe("giveUp", () => {
     // Assert
     expect(result).toEqual({
       ok: true,
-      game: { start: "cold", target: "warm", chain: ["cold", "cord", "card"], status: "given-up" },
+      game: {
+        start: "cold",
+        target: "warm",
+        chain: ["cold", "cord", "card"],
+        status: "given-up",
+        undoCount: 0,
+      },
     });
   });
 
   it("can give up at the start word before any move", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold"],
+      status: "in-progress",
+      undoCount: 0,
+    };
 
     // Act
     const result = giveUp(game);
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { chain: ["cold"], status: "given-up" } });
+  });
+
+  it("the undo count is kept when the game is given up", () => {
+    // Arrange
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+      undoCount: 2,
+    };
+
+    // Act
+    const result = giveUp(game);
+
+    // Assert
+    expect(result).toMatchObject({ ok: true, game: { status: "given-up", undoCount: 2 } });
   });
 
   it("giving up leaves the game it was given as it was", () => {
@@ -48,6 +78,7 @@ describe("giveUp", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     };
 
     // Act
@@ -59,6 +90,7 @@ describe("giveUp", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     });
   });
 
@@ -70,6 +102,7 @@ describe("giveUp", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "in-progress",
+      undoCount: 0,
     };
     const givenUp = giveUp(game);
     if (!givenUp.ok) {
@@ -90,6 +123,7 @@ describe("giveUp", () => {
       target: "warm",
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
+      undoCount: 0,
     };
 
     // Act
@@ -106,6 +140,7 @@ describe("giveUp", () => {
       target: "warm",
       chain: ["cold", "cord"],
       status: "given-up",
+      undoCount: 0,
     };
 
     // Act

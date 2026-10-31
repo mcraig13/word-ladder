@@ -74,13 +74,17 @@ CI (`.github/workflows/ci.yml`) runs lint, tests and build on every pull request
 
 ## How we work
 
-Every chunk follows this loop:
+Every chunk follows this loop, recorded in `sdlc/<chunk id>-<short name>/` (templates in `sdlc/README.md`):
 
-1. **Spec** — intent, signature, acceptance criteria, edge cases, out of scope.
-2. **Tests first** — write tests from the acceptance criteria. Stop and show them for review before implementing.
+1. **Intent** — write `intent.md`: what and why, rules protected, acceptance criteria as test names, out of scope. Stop for human approval.
+2. **Plan and tests** — write `plan.md` (approach, files, each test with the rule it protects) and the tests. Stop and show them for review before implementing.
 3. **Implement** — make the tests pass with the smallest change that does it.
-4. **Self-review** — check the diff against the spec; flag anything uncertain. Then **break the code on purpose**: for each rule, make a small deliberate change that breaks it (delete a check, reverse an order, skip a lowercase) and confirm a test goes red. Restore the code afterwards. If no test fails, the test isn't protecting its rule: strengthen it and tell the reviewer what changed and why.
-5. **Human review and merge.**
+4. **Self-review** — check the diff against the intent; flag anything uncertain. Then **break the code on purpose**: for each rule, make a small deliberate change that breaks it (delete a check, reverse an order, skip a lowercase) and confirm a test goes red. Restore the code afterwards. If no test fails, the test isn't protecting its rule: strengthen it and tell the reviewer what changed and why. Record the breaks in `plan.md`.
+5. **Independent review** — run a reviewer agent with a fresh context, using the brief in `sdlc/README.md`. It sees only the intent, plan, diff and this file, never the author's reasoning, and runs its own breaks. Its findings go in `review.md`.
+6. **Respond** — answer every finding in `review.md`: fixed (with the test or change), or not changed and why. A test changed after human review is always called out.
+7. **Human review and merge** — via a pull request that links `review.md`. CI must be green.
+
+Process changes (this file, `sdlc/README.md`) go in their own branch and pull request, never inside a code chunk.
 
 Backlog and chunk IDs live in `backlog.md`. Decisions and their reasons live in `DECISIONS.md`.
 

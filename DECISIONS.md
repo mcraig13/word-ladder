@@ -105,6 +105,13 @@ TypeScript 7.0 ships without the JavaScript API that typescript-eslint uses, and
 - Considered: running 6 and 7 side by side via npm aliases (two TypeScripts to explain); oxlint or Biome (fewer rules, no type-aware linting).
 - **Revisit when** TypeScript 7.1 ships and typescript-eslint supports it.
 
+## D19 — Per-chunk SDLC records and independent review
+**Decided** · 2026-10-31
+Each chunk gets `sdlc/<id>-<name>/` with `intent.md`, `plan.md` and `review.md`, and is reviewed by an agent with a fresh context before the human review.
+- Why: specs were only living in chat, so the reasons behind tests weren't in the repo; and self-review is the author marking their own work.
+- Evidence from the trial on 1.4: the independent reviewer found that two breaks of the core move rule left every test green, and that `"cold "` returned `colds`. Self-review had missed both.
+- Cost: a few minutes and three short files per chunk. Keep the files short so the process doesn't become the work.
+
 ---
 
 ## Ideas for later (not scheduled)

@@ -115,7 +115,7 @@ Breadth-first search.
 - returns no path when the target is unreachable
 - returns a single-word path when start equals target
 
-*Carried forward:* if the solver uses a faster neighbour lookup than `getWordsOneLetterAway`, it must still pass 1.4's move-rule tests (two letters changed, letters moved), and check speed on the full ~3,300-word list (1.4 review 1, 1.4 intent).
+*Done in 1.9:* reuses `getWordsOneLetterAway`; speed is re-checked on the real list in 6.1 (1.9 intent choice 3).
 
 **1.10 `getPar` and `getScore` (S)** · Depends: 1.9, 1.6
 - par counts moves, not words (`cold → cord → card → ward → warm` is par 4)
@@ -269,6 +269,8 @@ Runs at build time to produce the files in `data/words/` from the SCOWL sources 
 - every pair of puzzle words is connected through accepted words
 - the same inputs always produce the same output files
 Tests use tiny hand-written `.dic`/`.aff` fixtures, not the real dictionaries.
+
+*Carried forward:* time `findShortestPath` on the built accepted list (worst case: a target it can't reach) and record it. 1.9 estimated about 80 ms on a PC from a synthetic list. If it's too slow for 2.2, speed up `getWordsOneLetterAway` behind its 1.4 tests (1.9 intent choice 3).
 
 **6.2 Review exclusion list (S)** · Depends: 6.1 · *human-owned*
 The script lists candidate abbreviations (no vowels, or in SCOWL but missing from a common-words cross-check). A human confirms each one before it goes into `data/words/exclude.txt`.

@@ -6,15 +6,26 @@ One folder per chunk of work, named `<chunk id>-<short name>`, e.g. `1.5-check-m
 
 | Step | Who | Output |
 |---|---|---|
-| 1. Intent | AI drafts, human approves | `intent.md` |
-| 2. Plan and tests | AI writes, human reviews before implementation | `plan.md`, test file |
+| 1. Intent | AI drafts | `intent.md` |
+| 2. Plan and tests | AI writes; human reviews intent, plan and tests before implementation (the one stop) | `plan.md`, test file |
 | 3. Implement | AI | code |
-| 4. Self-review | AI: check against intent, then break the code on purpose and confirm a test goes red | notes in `plan.md` |
-| 5. Independent review | Reviewer agent with fresh context: sees only `intent.md`, `plan.md`, the diff and `CLAUDE.md` | `review.md` |
+| 4. Self-review | AI: check against intent, then break the code on purpose, using the checklist below, and confirm a test goes red | notes in `plan.md` |
+| 5. Independent review | Reviewer agent with fresh context: sees only `intent.md`, `plan.md`, the diff and `CLAUDE.md`. Skipped for some S chunks (see below) | `review.md` |
 | 6. Respond | AI answers every finding: fixed, or why not | responses in `review.md` |
-| 7. Human review and merge | Human, via pull request linking `review.md` | merged PR |
+| 7. Human review and merge | Human, via pull request linking `review.md` (or `plan.md`) | merged PR |
 
-An S chunk that follows an existing pattern combines steps 1 and 2 into one human stop (see `CLAUDE.md`).
+**When to skip step 5 (D23):** only when all of these hold: the chunk is S, it follows an existing pattern, it has no search, loop or recursion logic, and every self-review break went red. Otherwise run the reviewer. If in doubt, run it.
+
+## Break checklist
+
+Earlier reviews found the gaps self-review missed came from breaks that move or delete code, not just change it in place (1.4, 1.5, 1.7, 1.9). For each rule, try breaks of every kind that applies:
+
+- **Change in place:** flip a comparison, an off-by-one, skip a lowercase or trim.
+- **Reorder:** swap the order two checks run in, where both could apply to one input. A test needs an input that fails both.
+- **Delete a guard:** remove each check in turn, including the check on each argument (start *and* target), not just the first.
+- **Return early:** put a shortcut result (e.g. `[start]` when start equals target) before the validation it should come after.
+- **Forget state:** stop recording what's been seen or used (visited words, the chain so far). A test needs a fixture with a loop or a repeat.
+- **Use the wrong input:** compare with the raw input instead of the normalised one, or the first word instead of the last.
 
 Keep files short. A small chunk should need a few lines per file, not pages.
 
@@ -81,6 +92,8 @@ A few lines on how, and why this way.
 ## Findings
 1. **<severity>** <finding> — *Response:* <fixed in abc123 / not changed because …>
 
+**Notes:** one line each, for things checked and found fine that need no response.
+
 ## Reviewer's own break-the-code checks
 - <change> → <result>
 ```
@@ -100,10 +113,10 @@ Give the reviewer agent this brief, filling in the chunk details. Don't add your
 > - Does each test meet the testing rules in `CLAUDE.md` (named after a rule, AAA, one Act, hand-worked literals, small fixtures, not tautological)? Does every acceptance criterion have a test? Are edge cases that come from the game rules missing?
 > - Naming, per `CLAUDE.md`.
 > - Correctness on awkward input. Run it rather than guessing.
-> - Your **own** break-the-code checks: at least three deliberate breaks of different rules, different from those in `plan.md` where you can. Report which tests went red. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`).
+> - Your **own** break-the-code checks: at least three deliberate breaks of different rules, different from those in `plan.md` where you can, using the break checklist in `sdlc/README.md`. Report which tests went red. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`).
 > - Type-check and lint pass. If you can't run the test runner in your environment, say so; CI is the final check.
 >
-> **Reply with only the content for `review.md`**, following the template: a verdict, numbered findings each with a severity (**blocker**, **should fix**, **nit**, **note**), what, where and why in plain language, a "*Response:*" placeholder after each, then your break-the-code checks. Only report what you verified.
+> **Reply with only the content for `review.md`**, following the template: a verdict, numbered findings each with a severity (**blocker**, **should fix**, **nit**, **note**), what, where and why in plain language, a "*Response:*" placeholder after each, then your break-the-code checks. A **note** is something the author might act on or carry forward; observations that need no action go on the one-line **Notes** list instead. Only report what you verified.
 
 ## Earlier chunks (before these records)
 

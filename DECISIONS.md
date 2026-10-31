@@ -182,6 +182,14 @@ Par is 1.5 × the moves in a shortest path, rounded up. `cold → warm` has a sh
 - D16's range is in moves of the shortest path, not par: the suggested 4–6 gives par 6–9. 2.2 already generates by shortest path.
 - Considered: par equal to the shortest path (D9 as it was); the shortest path plus a fixed number of moves (unlike 1.5 ×, the room under par wouldn't grow with longer puzzles); par by puzzle difficulty, now in Ideas for later.
 
+## D28 — The intent says what the author is least sure of
+**Decided** · 2026-10-31 · amends D23
+`intent.md` gains a "What I'm least sure of" section: two or three points where judgement went in, weakest first, each with what would change the author's mind. The PR description repeats it, updated after self-review.
+- Why: at the human stop, the records read as uniformly confident, so the contentious points were hard to find. In 1.13 the weakest choice (no shared test helper, though half the diff was literals reflowed for one new field) was argued for, not flagged. The author writes the code, tests and breaks, so their blind spots are shared; saying where they're unsure points the human at them.
+- An exception to D23's process freeze, made by the human reviewer: it changes a template, not how chunks run, and costs a few lines per chunk.
+- The independent reviewer also reads `intent.md`, so it sees the list. That's accepted: the brief still asks for its own breaks, and checking named doubts is cheap. If reviews start only answering the list, revisit at 3.0.
+- Considered: waiting for the 3.0 process review (another ten or so chunks reviewed without it); a full risk register per chunk (too heavy for S chunks).
+
 ---
 
 ## Ideas for later (not scheduled)

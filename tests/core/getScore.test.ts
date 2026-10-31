@@ -90,7 +90,7 @@ describe("getScore", () => {
     // Arrange
     // cold → cord is a one-move puzzle, so par is 2. Won in 1 move.
     const dictionary = createDictionaryFromWords(["cold", "cord"]);
-    const created = createGame("cold", "cord", 2);
+    const created = createGame("cold", "cord", dictionary);
     if (!created.ok) {
       throw new Error("Arrange failed: game was not created");
     }

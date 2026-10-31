@@ -1,23 +1,24 @@
 # 1.10 plan
 
 ## Approach
-`Game` gains `readonly par: number`, and `createGame(start, target, par)` stores it (intent choice 3, changed at the human stop). `applyMove`, `undoLastMove` and `giveUp` copy the game with `...game`, so they keep par with no code change.
+`Game` gains `readonly par: number`. `createGame(start, target, dictionary)` runs `findShortestPath` after its word checks, passes on `not-a-word` or `unreachable`, and stores `getPar(path.length - 1)` (intent choice 3, changed twice at the human stop). `applyMove`, `undoLastMove` and `giveUp` copy the game with `...game`, so they keep par with no code change.
 
-Two new files in `src/core/`, one function each, as in 1.4–1.9. `getPar` is one line: `Math.ceil((shortestPathMoves * 3) / 2)`. `getScore(game)` checks `game.status` first: anything but `won` returns `{ ok: false, reason: game.status }`; `won` returns `{ ok: true, score: game.chain.length - 1 + game.undoCount - game.par }`. No loops, no search.
+Two new files in `src/core/`, one function each, as in 1.4–1.9. `getPar` is one line: `Math.ceil((shortestPathMoves * 3) / 2)`. `getScore(game)` checks `game.status` first: anything but `won` returns `{ ok: false, reason: game.status }`; `won` returns `{ ok: true, score: game.chain.length - 1 + game.undoCount - game.par }`. No loops or search of their own; `createGame` reuses the 1.9 search.
 
-Tests write games as literals, as in 1.6–1.13. `getScore` doesn't check the chain against a dictionary, but every chain in the tests is a real one-letter-at-a-time route from `cold` (worked out by hand below), so the stories are possible games. One test builds its game with `createGame` and `applyMove`, so that `createGame` storing par is tested through a score rather than by checking a constructor sets its fields.
+Tests write games as literals, as in 1.6–1.13. `getScore` doesn't check the chain against a dictionary, but every chain in the tests is a real one-letter-at-a-time route from `cold` (worked out by hand below), so the stories are possible games. One test builds its game with `createGame` and `applyMove`, so par is tested from the dictionary through to the score.
 
 ## Files
-- `src/core/createGame.ts` — `par` on `Game`; `createGame` takes and stores it; doc comment
+- `src/core/createGame.ts` — `par` on `Game`; `createGame` takes the dictionary, searches, stores par; two new reasons; doc comment
 - `src/core/getPar.ts` — new
 - `src/core/getScore.ts` — new
 - `src/core/findShortestPath.ts` — doc comment: the path's moves give par through `getPar` (D27), not "length minus one"
 - `tests/core/getPar.test.ts` — new, 3 tests
 - `tests/core/getScore.test.ts` — new, 7 tests
-- `tests/core/createGame.test.ts` — `createGame(start, target, 6)` in 8 calls; assertions unchanged
+- `tests/core/createGame.test.ts` — file-scope dictionary (cold, cord, card, ward, warm) passed in 8 existing calls, assertions unchanged; 5 new tests
 - `tests/core/applyMove.test.ts`, `undoLastMove.test.ts`, `giveUp.test.ts` — `par` on 35 `Game` literals (input and whole-game expected values): 6, except par 9 in one whole-game test each in `undoLastMove` and `giveUp` (review finding 1); assertions otherwise unchanged
 - `tests/core/findShortestPath.test.ts` — header comment only
-- `backlog.md` — M1 Status: Done; carried-forward lines on 2.2 (check the shortest path is 1 or more) and 3.9 (restore keeps and checks par)
+- `backlog.md` — M1 Status: Done; carried-forward lines on 2.2 (a puzzle needs only start and target) and 3.9 (take par from `createGame`, not storage); 6.1b timing line notes one search per game
+- `DECISIONS.md` — D24 option A: the schedule doesn't store par (approved at the human stop)
 - `sdlc/1.10-par-and-score/` — these records
 
 ## Tests
@@ -32,14 +33,19 @@ Par for `cold → warm` is 6 (shortest path 4 moves). Score = (chain length − 
 | a win in two moves over par scores +2 | won; cold, hold, bold, bald, bard, hard, card, ward, warm; undos 0; par 6 | 8 + 0 − 6 | `{ ok: true, score: 2 }` | Score (D27) |
 | a win along a shortest path scores below par | won; cold, cord, card, ward, warm; undos 0; par 6 | 4 + 0 − 6 | `{ ok: true, score: -2 }` | Score can be below par (D27) |
 | each undo adds one to the score | won; cold, cord, card, ward, warm; undos 3; par 6 | 4 + 3 − 6 | `{ ok: true, score: 1 }` | Each undo adds one (D26) |
-| a game is scored against the par it was created with | `createGame("cold", "cord", 2)`, then play cord | 1 + 0 − 2 | `{ ok: true, score: -1 }` | Score uses the game's own par, set at creation (D9, D27) |
+| a game is scored against the par it was created with | `createGame("cold", "cord", [cold, cord])` (par 2), then play cord | 1 + 0 − 2 | `{ ok: true, score: -1 }` | Score uses the game's own par, set at creation (D9, D27) |
 | a game that was given up has no score | given-up; cold, cord, card; par 6 | — | `{ ok: false, reason: "given-up" }` | Giving up has no score (D11) |
 | a game in progress has no score | in-progress; cold, cord, card; par 6 | — | `{ ok: false, reason: "in-progress" }` | Only a won game is scored |
+| a new game's par comes from a shortest path between start and target | cold → warm; also bold, bald, bard (a 6-move route) | 4 moves → 6, not 9 | `par: 6` | Par from a shortest path (D27) |
+| rejects creating a game with a start that is not an accepted word | colt → warm | colt not in list | `not-a-word` | Start is an accepted word (D8) |
+| rejects creating a game with a target that is not an accepted word | cold → wart | wart not in list | `not-a-word` | Target is an accepted word (D8) |
+| rejects creating a game whose target can't be reached | cold, cord, ward, warm (no card) | no link cord → ward | `unreachable` | Every puzzle is solvable (D8) |
+| reports same-word before checking the dictionary | colt → COLT | both reasons apply | `same-word` | Check order (intent choice 3) |
 
 Undos 3 rather than 1 or 2 so the result (+1) differs from ignoring undos (−2), counting them twice (+4) and subtracting them (−5).
 
 ### Size
-`src/` and `tests/`: +273 / −15 after review. Of that, about 60 lines are `par` on existing literals and calls; the rest is the two new functions (30) and their tests (187). Over ~200, approved at the human stop.
+`src/` and `tests/`: +362 / −18 after moving par into `createGame`. About 60 lines are `par` on existing literals and the dictionary on existing calls; the rest is the new functions and changes (about 50) and their tests. Over ~200, approved at the human stop.
 
 ## Self-review
 Diff matches the intent and touches only the files listed; `applyMove.ts`, `undoLastMove.ts` and `giveUp.ts` are unchanged. Lint and all 119 tests pass. 22 breaks run with `npm run break`: 21 went red, 1 stayed green as predicted (below). No test needed strengthening at the time, but the review found par-keeping was only checked against 0 (review finding 1; strengthened after review, below).
@@ -70,5 +76,19 @@ Diff matches the intent and touches only the files listed; `applyMove.ts`, `undo
 
 Reorder doesn't apply: `getScore` has one check. Use the wrong input: the hard-coded-par break covers using a fixed par rather than the game's.
 
+**After par moved into `createGame`** (human stop, second change). 13 breaks, 12 red, 1 equivalent:
+- Break: search runs before the `same-word` check (reorder) → red: `reports same-word before…`
+- Break: delete the `same-word` guard → red: `…start and target are the same word`, `reports same-word before…`
+- Break: delete the search guard → red: both `not an accepted word` tests, `…can't be reached`
+- Break: every failed search reports `not-a-word` → red: `…can't be reached`
+- Break: every failed search reports `unreachable` → red: both `not an accepted word` tests
+- Break: par from the path's words, not moves (`getPar(length)`) → red: `a new game's par comes from…`, `…par it was created with`
+- Break: par equals the moves (skips `getPar`) → red: same two
+- Break: par fixed at 6 → red: `…par it was created with`
+- Break: search start to start (wrong input) → red: `a new game's par…`, `…target that is not an accepted word`, `…can't be reached`, `…par it was created with`
+- Break: search with the raw start and target instead of the lowercased ones → **all green**. Equivalent: `findShortestPath` lowercases and trims its own inputs, and the earlier checks have already rejected anything `normaliseWord` rejects.
+- Break: `applyMove`, `undoLastMove`, `giveUp` each set par 6 → red, as after review finding 1
+- The earlier 22 breaks rerun: the two that edited `createGame`'s old `par,` line no longer apply and are replaced by the ones above; the rest unchanged.
+
 ## Step 5
-Run. D23 criteria: S chunk — holds; follows an existing pattern (a field on `Game` copied by spread, as 1.13; a result with a reason, as 1.8) — holds; no search, loop or recursion — holds; every self-review break went red — **doesn't hold**, strictly: the `Math.round` break stayed green, though it's equivalent. The chunk also changes `createGame`'s signature and is over the size limit, so "if in doubt, run it" applies.
+Run. D23 criteria: S chunk — holds; follows an existing pattern (a field on `Game` copied by spread, as 1.13; a result with a reason, as 1.8) — holds; no search, loop or recursion — holds for `getPar` and `getScore`, but not since `createGame` calls the search; every self-review break went red — **doesn't hold**, strictly: the `Math.round` break stayed green, though it's equivalent. The chunk also changes `createGame`'s signature and is over the size limit, so "if in doubt, run it" applies. Re-run after par moved into `createGame`, since `createGame` now calls the search.

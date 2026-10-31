@@ -1,3 +1,6 @@
+import type { Dictionary } from "./createDictionaryFromWords";
+import { findShortestPath } from "./findShortestPath";
+import { getPar } from "./getPar";
 import { normaliseWord } from "./normaliseWord";
 
 /**
@@ -13,7 +16,7 @@ export type Chain = readonly [startWord: string, ...laterWords: string[]];
 export interface Game {
   readonly start: string;
   readonly target: string;
-  /** Typical moves for this puzzle, from getPar; shown from the start (D9, D27, chunk 1.10). */
+  /** Typical moves for this puzzle, from a shortest path (D27); shown from the start (D9). */
   readonly par: number;
   readonly chain: Chain;
   readonly status: "in-progress" | "won" | "given-up";
@@ -23,14 +26,23 @@ export interface Game {
 
 export type CreateGameResult =
   | { ok: true; game: Game }
-  | { ok: false; reason: "invalid-word" | "different-lengths" | "same-word" };
+  | {
+      ok: false;
+      reason: "invalid-word" | "different-lengths" | "same-word" | "not-a-word" | "unreachable";
+    };
 
 /**
- * A new game from start to target, with words stored lowercase. Whether the
- * words are in the dictionary, and whether par is right for them, is left to
- * puzzle generation, which picks them and works out par.
+ * A new game from start to target, with words stored lowercase. Start and
+ * target must be accepted words with a path between them (D8). Par is worked
+ * out here from a shortest path (D27, chunk 1.10), so it can't disagree with
+ * the words. The search runs last: it's the slow step, and a start equal to
+ * the target would otherwise find a path of no moves.
  */
-export function createGame(start: string, target: string, par: number): CreateGameResult {
+export function createGame(
+  start: string,
+  target: string,
+  dictionary: Dictionary,
+): CreateGameResult {
   const normalisedStart = normaliseWord(start);
   const normalisedTarget = normaliseWord(target);
 
@@ -46,12 +58,17 @@ export function createGame(start: string, target: string, par: number): CreateGa
     return { ok: false, reason: "same-word" };
   }
 
+  const shortestPath = findShortestPath(normalisedStart.word, normalisedTarget.word, dictionary);
+  if (!shortestPath.ok) {
+    return { ok: false, reason: shortestPath.reason };
+  }
+
   return {
     ok: true,
     game: {
       start: normalisedStart.word,
       target: normalisedTarget.word,
-      par,
+      par: getPar(shortestPath.path.length - 1),
       chain: [normalisedStart.word],
       status: "in-progress",
       undoCount: 0,

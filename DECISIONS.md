@@ -129,6 +129,14 @@ CI runs the tests with V8 coverage (`@vitest/coverage-v8`) over `src/` and `scri
 - SOLID isn't adopted as a standard: it targets class design, and this code is pure functions over plain data. Where it translates (one job per function, dependencies passed in, small interfaces) the conventions already cover it.
 - New dependency: `prettier` (dev only, exact version).
 
+## D22 — Mutation testing (Stryker) not adopted
+**Decided** · 2026-10-31
+Stryker was tried once, on 1.9 `findShortestPath`, in a scratch copy with nothing committed. Details are in `sdlc/1.9-find-shortest-path/plan.md`.
+- Result: 48 mutants and a mutation score of 95.8% (97.9% after the review fixes; the one survivor left changes no result). It found one real gap the hand-made breaks missed: the unreachable-target test had no loop, so a solver that never records the words it has reached still passed.
+- Why not adopt it: the independent review found that same gap, and three more Stryker couldn't. Those needed a statement moved or added, not a small change in place. It added nothing beyond the review, at the cost of two dev dependencies and a config to maintain.
+- Considered: running it on every chunk in CI; running it once on M chunks with search or loop logic.
+- **Revisit if** an independent review misses a gap that a mutant would have shown.
+
 ---
 
 ## Ideas for later (not scheduled)

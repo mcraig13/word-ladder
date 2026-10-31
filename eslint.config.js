@@ -45,9 +45,9 @@ export default [
     },
   },
   {
-    // Yes/no values in game code start with a question word. Tests are
-    // exempt so they can keep the AAA convention of `const result = ...`.
-    files: ["src/**/*.ts"],
+    // Yes/no values in game code and build scripts start with a question word.
+    // Tests are exempt so they can keep the AAA convention of `const result = ...`.
+    files: ["src/**/*.ts", "scripts/**/*.ts"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
@@ -70,37 +70,39 @@ export default [
   {
     // Core logic is pure: no DOM, no I/O, no clock, no unseeded randomness.
     // Dependencies are passed in as arguments (CLAUDE.md, Conventions; D21).
-    files: ["src/core/**/*.ts"],
+    // The word-list parser is pure too; only the build script around it reads
+    // files (6.1a intent, choice 1).
+    files: ["src/core/**/*.ts", "scripts/words/**/*.ts"],
     rules: {
       "no-restricted-globals": [
         "error",
         ...["window", "document", "navigator", "localStorage", "sessionStorage", "indexedDB"].map(
-          (name) => ({ name, message: "No DOM or storage in src/core." }),
+          (name) => ({ name, message: "No DOM or storage in pure code." }),
         ),
         ...["fetch", "XMLHttpRequest", "setTimeout", "setInterval"].map((name) => ({
           name,
-          message: "No I/O or timers in src/core.",
+          message: "No I/O or timers in pure code.",
         })),
-        { name: "Date", message: "Pass the date in; the core never reads the clock (D6)." },
-        { name: "performance", message: "The core never reads the clock (D6)." },
-        { name: "crypto", message: "Pass a seed in; no unseeded randomness in src/core." },
+        { name: "Date", message: "Pass the date in; pure code never reads the clock (D6)." },
+        { name: "performance", message: "Pure code never reads the clock (D6)." },
+        { name: "crypto", message: "Pass a seed in; no unseeded randomness in pure code." },
       ],
       "no-restricted-properties": [
         "error",
         {
           object: "Math",
           property: "random",
-          message: "Pass a seed in; no unseeded randomness in src/core.",
+          message: "Pass a seed in; no unseeded randomness in pure code.",
         },
       ],
       "no-restricted-imports": [
         "error",
         {
           patterns: [
-            { group: ["node:*"], message: "No Node modules in src/core." },
+            { group: ["node:*"], message: "No Node modules in pure code." },
             {
               group: ["**/ui/**", "**/puzzles/**"],
-              message: "src/core doesn't depend on ui or puzzles.",
+              message: "Pure code doesn't depend on ui or puzzles.",
             },
           ],
         },

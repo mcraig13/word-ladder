@@ -100,4 +100,28 @@ describe("undoLastMove", () => {
     // Assert
     expect(result).toEqual({ ok: false, reason: "game-over" });
   });
+
+  it("undo is not available after giving up", () => {
+    // Arrange
+    // The last word is not the target, so only the status says the game ended.
+    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "given-up" };
+
+    // Act
+    const result = undoLastMove(game);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "game-over" });
+  });
+
+  it("undo is not available after giving up at the start word", () => {
+    // Arrange
+    // Both reasons apply here; the game being over is reported first.
+    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "given-up" };
+
+    // Act
+    const result = undoLastMove(game);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "game-over" });
+  });
 });

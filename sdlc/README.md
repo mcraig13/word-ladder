@@ -60,6 +60,9 @@ A break whose test run crashes (a worker out of memory, an unhandled error, a no
 ## Acceptance criteria
 - Written as test names
 
+## What I'm least sure of
+- Two or three points where the author's judgement went in, weakest first: a choice another reviewer might make differently, a claim no test backs, or a rule read one way when the text allows another. Say what would change your mind. "Nothing" is allowed, but say why.
+
 ## Out of scope
 - What this deliberately doesn't do, and which chunk does
 ```

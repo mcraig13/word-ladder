@@ -9,8 +9,6 @@ import { getScore } from "../../src/core/getScore";
 // no score (D11), and nor does one still in progress. cold → warm has a
 // shortest path of 4 moves, so par is 6.
 
-const dictionary = createDictionaryFromWords(["cold", "cord"]);
-
 describe("getScore", () => {
   it("a win in par moves scores 0", () => {
     // Arrange
@@ -91,6 +89,7 @@ describe("getScore", () => {
   it("a game is scored against the par it was created with", () => {
     // Arrange
     // cold → cord is a one-move puzzle, so par is 2. Won in 1 move.
+    const dictionary = createDictionaryFromWords(["cold", "cord"]);
     const created = createGame("cold", "cord", 2);
     if (!created.ok) {
       throw new Error("Arrange failed: game was not created");

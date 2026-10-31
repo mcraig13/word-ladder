@@ -14,10 +14,11 @@ const dictionary = createDictionaryFromWords(["cold", "cord", "card", "ward", "w
 describe("undoLastMove", () => {
   it("removes the last word from the chain", () => {
     // Arrange
+    // Par 9, unlike the other tests, so a par set to 6 instead of kept goes red.
     const game: Game = {
       start: "cold",
       target: "warm",
-      par: 6,
+      par: 9,
       chain: ["cold", "cord", "card"],
       status: "in-progress",
       undoCount: 0,
@@ -32,7 +33,7 @@ describe("undoLastMove", () => {
       game: {
         start: "cold",
         target: "warm",
-        par: 6,
+        par: 9,
         chain: ["cold", "cord"],
         status: "in-progress",
         undoCount: 1,

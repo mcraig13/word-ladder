@@ -30,7 +30,7 @@
 
 ## What I'm least sure of
 1. **`createGame` takes par, not the shortest path's length.** Taking the length and calling `getPar` itself would make a wrong par impossible to pass, but then 3.1 would need the length rather than par, and under D24 option A the schedule would have to store the length. If D24 goes to option A and the schedule stores the length anyway, switching is a small change.
-2. **No test that `applyMove`, `undoLastMove` and `giveUp` keep par.** They copy the game with `...game`, and the existing whole-game `toEqual` checks now include `par: 6`, so a version that dropped or reset par goes red. The breaks in self-review must show that; if one stays green, I'll add a test like 1.13's.
+2. **No test that `applyMove`, `undoLastMove` and `giveUp` keep par.** They copy the game with `...game`, and the existing whole-game `toEqual` checks now include `par: 6`, so a version that dropped or reset par goes red. The breaks in self-review must show that; if one stays green, I'll add a test like 1.13's. *After review:* setting par to 6 stayed green for `undoLastMove` and `giveUp`, since every literal used 6; one test in each now uses par 9 (review finding 1).
 3. **`par` is a plain number on `Game`.** It could be any number at the type level. A branded "whole number of 2 or more" type would catch a bad par from code, but nothing else in `Game` does this, and the risk is JSON from storage or the schedule, which only a runtime check catches (3.9, 2.2).
 
 ## Out of scope

@@ -15,7 +15,7 @@ Tests write games as literals, as in 1.6–1.13. `getScore` doesn't check the ch
 - `tests/core/getPar.test.ts` — new, 3 tests
 - `tests/core/getScore.test.ts` — new, 7 tests
 - `tests/core/createGame.test.ts` — `createGame(start, target, 6)` in 8 calls; assertions unchanged
-- `tests/core/applyMove.test.ts`, `undoLastMove.test.ts`, `giveUp.test.ts` — `par: 6` on 35 `Game` literals (input and whole-game expected values); assertions otherwise unchanged
+- `tests/core/applyMove.test.ts`, `undoLastMove.test.ts`, `giveUp.test.ts` — `par` on 35 `Game` literals (input and whole-game expected values): 6, except par 9 in one whole-game test each in `undoLastMove` and `giveUp` (review finding 1); assertions otherwise unchanged
 - `tests/core/findShortestPath.test.ts` — header comment only
 - `backlog.md` — M1 Status: Done; carried-forward lines on 2.2 (check the shortest path is 1 or more) and 3.9 (restore keeps and checks par)
 - `sdlc/1.10-par-and-score/` — these records
@@ -39,10 +39,10 @@ Par for `cold → warm` is 6 (shortest path 4 moves). Score = (chain length − 
 Undos 3 rather than 1 or 2 so the result (+1) differs from ignoring undos (−2), counting them twice (+4) and subtracting them (−5).
 
 ### Size
-`src/` and `tests/`: +270 / −13. Of that, about 60 lines are `par` on existing literals and calls; the rest is the two new functions (30) and their tests (187). Over ~200, approved at the human stop.
+`src/` and `tests/`: +273 / −15 after review. Of that, about 60 lines are `par` on existing literals and calls; the rest is the two new functions (30) and their tests (187). Over ~200, approved at the human stop.
 
 ## Self-review
-Diff matches the intent and touches only the files listed; `applyMove.ts`, `undoLastMove.ts` and `giveUp.ts` are unchanged. Lint and all 119 tests pass. 22 breaks run with `npm run break`: 21 went red, 1 stayed green as predicted (below). No test needed strengthening. Least-sure point 2 is settled: dropping par in `applyMove`, `undoLastMove` or `giveUp` goes red, so no new tests for them.
+Diff matches the intent and touches only the files listed; `applyMove.ts`, `undoLastMove.ts` and `giveUp.ts` are unchanged. Lint and all 119 tests pass. 22 breaks run with `npm run break`: 21 went red, 1 stayed green as predicted (below). No test needed strengthening at the time, but the review found par-keeping was only checked against 0 (review finding 1; strengthened after review, below).
 - Break: `getPar` uses `Math.floor` → red: `par rounds up…`, `a one-move shortest path…`
 - Break: `getPar` drops the rounding → red: `par rounds up…`, `a one-move shortest path…`
 - Break: `getPar` adds one → red: all three `getPar` tests
@@ -65,6 +65,8 @@ Diff matches the intent and touches only the files listed; `applyMove.ts`, `undo
 - Break: `applyMove` resets par to 0 (forget state) → red: `applying a valid move extends the chain`, `…par it was created with`
 - Break: `undoLastMove` resets par to 0 → red: `removes the last word from the chain`
 - Break: `giveUp` resets par to 0 → red: `giving up ends the game as a loss`
+
+**After review (finding 1):** every `undoLastMove` and `giveUp` literal used par 6, so setting par to 6 instead of keeping it stayed green. One whole-game test in each file now uses par 9. Reran: `undoLastMove` sets par 6 → red: `removes the last word…`; `giveUp` sets par 6 → red: `giving up ends…`; `applyMove` sets par 6 → red: `…par it was created with`; both reset-to-0 breaks still red.
 
 Reorder doesn't apply: `getScore` has one check. Use the wrong input: the hard-coded-par break covers using a fixed par rather than the game's.
 

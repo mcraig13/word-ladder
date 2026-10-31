@@ -106,6 +106,8 @@ Readable beats short. A name should make sense on first read to someone who does
 - No abbreviations or single-letter names, including parameters and loop variables (`word`, not `w`).
 - If a name needs explaining in review, rename it.
 
+Lint enforces the mechanical parts: no single-letter names, `camelCase` for functions and variables, `PascalCase` for types, and yes/no values in `src/` starting with `is`, `are`, `has`, `contains`, `can` or `should`. Whether a name reads well is checked in review.
+
 ## Testing: meaningful, not tautological
 
 Every test must check a game rule or a behaviour a player would notice. A test earns its place only if it would fail when that rule is broken.

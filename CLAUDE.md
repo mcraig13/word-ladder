@@ -26,13 +26,13 @@ Reasons for each rule are in `DECISIONS.md`.
 - A word already in the current chain is rejected (D13).
 - A rejected attempt is not a move: the player sees the reason and tries again (D13).
 - Comparisons are case-insensitive; words are stored and compared in lowercase.
-- Undo removes the last word at no cost and cannot go past the start word. An undone word is no longer in the chain, so it can be played again (D12).
+- Undo removes the last word and cannot go past the start word. Each undo adds one to the score. An undone word is no longer in the chain, so it can be played again (D26).
 
 **Ending and scoring**
 - The game is won when the chain reaches the target word.
 - Giving up ends the game as a loss, with no score (D11).
 - **Par** is the number of moves in a shortest path, computed over the accepted words. `COLD → CORD → CARD → WARD → WARM` is par 4. Par is shown from the start (D9).
-- **Score** is moves in the final chain minus par. 0 is shown as "par", otherwise "+1", "+2"… Nobody can beat par (D9).
+- **Score** is moves in the final chain, plus undos, minus par. 0 is shown as "par", otherwise "+1", "+2"… Nobody can beat par (D9, D26).
 - When the game ends (won or given up), show one shortest path; on a win, show it beside the player's chain (D9, D11).
 - Hints (after launch) don't change the score; they're counted and shown as 💡 in the share (D10).
 

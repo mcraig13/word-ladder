@@ -79,7 +79,7 @@ Every chunk follows this loop:
 1. **Spec** — intent, signature, acceptance criteria, edge cases, out of scope.
 2. **Tests first** — write tests from the acceptance criteria. Stop and show them for review before implementing.
 3. **Implement** — make the tests pass with the smallest change that does it.
-4. **Self-review** — check the diff against the spec; flag anything uncertain.
+4. **Self-review** — check the diff against the spec; flag anything uncertain. Then **break the code on purpose**: for each rule, make a small deliberate change that breaks it (delete a check, reverse an order, skip a lowercase) and confirm a test goes red. Restore the code afterwards. If no test fails, the test isn't protecting its rule: strengthen it and tell the reviewer what changed and why.
 5. **Human review and merge.**
 
 Backlog and chunk IDs live in `backlog.md`. Decisions and their reasons live in `DECISIONS.md`.

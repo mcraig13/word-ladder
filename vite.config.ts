@@ -12,9 +12,8 @@ export default defineConfig({
       provider: "v8",
       include: ["src/**/*.ts", "scripts/**/*.ts"],
       reporter: ["text", "html"],
-      // Today's level (D20). Branches move to 100 once the empty-chain
-      // fallback in checkMove is tested (4.3).
-      thresholds: { statements: 100, lines: 100, functions: 100, branches: 97 },
+      // Every line, function and branch (D20; branches raised to 100 in 1.12).
+      thresholds: { statements: 100, lines: 100, functions: 100, branches: 100 },
     },
   },
 });

@@ -1,13 +1,19 @@
 import { normaliseWord } from "./normaliseWord";
 
 /**
+ * The words played so far: the start word, then each word after it
+ * (chunk 1.12). The type rules out an empty chain.
+ */
+export type Chain = readonly [startWord: string, ...laterWords: string[]];
+
+/**
  * One game as plain data (chunk 1.6). The chain always begins with the start
  * word. Games are never changed in place: moves return a new game.
  */
 export interface Game {
   readonly start: string;
   readonly target: string;
-  readonly chain: readonly string[];
+  readonly chain: Chain;
   readonly status: "in-progress" | "won" | "given-up";
 }
 

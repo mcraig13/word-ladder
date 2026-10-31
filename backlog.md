@@ -10,7 +10,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | Milestone | Chunks | Outcome |
 |-----------|--------|---------|
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI |
-| M1 Rules engine | 1.1–1.11 | All game rules enforced and tested; solver and scoring work |
+| M1 Rules engine | 1.1–1.12 | All game rules enforced and tested; solver and scoring work |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date |
 | **M3 Soft launch** | 3.1–3.8 | Friends can play today's puzzle from a link |
 | M4 After launch | 4.1–4.3 | Share, hints, stats |
@@ -130,6 +130,12 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 - loads accepted words and puzzle words as separate dictionaries
 - every puzzle word is also an accepted word
 
+**1.12 Non-empty chain (S)** · Depends: 1.8
+Type `Game.chain` so an empty chain can't be built, and drop `checkMove`'s `?? ""` fallback (1.5 review 5, 1.6 review 6). Types only; behaviour unchanged.
+- every existing test passes with its values and assertions unchanged
+- type-check fails if code builds a chain without a start word
+- branch coverage is 100%
+
 ---
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
@@ -232,7 +238,7 @@ Browser storage only; no backend. Split into resume and stats if it grows.
 - a win on consecutive days extends the streak
 - a missed day or a give-up resets the streak
 
-*Carried forward:* restoring a saved game must reject an empty chain (1.6 review 6); once that's tested, raise the branch coverage threshold to 100 (D20).
+*Carried forward:* restoring a saved game must reject a saved chain that is empty or doesn't start with the start word. `Chain` (1.12) checks only code, not JSON read from storage, so the restore code must check it at runtime, with a test (1.6 review 6, 1.12).
 
 ---
 

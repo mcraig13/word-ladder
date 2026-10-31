@@ -18,6 +18,20 @@ describe("applyMove", () => {
     const result = applyMove(game, "cord", dictionary);
 
     // Assert
+    expect(result).toEqual({
+      ok: true,
+      game: { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" },
+    });
+  });
+
+  it("stores the played word in lowercase without surrounding spaces", () => {
+    // Arrange
+    const game: Game = { start: "cold", target: "warm", chain: ["cold"], status: "in-progress" };
+
+    // Act
+    const result = applyMove(game, " CORD ", dictionary);
+
+    // Assert
     expect(result).toMatchObject({ ok: true, game: { chain: ["cold", "cord"] } });
   });
 
@@ -67,9 +81,10 @@ describe("applyMove", () => {
     const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" };
 
     // Act
-    applyMove(game, "word", dictionary);
+    const result = applyMove(game, "word", dictionary);
 
     // Assert
+    expect(result).toEqual({ ok: false, reason: "not-a-word" });
     expect(game.chain).toEqual(["cold", "cord"]);
   });
 
@@ -92,7 +107,7 @@ describe("applyMove", () => {
     });
   });
 
-  it("the game is won when the target is typed in a different case", () => {
+  it("the game is won when the target is typed in a different case or with spaces", () => {
     // Arrange
     const game: Game = {
       start: "cold",
@@ -102,7 +117,7 @@ describe("applyMove", () => {
     };
 
     // Act
-    const result = applyMove(game, "WARM", dictionary);
+    const result = applyMove(game, " WARM ", dictionary);
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { status: "won" } });

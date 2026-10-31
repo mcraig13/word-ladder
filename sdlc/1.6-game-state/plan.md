@@ -25,13 +25,14 @@ Dictionary for all: cold, cord, card, ward, warm, worm. Target `warm`.
 
 | Test | Chain (status) | Next word | Expected | Rule |
 |---|---|---|---|---|
-| applying a valid move extends the chain | cold | cord | chain cold, cord | A legal move is added |
+| applying a valid move extends the chain | cold | cord | whole game: chain cold, cord; start, target kept | A legal move is added |
 | applying a move leaves the game it was given as it was | cold | cord | given game still cold | Pure function |
+| stores the played word in lowercase without surrounding spaces | cold | ` CORD ` | chain cold, cord | Words stored lowercase *(added in review)* |
 | an invalid move returns the reason from checkMove | cold | card | `not-one-change` | Rejected attempts give a reason (D13) |
 | an invalid move checks repeats against the whole chain | cold, cord, card | cord | `repeated-word` | No repeats (D13) |
-| an invalid move leaves the chain unchanged | cold, cord | word | given game still cold, cord | A rejected attempt is not a move (D13) |
+| an invalid move leaves the chain unchanged | cold, cord | word | `not-a-word`; given game still cold, cord | A rejected attempt is not a move (D13) |
 | the game is won when the chain reaches the target | cold, cord, card, ward | warm | `won`, chain ends warm | Winning |
-| the game is won when the target is typed in a different case | cold, cord, card, ward | WARM | `won` | Comparisons ignore case |
+| the game is won when the target is typed in a different case or with spaces | cold, cord, card, ward | ` WARM ` | `won` | Comparisons ignore case |
 | the game is still in progress before the target is reached | cold | cord | `in-progress` | Not won early |
 | no moves are accepted after the game is won | …, ward, warm (won) | worm | `game-over` | Game ends at the target |
 | reports game-over before any other reason | …, ward, warm (won) | cards | `game-over` | Precedence |
@@ -50,3 +51,4 @@ Dictionary for all: cold, cord, card, ward, warm, worm. Target `warm`.
 - Break: always set status `won` → red: `…still in progress…`
 - Break: also push the move onto the given game's chain → red: `…leaves the game it was given as it was` and two others
 - Break: append the word before checking and keep it on failure → red: `an invalid move leaves the chain unchanged` and six others
+- After review: the reviewer's four breaks that left everything green (append the raw word; overwrite start or target; untrimmed win check) now each turn a test red

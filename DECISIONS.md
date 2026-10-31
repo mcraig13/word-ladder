@@ -137,6 +137,18 @@ Stryker was tried once, on 1.9 `findShortestPath`, in a scratch copy with nothin
 - Considered: running it on every chunk in CI; running it once on M chunks with search or loop logic.
 - **Revisit if** an independent review misses a gap that a mutant would have shown.
 
+## D23 — One human stop, review by risk, and a process freeze
+**Decided** · 2026-10-31 · amends D19
+After 1.4–1.12, a look back at how the loop actually ran.
+- **One human stop per chunk**, after intent, plan and tests, before implementing. The two stops planned for M chunks never happened: 1.5 and 1.6 put intent, plan and tests in one commit, and 1.9 had no stop before the PR.
+- **Break checklist for self-review.** The gaps reviewers found and self-review missed came from breaks that reorder checks, delete a guard on the second argument, return early or forget visited state (1.4, 1.5, 1.7, 1.9). Self-review now works through those kinds of break, so they're caught before review.
+- **Skip the independent review** for S chunks that follow a pattern, have no search or loop logic, and whose self-review breaks all went red. 1.8 and 1.12 reviews came back "approve" with notes only. 1.7's review did find two check-order gaps, but those are now on the checklist. M chunks keep the review: it found real gaps in 1.4, 1.5 and 1.9.
+- **Shorter reviews:** observations that need no action go on a one-line Notes list, not as numbered findings each answered "agreed, no change".
+- **Process freeze until soft launch:** only fixes to the process tooling (as `break.mjs` crash reporting was). Six of the first 18 PRs were process changes; the effort now goes to the critical path.
+- Considered: dropping the human stop and reviewing only at the PR (tests written to fit the code would be harder to spot); keeping the review for every chunk (several minutes per S chunk for notes only).
+- **Revisit at** the start of 3.1, together with D7 and D20: how UI code is tested, and whether the coverage gate and break checks still fit.
+- **Revisit sooner if** a skipped review lets through a gap that the human review or a later chunk finds.
+
 ---
 
 ## Ideas for later (not scheduled)

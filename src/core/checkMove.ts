@@ -19,23 +19,23 @@ export function checkMove(
   dictionary: Dictionary,
 ): CheckMoveResult {
   const currentWord = chain[chain.length - 1] ?? "";
-  const word = nextWord.trim().toLowerCase();
+  const normalisedNextWord = nextWord.trim().toLowerCase();
 
-  if (word.length !== currentWord.length) {
+  if (normalisedNextWord.length !== currentWord.length) {
     return { ok: false, reason: "wrong-length" };
   }
 
-  if (!areWordsOneLetterApart(currentWord, word)) {
+  if (!areWordsOneLetterApart(currentWord, normalisedNextWord)) {
     return { ok: false, reason: "not-one-change" };
   }
 
-  if (!dictionary.containsWord(word)) {
+  if (!dictionary.containsWord(normalisedNextWord)) {
     return { ok: false, reason: "not-a-word" };
   }
 
-  if (chain.includes(word)) {
+  if (chain.includes(normalisedNextWord)) {
     return { ok: false, reason: "repeated-word" };
   }
 
-  return { ok: true, word };
+  return { ok: true, word: normalisedNextWord };
 }

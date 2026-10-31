@@ -33,6 +33,32 @@ describe("checkMove", () => {
     expect(result).toEqual({ ok: true, word: "card" });
   });
 
+  it("rejects a word one letter from an earlier word but not the last one with reason not-one-change", () => {
+    // Arrange
+    // "colt" is one letter from the start word "cold", but two from the current word "cord".
+    const dictionary = createDictionaryFromWords(["cold", "cord", "colt"]);
+    const chain = ["cold", "cord"];
+
+    // Act
+    const result = checkMove(chain, "colt", dictionary);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "not-one-change" });
+  });
+
+  it("accepts a move between words of another length", () => {
+    // Arrange
+    // Word length is a parameter, not a fixed 4 (D4).
+    const dictionary = createDictionaryFromWords(["cat", "cot"]);
+    const chain = ["cat"];
+
+    // Act
+    const result = checkMove(chain, "cot", dictionary);
+
+    // Assert
+    expect(result).toEqual({ ok: true, word: "cot" });
+  });
+
   it("returns the accepted word in lowercase without surrounding spaces", () => {
     // Arrange
     const dictionary = createDictionaryFromWords(["cold", "cord"]);
@@ -154,6 +180,18 @@ describe("checkMove", () => {
 
     // Act
     const result = checkMove(chain, "cold", dictionary);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "repeated-word" });
+  });
+
+  it("rejects a repeated word typed in a different case with reason repeated-word", () => {
+    // Arrange
+    const dictionary = createDictionaryFromWords(["cold", "cord", "card"]);
+    const chain = ["cold", "cord", "card"];
+
+    // Act
+    const result = checkMove(chain, "CORD", dictionary);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "repeated-word" });

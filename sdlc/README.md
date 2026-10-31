@@ -31,6 +31,8 @@ Write the breaks as a JSON list, e.g. in a scratch folder, and run `npm run brea
 
 `find` must occur exactly once in the file, or the break is reported **not applied** and skipped; fix it and run it again. For each break the script lists the tests that went red, or **all green**, and always puts the file back. It exits non-zero if any break was not applied or left everything green.
 
+A break whose test run crashes (a worker out of memory, an unhandled error, a non-zero exit with no failing test, or no readable report) or hangs is reported **red** with the reason in brackets, e.g. `(test run crashed, exit 1: FATAL ERROR: … heap out of memory)` or `(test run timed out after 120 s)`. Read it: a crash is red, but it may come from the break rather than from a test catching it. The timeout is 120 s per run; set `BREAK_TIMEOUT_SECONDS` to change it.
+
 ## Templates
 
 ### intent.md

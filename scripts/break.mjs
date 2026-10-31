@@ -5,8 +5,10 @@
 // The breaks file is a JSON list of { "label", "file", "find", "replace" }.
 // For each break: `find` must occur exactly once in `file` (otherwise the break
 // is reported as not applied and skipped), the tests run, the failing tests are
-// listed, and the file is put back as it was. Paths are relative to the folder
-// it is run in, so a reviewer can run it in a scratch copy.
+// listed, and the file is put back as it was. A run that crashes, errors or
+// takes longer than BREAK_TIMEOUT_SECONDS (default 120) counts as red, with the
+// reason. Paths are relative to the folder it is run in, so a reviewer can run
+// it in a scratch copy.
 
 import { spawnSync } from "node:child_process";
 import console from "node:console";
@@ -24,6 +26,7 @@ if (!breaksFile) {
 const breaks = JSON.parse(readFileSync(breaksFile, "utf8"));
 const reportFolder = mkdtempSync(join(tmpdir(), "breaks-"));
 const reportFile = join(reportFolder, "report.json");
+const timeoutMilliseconds = Number(process.env.BREAK_TIMEOUT_SECONDS ?? 120) * 1000;
 let notAppliedCount = 0;
 let allGreenCount = 0;
 
@@ -31,12 +34,49 @@ function countOccurrences(text, search) {
   return search === "" ? 0 : text.split(search).length - 1;
 }
 
+// The most telling line of a crashed run's error output, e.g. "FATAL ERROR: … heap out of memory".
+function getCrashReason(stderr) {
+  const lines = stderr
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
+  return (
+    lines.find((line) => /fatal error|out of memory/i.test(line)) ??
+    lines.find((line) => /error/i.test(line)) ??
+    lines.at(-1) ??
+    "no error output"
+  );
+}
+
+// Runs Vitest directly with node, not through a shell, so the timeout kills
+// Vitest itself rather than only the shell around it.
 function runTestsAndListFailures() {
-  spawnSync("npx", ["vitest", "run", "--reporter=json", `--outputFile=${reportFile}`], {
-    shell: true,
-    stdio: "ignore",
-  });
-  const report = JSON.parse(readFileSync(reportFile, "utf8"));
+  rmSync(reportFile, { force: true });
+  const run = spawnSync(
+    process.execPath,
+    ["node_modules/vitest/vitest.mjs", "run", "--reporter=json", `--outputFile=${reportFile}`],
+    {
+      stdio: ["ignore", "ignore", "pipe"],
+      encoding: "utf8",
+      timeout: timeoutMilliseconds,
+      maxBuffer: 64 * 1024 * 1024,
+    },
+  );
+  if (run.error?.code === "ETIMEDOUT") {
+    return [`(test run timed out after ${timeoutMilliseconds / 1000} s)`];
+  }
+  if (run.error) {
+    return [`(test run could not start: ${run.error.message})`];
+  }
+
+  let report;
+  try {
+    report = JSON.parse(readFileSync(reportFile, "utf8"));
+  } catch (error) {
+    return [
+      `(test run crashed, exit ${run.status ?? run.signal}, no readable report: ${getCrashReason(run.stderr)}; ${error.message})`,
+    ];
+  }
   const failures = report.testResults.flatMap((file) =>
     file.assertionResults.filter((test) => test.status === "failed").map((test) => test.title),
   );
@@ -44,7 +84,17 @@ function runTestsAndListFailures() {
   const brokenFiles = report.testResults.filter(
     (file) => file.status === "failed" && file.assertionResults.length === 0,
   );
-  return [...failures, ...brokenFiles.map((file) => `(whole file failed to load: ${file.name})`)];
+  const reasons = [
+    ...failures,
+    ...brokenFiles.map((file) => `(whole file failed to load: ${file.name})`),
+  ];
+  // A crashed worker or an unhandled error fails the run without failing any test.
+  if (reasons.length === 0 && (run.status !== 0 || report.success === false)) {
+    reasons.push(
+      `(test run crashed, exit ${run.status ?? run.signal}: ${getCrashReason(run.stderr)})`,
+    );
+  }
+  return reasons;
 }
 
 try {

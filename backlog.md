@@ -121,9 +121,11 @@ Breadth-first search.
 *Done in 1.9:* reuses `getWordsOneLetterAway`; speed is re-checked on the real list in 6.1b (1.9 intent choice 3).
 
 **1.10 `getPar` and `getScore` (S)** · Depends: 1.9, 1.6, 1.13
-- par counts moves, not words (`cold → cord → card → ward → warm` is par 4)
+- par is 1.5 × the moves in a shortest path (`cold → cord → card → ward → warm` is 4 moves, so par 6) (D27)
+- par rounds up when the shortest path is odd (5 moves gives par 8)
 - a win in par moves scores 0
 - a win in two moves over par scores +2
+- a win along a shortest path scores below par (4 moves on par 6 scores −2)
 - each undo adds one to the score (D26)
 - a game that was given up has no score
 - a game in progress has no score
@@ -155,16 +157,16 @@ The game records how many undos the player has used, so `getScore` can add them 
 - different seeds produce different sequences
 
 **2.2 `generatePuzzle` (M)** · Depends: 1.9, 2.1, 6.1b, **D24**
-Given accepted words, puzzle words, a par range and a seed. How puzzles are tied to a date, and whether they're generated in the browser or into a schedule at build time, depends on D24.
-*Design note:* don't call `findShortestPath` once per candidate target. It takes about 200 ms on a PC and maybe 0.6–1 s on a phone (1.9 review 5). One breadth-first search from the start word gives the distance to every word, so every target with a par in range comes from a single search.
+Given accepted words, puzzle words, a range of shortest-path lengths and a seed. How puzzles are tied to a date, and whether they're generated in the browser or into a schedule at build time, depends on D24.
+*Design note:* don't call `findShortestPath` once per candidate target. It takes about 200 ms on a PC and maybe 0.6–1 s on a phone (1.9 review 5). One breadth-first search from the start word gives the distance to every word, so every target with a shortest path in range comes from a single search.
 - start and target are both puzzle words
-- the puzzle's par is inside the requested range
+- the puzzle's shortest path is inside the requested range
 - every generated puzzle is solvable
 - the same seed produces the same puzzle
 - reports failure when no puzzle fits the range
 
 **2.3 Daily par range (S)** · Depends: 2.2, **D16**
-- the daily puzzle's par is within the agreed range
+- the daily puzzle's shortest path is within the agreed range (par follows from it, D27)
 
 **2.4 Puzzle for a date (S)** · Depends: 2.2
 The app passes in the player's local date; the core never reads the clock.
@@ -215,7 +217,7 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 
 **3.5 Win screen (S)** · Depends: 3.2, 1.10
 - reaching the target shows a win message
-- shows the score as "par" or "+N"
+- shows the score as "par", "−N" or "+N"
 - shows the player's chain beside a shortest path
 
 **3.6 Mobile layout (S)** · Depends: 3.2
@@ -316,5 +318,5 @@ Choose a blocklist source with a compatible licence, log it in `DECISIONS.md`, a
 | ID | Decision | Blocks |
 |----|----------|--------|
 | D7 | UI framework | 3.0 |
-| D16 | Daily par range (suggest 4–6); decide once 6.1b gives real data | 2.3 |
+| D16 | Daily par range, in moves of the shortest path (suggest 4–6, so par 6–9); decide once 6.1b gives real data | 2.3 |
 | D24 | Keeping past and future puzzles fixed when a word list changes | 2.2 |

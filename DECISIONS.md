@@ -44,7 +44,7 @@ A Word Cloud is a group of words where every word can reach every other by singl
 Evidence from `english3.txt`: 5,361 four-letter words in 84 clouds; the largest holds 5,255 (98%). The rest are tiny groups and 67 isolated words (`envy`, `hymn`, `aqua`), which can never appear in a ladder anyway. Proper nouns can't be detected from that list alone because it's all lowercase.
 
 ## D9 — Scoring: par, shown up front
-**Decided** · 2026-10-30 · score amended by D26 (undos count)
+**Decided** · 2026-10-30 · score amended by D26 (undos count), par amended by D27 (1.5 × the shortest path)
 - **Par** is the number of moves in a shortest path. `COLD → CORD → CARD → WARD → WARM` is par 4.
 - Par is shown from the start ("COLD → WARM, par 4"). The shortest path itself is only shown when the game ends.
 - **Score** is moves in the player's final chain minus par. Par is the best possible result (shown as "par"); otherwise "+1", "+2" and so on.
@@ -76,7 +76,7 @@ Puzzle #1 is the launch date; the number goes up by one each day. Fixed once peo
 
 ## D16 — Daily par range
 **Open** · blocks 2.3
-How long should daily puzzles be? Suggested starting point: par 4–6, adjusted from player feedback.
+How long should daily puzzles be? Suggested starting point: a shortest path of 4–6 moves (par 6–9, D27), adjusted from player feedback.
 
 ## D17 — Dictionary source: SCOWL, two sizes
 **Decided** · 2026-10-30 · supersedes D3 and the puzzle-word source in D8
@@ -168,12 +168,24 @@ Reloading the page and keeping today's chain moves from after launch (4.3) to so
 Each undo adds one to the score. Score is moves in the final chain, plus undos, minus par. That's the same as counting every move played, since an undo takes back exactly one move: play `colt`, undo it, then win in par, and the score is +1.
 - Why: with free undo, trial and error cost nothing, so the score showed only the final chain, not how the player got there.
 - Unchanged from D12: undo removes the last word, cannot go past the start word, and isn't available once the game has ended. An undone word is no longer in the chain, so it can be played again; playing it again is a new move.
-- Nobody can beat par still holds: undos only add to the score.
+- Undos only add to the score, so they never help a player get under par (D27).
 - The game has to record its undos, since the chain alone no longer gives the score (new chunk 1.13, before 1.10). A saved game must keep its undo count (3.9), or a reload would clear it.
 - Considered: +2 per undo (the move back plus a penalty: harsher than playing on, for no clear gain); counting undos and showing them in the share without changing the score, as hints do (D10).
+
+## D27 — Par is a typical result, not the best
+**Decided** · 2026-10-31 · amends D9
+Par is 1.5 × the moves in a shortest path, rounded up. `cold → warm` has a shortest path of 4 moves, so par is 6; a shortest path of 5 gives par 8. Score is still moves (plus undos, D26) minus par, so it can go below par: winning `cold → warm` in 4 scores −2, in 6 "par", in 7 +1.
+- Why: as in golf, par should be what a typical player scores, so a good game beats it. With par equal to the shortest path, par was a ceiling to reach, and nobody could get under it.
+- 1.5 × is a stand-in until there's data on what players actually score. Finding that out needs analytics, which v1 rules out (CLAUDE.md), so it's a decision for after launch; friends' shared scores (4.1) are a rough guide meanwhile.
+- Rounded up so odd shortest paths still leave at least half the shortest path under par.
+- The best possible score is the shortest path minus par. The shortest path is still worked out over the accepted words and shown at the end (D9).
+- D16's range is in moves of the shortest path, not par: the suggested 4–6 gives par 6–9. 2.2 already generates by shortest path.
+- Considered: par equal to the shortest path (D9 as it was); the shortest path plus a fixed number of moves (unlike 1.5 ×, the room under par wouldn't grow with longer puzzles); par by puzzle difficulty, now in Ideas for later.
 
 ---
 
 ## Ideas for later (not scheduled)
 - **Separate-cloud puzzles:** offer a start and target from different clouds and ask the player to spot that it can't be done.
 - **Longer words:** 5–7 letter puzzles, each length with its own cloud.
+- **Par by difficulty:** set par from how hard a puzzle is (few routes, many dead ends), not a fixed 1.5 × the shortest path (D27). Needs a difficulty measure.
+- **Par from player averages:** once there's data on what players score (D27). Needs a decision on collecting it, since v1 has no analytics.

@@ -8,7 +8,7 @@
 - `createGame`, `applyMove`, `undoLastMove`, `giveUp`: same results as now; the games they return carry a `Chain`.
 
 ## Rules protected
-- The chain always begins with the start word (CLAUDE.md, Moves; 1.6)
+- The chain always begins with the start word (CLAUDE.md, Moves; 1.6). The type guarantees there is a first word; the tests guarantee it is the start word (1.12 review 1).
 - Undo cannot go past the start word (D12)
 - Moves are checked from the last word in the chain (CLAUDE.md, Moves)
 

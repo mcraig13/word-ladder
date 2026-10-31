@@ -14,12 +14,12 @@ export function undoLastMove(game: Game): UndoLastMoveResult {
     return { ok: false, reason: "game-over" };
   }
 
-  if (game.chain.length <= 1) {
+  const [startWord, ...laterWords] = game.chain;
+  if (laterWords.length === 0) {
     return { ok: false, reason: "nothing-to-undo" };
   }
 
   // Rebuilt from its parts so the chain keeps its start word in the type.
-  const [startWord, ...laterWords] = game.chain;
   return {
     ok: true,
     game: { ...game, chain: [startWord, ...laterWords.slice(0, -1)] },

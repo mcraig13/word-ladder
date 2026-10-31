@@ -238,7 +238,7 @@ Browser storage only; no backend. Split into resume and stats if it grows.
 - a win on consecutive days extends the streak
 - a missed day or a give-up resets the streak
 
-*Carried forward:* restoring a saved game must reject a saved chain that is empty or doesn't start with the start word. `Chain` (1.12) checks only code, not JSON read from storage, so the restore code must check it at runtime, with a test (1.6 review 6, 1.12).
+*Carried forward:* restoring a saved game must reject a saved chain that is empty or doesn't start with the start word. `Chain` (1.12) checks only code, not JSON read from storage, so the restore code must check it at runtime, with a test. Without that check, an empty chain now makes `checkMove` throw rather than return a reason (1.6 review 6, 1.12 review 2).
 
 ---
 

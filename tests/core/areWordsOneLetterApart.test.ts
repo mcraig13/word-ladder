@@ -67,8 +67,8 @@ describe("areWordsOneLetterApart", () => {
 
   it("rejects removing a letter", () => {
     // Arrange
-    const firstWord = "cold";
-    const secondWord = "old";
+    const firstWord = "colds";
+    const secondWord = "cold";
 
     // Act
     const result = areWordsOneLetterApart(firstWord, secondWord);

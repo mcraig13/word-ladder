@@ -13,6 +13,8 @@ export type Chain = readonly [startWord: string, ...laterWords: string[]];
 export interface Game {
   readonly start: string;
   readonly target: string;
+  /** Typical moves for this puzzle, from getPar; shown from the start (D9, D27, chunk 1.10). */
+  readonly par: number;
   readonly chain: Chain;
   readonly status: "in-progress" | "won" | "given-up";
   /** Undos used so far; each adds one to the score (D26, chunk 1.13). */
@@ -25,9 +27,10 @@ export type CreateGameResult =
 
 /**
  * A new game from start to target, with words stored lowercase. Whether the
- * words are in the dictionary is left to puzzle generation, which picks them.
+ * words are in the dictionary, and whether par is right for them, is left to
+ * puzzle generation, which picks them and works out par.
  */
-export function createGame(start: string, target: string): CreateGameResult {
+export function createGame(start: string, target: string, par: number): CreateGameResult {
   const normalisedStart = normaliseWord(start);
   const normalisedTarget = normaliseWord(target);
 
@@ -48,6 +51,7 @@ export function createGame(start: string, target: string): CreateGameResult {
     game: {
       start: normalisedStart.word,
       target: normalisedTarget.word,
+      par,
       chain: [normalisedStart.word],
       status: "in-progress",
       undoCount: 0,

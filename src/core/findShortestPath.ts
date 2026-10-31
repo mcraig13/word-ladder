@@ -9,7 +9,8 @@ export type FindShortestPathResult =
 
 /**
  * One shortest path from start to target through dictionary words, or the
- * reason there is none (chunk 1.9). Par is the path's length minus one.
+ * reason there is none (chunk 1.9). Its moves (length minus one) give par,
+ * through getPar (D27).
  *
  * Breadth-first search, visiting neighbours in alphabetical order and keeping
  * the first path to each word, so the result is the alphabetically first

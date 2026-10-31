@@ -12,7 +12,7 @@ describe("createGame", () => {
     const target = "warm";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { chain: ["cold"] } });
@@ -24,7 +24,7 @@ describe("createGame", () => {
     const target = "warm";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { status: "in-progress" } });
@@ -36,7 +36,7 @@ describe("createGame", () => {
     const target = "warm";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toMatchObject({ ok: true, game: { undoCount: 0 } });
@@ -48,7 +48,7 @@ describe("createGame", () => {
     const target = "Warm";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toMatchObject({
@@ -63,7 +63,7 @@ describe("createGame", () => {
     const target = "warms";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "different-lengths" });
@@ -75,7 +75,7 @@ describe("createGame", () => {
     const target = "warm";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "invalid-word" });
@@ -87,7 +87,7 @@ describe("createGame", () => {
     const target = "";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "invalid-word" });
@@ -100,7 +100,7 @@ describe("createGame", () => {
     const target = "COLD";
 
     // Act
-    const result = createGame(start, target);
+    const result = createGame(start, target, 6);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "same-word" });

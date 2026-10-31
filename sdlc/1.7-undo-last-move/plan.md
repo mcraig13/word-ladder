@@ -23,4 +23,12 @@ Dictionary (only the replay test uses it): cold, cord, card, ward, warm. Target 
 "Can undo the first move" was added while writing tests: with only a three-word chain, a check of `chain.length <= 2` instead of `<= 1` would leave every test green. The replay test calls `undoLastMove` in Arrange so the Act is the replay itself.
 
 ## Self-review
-(after implementation)
+Diff matches the intent and touches only the files listed. Every break below applied and was restored; no test needed strengthening.
+- Break: drop the game-over check → red: `undo is not available after the game has been won`
+- Break: `chain.length <= 2` → red: `can undo the first move back to the start word`
+- Break: `chain.length < 1` → red: `cannot undo past the start word`
+- Break: reset the chain to the start word → red: `removes the last word…`, `an undone word can be played again`
+- Break: remove the start word instead of the last → red: `removes the last word…`, `can undo the first move…`, `an undone word…`
+- Break: shorten the given game's chain in place (`splice`) → red: `undoing leaves the game it was given as it was`
+- Break: set status `won` → red: `removes the last word…`, `an undone word…`
+- Break: overwrite start with target → red: `removes the last word…`

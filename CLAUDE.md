@@ -26,13 +26,13 @@ Reasons for each rule are in `DECISIONS.md`.
 - A word already in the current chain is rejected (D13).
 - A rejected attempt is not a move: the player sees the reason and tries again (D13).
 - Comparisons are case-insensitive; words are stored and compared in lowercase.
-- Undo removes the last word at no cost and cannot go past the start word. An undone word is no longer in the chain, so it can be played again (D12).
+- Undo removes the last word and cannot go past the start word. Each undo adds one to the score. An undone word is no longer in the chain, so it can be played again (D26).
 
 **Ending and scoring**
 - The game is won when the chain reaches the target word.
 - Giving up ends the game as a loss, with no score (D11).
-- **Par** is the number of moves in a shortest path, computed over the accepted words. `COLD → CORD → CARD → WARD → WARM` is par 4. Par is shown from the start (D9).
-- **Score** is moves in the final chain minus par. 0 is shown as "par", otherwise "+1", "+2"… Nobody can beat par (D9).
+- **Par** is a typical result: 1.5 × the moves in a shortest path, rounded up. The shortest path is computed over the accepted words. `COLD → CORD → CARD → WARD → WARM` is a shortest path of 4 moves, so par is 6. Par is shown from the start (D9, D27).
+- **Score** is moves in the final chain, plus undos, minus par. It can be below par: 0 is shown as "par", otherwise "−1", "+1" and so on. The best possible score is the shortest path minus par (D9, D26, D27).
 - When the game ends (won or given up), show one shortest path; on a win, show it beside the player's chain (D9, D11).
 - Hints (after launch) don't change the score; they're counted and shown as 💡 in the share (D10).
 
@@ -96,7 +96,7 @@ Backlog and chunk IDs live in `backlog.md`. A review finding left for a later ch
 
 - Core logic is pure functions: same input, same output. Pass dependencies (dictionary, random seed, current date) in as arguments.
 - Functions that can fail in expected ways return a result object with a specific reason (e.g. `{ ok: false, reason: "not-a-word" }`) rather than throwing.
-- Name things after the game's words: `chain`, `move`, `start`, `target`, `par` (shortest solution length).
+- Name things after the game's words: `chain`, `move`, `start`, `target`, `par` (the typical number of moves, D27), `shortest path`.
 - One chunk per branch/PR. Closely related S chunks may be done as one chunk (as 1.7 and 1.8 could have been) when the code stays within the size limit.
 - Keep changes in `src/`, `tests/` and `scripts/` under ~200 lines; `sdlc/` records, docs and `package-lock.json` don't count. If a chunk is bigger, propose a split.
 - No new dependencies without saying why in the PR description.
@@ -177,4 +177,4 @@ it("rejects a move that changes two letters", () => {
 See `DECISIONS.md` for detail.
 - D7 UI framework (decide in 3.0)
 - D24 Keeping puzzles fixed when a word list changes (blocks 2.2)
-- D16 Daily par range (blocks 2.3; suggested par 4–6)
+- D16 Daily par range, in moves of the shortest path (blocks 2.3; suggested 4–6, so par 6–9)

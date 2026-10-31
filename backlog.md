@@ -10,7 +10,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | Milestone | Chunks | Outcome | Status |
 |-----------|--------|---------|--------|
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
-| M1 Rules engine | 1.1–1.10, 1.12 | All game rules enforced and tested; solver and scoring work | 1.10 left |
+| M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | 1.13, 1.10 left |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | Not started |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | Not started; 2.2 blocked by D24 |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
@@ -19,7 +19,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 
 Update the Status column when a chunk merges.
 
-Critical path to soft launch: 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.4 → 2.3 → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16, D24) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
+Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.4 → 2.3 → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16, D24) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
 
 ---
 
@@ -120,11 +120,13 @@ Breadth-first search.
 
 *Done in 1.9:* reuses `getWordsOneLetterAway`; speed is re-checked on the real list in 6.1b (1.9 intent choice 3).
 
-**1.10 `getPar` and `getScore` (S)** · Depends: 1.9, 1.6
-- par counts moves, not words (`cold → cord → card → ward → warm` is par 4)
+**1.10 `getPar` and `getScore` (S)** · Depends: 1.9, 1.6, 1.13
+- par is 1.5 × the moves in a shortest path (`cold → cord → card → ward → warm` is 4 moves, so par 6) (D27)
+- par rounds up when the shortest path is odd (5 moves gives par 8)
 - a win in par moves scores 0
 - a win in two moves over par scores +2
-- the score counts only the final chain, not undone moves
+- a win along a shortest path scores below par (4 moves on par 6 scores −2)
+- each undo adds one to the score (D26)
 - a game that was given up has no score
 - a game in progress has no score
 
@@ -139,6 +141,13 @@ Type `Game.chain` so an empty chain can't be built, and drop `checkMove`'s `?? "
 - type-check fails if code builds a chain without a start word
 - branch coverage is 100%
 
+**1.13 Count undos (S)** · Depends: 1.8
+The game records how many undos the player has used, so `getScore` can add them (D26). Undo itself works as before.
+- a new game has used no undos
+- each undo adds one to the undo count
+- a move does not change the undo count
+- the undo count is kept when the game is won or given up
+
 ---
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
@@ -148,16 +157,16 @@ Type `Game.chain` so an empty chain can't be built, and drop `checkMove`'s `?? "
 - different seeds produce different sequences
 
 **2.2 `generatePuzzle` (M)** · Depends: 1.9, 2.1, 6.1b, **D24**
-Given accepted words, puzzle words, a par range and a seed. How puzzles are tied to a date, and whether they're generated in the browser or into a schedule at build time, depends on D24.
-*Design note:* don't call `findShortestPath` once per candidate target. It takes about 200 ms on a PC and maybe 0.6–1 s on a phone (1.9 review 5). One breadth-first search from the start word gives the distance to every word, so every target with a par in range comes from a single search.
+Given accepted words, puzzle words, a range of shortest-path lengths and a seed. How puzzles are tied to a date, and whether they're generated in the browser or into a schedule at build time, depends on D24.
+*Design note:* don't call `findShortestPath` once per candidate target. It takes about 200 ms on a PC and maybe 0.6–1 s on a phone (1.9 review 5). One breadth-first search from the start word gives the distance to every word, so every target with a shortest path in range comes from a single search.
 - start and target are both puzzle words
-- the puzzle's par is inside the requested range
+- the puzzle's shortest path is inside the requested range
 - every generated puzzle is solvable
 - the same seed produces the same puzzle
 - reports failure when no puzzle fits the range
 
 **2.3 Daily par range (S)** · Depends: 2.2, **D16**
-- the daily puzzle's par is within the agreed range
+- the daily puzzle's shortest path is within the agreed range (par follows from it, D27)
 
 **2.4 Puzzle for a date (S)** · Depends: 2.2
 The app passes in the player's local date; the core never reads the clock.
@@ -199,6 +208,8 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 - undo removes the last word from the chain shown
 - undo is unavailable when only the start word is shown
 
+*Carried forward:* undo now adds one to the score (D26), so the player should be able to see that before pressing it.
+
 **3.4 Give up (S)** · Depends: 3.2, 1.8, 1.9
 - giving up asks for confirmation first
 - after giving up, a shortest path is shown
@@ -206,7 +217,7 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 
 **3.5 Win screen (S)** · Depends: 3.2, 1.10
 - reaching the target shows a win message
-- shows the score as "par" or "+N"
+- shows the score as "par", "−N" or "+N"
 - shows the player's chain beside a shortest path
 
 **3.6 Mobile layout (S)** · Depends: 3.2
@@ -217,6 +228,8 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 - first-time players see the rules with a worked example
 - the rules can be reopened later
 - credits SCOWL as the word list source (licence condition, D17)
+
+*Carried forward:* the rules say each undo adds one to the score (D26).
 
 **3.8 Launch checks (S)** · Depends: 3.1–3.7, 3.9, 6.2, 6.3
 - a full game can be played on a phone browser, from link to win
@@ -231,6 +244,8 @@ Browser storage only; no backend.
 - a saved chain that is empty or doesn't start with the start word is not restored
 
 *Carried forward:* restoring a saved game must reject a saved chain that is empty or doesn't start with the start word. `Chain` (1.12) checks only code, not JSON read from storage, so the restore code must check it at runtime, with a test. Without that check, an empty chain now makes `checkMove` throw rather than return a reason (1.6 review 6, 1.12 review 2). Once that test exists, D20's branch threshold note no longer applies.
+
+*Carried forward:* the saved game must keep its undo count (1.13), or a reload would clear the undos from the score (D26).
 
 ---
 
@@ -303,5 +318,5 @@ Choose a blocklist source with a compatible licence, log it in `DECISIONS.md`, a
 | ID | Decision | Blocks |
 |----|----------|--------|
 | D7 | UI framework | 3.0 |
-| D16 | Daily par range (suggest 4–6); decide once 6.1b gives real data | 2.3 |
+| D16 | Daily par range, in moves of the shortest path (suggest 4–6, so par 6–9); decide once 6.1b gives real data | 2.3 |
 | D24 | Keeping past and future puzzles fixed when a word list changes | 2.2 |

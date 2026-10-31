@@ -27,4 +27,16 @@ Dictionary (only the move test uses it): cold, cord, card, ward, warm. Target `w
 The move test calls `giveUp` in Arrange so the Act is the move, as in 1.7's replay test. `card` would be a valid move, so only the ended game can reject it.
 
 ## Self-review
-_To be filled in after implementation._
+Diff matches the intent and touches only the files listed. Every break below applied (checked by a file diff before each run) and was restored; no test needed strengthening.
+- Break: drop the game-over check in `giveUp` → red: `…already won`, `…already been given up`
+- Break: reject only `won` → red: `…already been given up`
+- Break: reject only `given-up` → red: `…already won`
+- Break: status stays `in-progress` → red: `…ends the game as a loss`, `…at the start word…`, `no moves are accepted after giving up`
+- Break: status set to `won` → red: `…ends the game as a loss`, `…at the start word…`
+- Break: clear the chain to the start word → red: `…ends the game as a loss`
+- Break: refuse to give up at the start word → red: `…at the start word…`
+- Break: change the given game in place → red: `…leaves the game it was given as it was`
+- Break: undo checks `nothing-to-undo` before `game-over` → red: `undo is not available after giving up at the start word`
+- Break: undo treats "last word is the target" as ended → red: both undo-after-giving-up tests
+- Break: undo rejects only `won` → red: both undo-after-giving-up tests
+- Break: `applyMove` rejects only `won` → red: `no moves are accepted after giving up`

@@ -88,7 +88,7 @@ Every chunk follows this loop, recorded in `sdlc/<chunk id>-<short name>/` (temp
 6. **Respond** — answer every finding in `review.md`: fixed (with the test or change), or not changed and why. A test changed after human review is always called out.
 7. **Human review and merge** — via a pull request that links `review.md` (or `plan.md` when step 5 was skipped). CI must be green.
 
-Process changes (this file, `sdlc/README.md`) go in their own branch and pull request, never inside a code chunk. Until soft launch, process changes are limited to fixing the process tooling; the next planned process review is at the start of 3.1 (D23).
+Process changes (this file, `sdlc/README.md`) go in their own branch and pull request, never inside a code chunk. Until soft launch, process changes are limited to fixing the process tooling; the next planned process review is in 3.0 (D23, D25).
 
 Backlog and chunk IDs live in `backlog.md`. A review finding left for a later chunk goes on that chunk's backlog entry as a *Carried forward* line, so the next session finds it there. Decisions and their reasons live in `DECISIONS.md`.
 
@@ -175,5 +175,6 @@ it("rejects a move that changes two letters", () => {
 ## Open decisions
 
 See `DECISIONS.md` for detail.
-- D7 UI framework (decide at the start of 3.1)
+- D7 UI framework (decide in 3.0)
+- D24 Keeping puzzles fixed when a word list changes (blocks 2.2)
 - D16 Daily par range (blocks 2.3; suggested par 4–6)

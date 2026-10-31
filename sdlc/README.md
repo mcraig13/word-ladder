@@ -14,7 +14,22 @@ One folder per chunk of work, named `<chunk id>-<short name>`, e.g. `1.5-check-m
 | 6. Respond | AI answers every finding: fixed, or why not | responses in `review.md` |
 | 7. Human review and merge | Human, via pull request linking `review.md` | merged PR |
 
+An S chunk that follows an existing pattern combines steps 1 and 2 into one human stop (see `CLAUDE.md`).
+
 Keep files short. A small chunk should need a few lines per file, not pages.
+
+## Running breaks
+
+Write the breaks as a JSON list, e.g. in a scratch folder, and run `npm run break -- <breaks.json>`:
+
+```json
+[
+  { "label": "giveUp rejects only won games", "file": "src/core/giveUp.ts",
+    "find": "game.status !== \"in-progress\"", "replace": "game.status === \"won\"" }
+]
+```
+
+`find` must occur exactly once in the file, or the break is reported **not applied** and skipped; fix it and run it again. For each break the script lists the tests that went red, or **all green**, and always puts the file back. It exits non-zero if any break was not applied or left everything green.
 
 ## Templates
 
@@ -83,7 +98,7 @@ Give the reviewer agent this brief, filling in the chunk details. Don't add your
 > - Does each test meet the testing rules in `CLAUDE.md` (named after a rule, AAA, one Act, hand-worked literals, small fixtures, not tautological)? Does every acceptance criterion have a test? Are edge cases that come from the game rules missing?
 > - Naming, per `CLAUDE.md`.
 > - Correctness on awkward input. Run it rather than guessing.
-> - Your **own** break-the-code checks: at least three deliberate breaks of different rules, different from those in `plan.md` where you can. Report which tests went red. A break that leaves every test green is a finding.
+> - Your **own** break-the-code checks: at least three deliberate breaks of different rules, different from those in `plan.md` where you can. Report which tests went red. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`).
 > - Type-check and lint pass. If you can't run the test runner in your environment, say so; CI is the final check.
 >
 > **Reply with only the content for `review.md`**, following the template: a verdict, numbered findings each with a severity (**blocker**, **should fix**, **nit**, **note**), what, where and why in plain language, a "*Response:*" placeholder after each, then your break-the-code checks. Only report what you verified.

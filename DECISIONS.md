@@ -112,6 +112,15 @@ Each chunk gets `sdlc/<id>-<name>/` with `intent.md`, `plan.md` and `review.md`,
 - Evidence from the trial on 1.4: the independent reviewer found that two breaks of the core move rule left every test green, and that `"cold "` returned `colds`. Self-review had missed both.
 - Cost: a few minutes and three short files per chunk. Keep the files short so the process doesn't become the work.
 
+## D20 — Coverage gate in CI
+**Decided** · 2026-10-31
+CI runs the tests with V8 coverage (`@vitest/coverage-v8`) over `src/` and `scripts/` and fails below 100% statements, lines and functions, and 97% branches: the level on main when this was added.
+- Why: break-the-code checks show a test protects its rule, but only for code someone thinks to break. Coverage catches code no test runs at all, such as a new untested file, at no review cost.
+- Coverage is a floor, not the goal: a covered line can still be untested in any meaningful sense. The testing rules and break-the-code checks still apply.
+- The one uncovered branch is the empty-chain fallback in `checkMove`; raise branches to 100 once 4.3 tests restoring a game with an empty chain.
+- Considered: 100% everywhere (needs a code change first); report only (nothing stops an untested file).
+- **Revisit at** 3.1, when UI code arrives.
+
 ---
 
 ## Ideas for later (not scheduled)

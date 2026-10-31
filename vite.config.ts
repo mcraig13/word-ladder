@@ -6,5 +6,15 @@ export default defineConfig({
   base: "./",
   test: {
     include: ["tests/**/*.test.ts"],
+    // Lines and branches the tests never run, as a safety net beside the
+    // break-the-code checks. Counts every source file, tested or not.
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts", "scripts/**/*.ts"],
+      reporter: ["text", "html"],
+      // Today's level (D20). Branches move to 100 once the empty-chain
+      // fallback in checkMove is tested (4.3).
+      thresholds: { statements: 100, lines: 100, functions: 100, branches: 97 },
+    },
   },
 });

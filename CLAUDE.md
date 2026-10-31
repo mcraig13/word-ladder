@@ -67,10 +67,11 @@ DECISIONS.md   # Short log of decisions and why
 - `npm run dev` — start local dev server
 - `npm test` — run tests once
 - `npm run test:watch` — run tests on change
+- `npm run test:coverage` — run tests once with coverage; fails below the thresholds in `vite.config.ts` (D20). Report in `coverage/index.html`
 - `npm run build` — type-check, then production build to `dist/`
 - `npm run lint` — type-check, then ESLint; fails on any error or warning
 
-CI (`.github/workflows/ci.yml`) runs lint, tests and build on every pull request and push to `main`. A pull request can only merge when CI is green.
+CI (`.github/workflows/ci.yml`) runs lint, tests with coverage and build on every pull request and push to `main`. A pull request can only merge when CI is green.
 
 ## How we work
 

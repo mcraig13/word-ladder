@@ -3,10 +3,10 @@ import { areWordsOneLetterApart } from "../../src/core/areWordsOneLetterApart";
 import { createDictionaryFromWords } from "../../src/core/createDictionaryFromWords";
 import { findShortestPath } from "../../src/core/findShortestPath";
 
-// Chunk 1.9. Rules: par is the number of moves in a shortest path over the
-// accepted words (D9). Every step changes one letter in the same position and
-// is an accepted word (CLAUDE.md, Moves). The same inputs always give the same
-// path, so every player sees the same one (D6).
+// Chunk 1.9. Rules: the path is a shortest path over the accepted words, and
+// par follows from its moves (D9, D27). Every step changes one letter in the
+// same position and is an accepted word (CLAUDE.md, Moves). The same inputs
+// always give the same path, so every player sees the same one (D6).
 
 describe("findShortestPath", () => {
   it("finds a path whose length is the fewest moves between two words", () => {

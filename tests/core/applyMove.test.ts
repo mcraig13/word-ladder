@@ -15,6 +15,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -29,6 +30,7 @@ describe("applyMove", () => {
       game: {
         start: "cold",
         target: "warm",
+        par: 6,
         chain: ["cold", "cord"],
         status: "in-progress",
         undoCount: 0,
@@ -41,6 +43,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -58,6 +61,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -70,6 +74,7 @@ describe("applyMove", () => {
     expect(game).toEqual({
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -82,6 +87,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -100,6 +106,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card"],
       status: "in-progress",
       undoCount: 0,
@@ -118,6 +125,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord"],
       status: "in-progress",
       undoCount: 0,
@@ -136,6 +144,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card", "ward"],
       status: "in-progress",
       undoCount: 0,
@@ -156,6 +165,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card", "ward"],
       status: "in-progress",
       undoCount: 0,
@@ -173,6 +183,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -190,6 +201,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 2,
@@ -207,6 +219,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card", "ward"],
       status: "in-progress",
       undoCount: 2,
@@ -225,6 +238,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
       undoCount: 0,
@@ -243,6 +257,7 @@ describe("applyMove", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
       undoCount: 0,

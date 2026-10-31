@@ -13,9 +13,11 @@ const dictionary = createDictionaryFromWords(["cold", "cord", "card", "ward", "w
 describe("giveUp", () => {
   it("giving up ends the game as a loss", () => {
     // Arrange
+    // Par 9, unlike the other tests, so a par set to 6 instead of kept goes red.
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 9,
       chain: ["cold", "cord", "card"],
       status: "in-progress",
       undoCount: 0,
@@ -30,6 +32,7 @@ describe("giveUp", () => {
       game: {
         start: "cold",
         target: "warm",
+        par: 9,
         chain: ["cold", "cord", "card"],
         status: "given-up",
         undoCount: 0,
@@ -42,6 +45,7 @@ describe("giveUp", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold"],
       status: "in-progress",
       undoCount: 0,
@@ -59,6 +63,7 @@ describe("giveUp", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord"],
       status: "in-progress",
       undoCount: 2,
@@ -76,6 +81,7 @@ describe("giveUp", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord"],
       status: "in-progress",
       undoCount: 0,
@@ -88,6 +94,7 @@ describe("giveUp", () => {
     expect(game).toEqual({
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord"],
       status: "in-progress",
       undoCount: 0,
@@ -100,6 +107,7 @@ describe("giveUp", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord"],
       status: "in-progress",
       undoCount: 0,
@@ -121,6 +129,7 @@ describe("giveUp", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord", "card", "ward", "warm"],
       status: "won",
       undoCount: 0,
@@ -138,6 +147,7 @@ describe("giveUp", () => {
     const game: Game = {
       start: "cold",
       target: "warm",
+      par: 6,
       chain: ["cold", "cord"],
       status: "given-up",
       undoCount: 0,

@@ -152,7 +152,7 @@ After 1.4–1.12, a look back at how the loop actually ran.
 ## D24 — Keeping puzzles fixed when a word list changes
 **Open** · blocks 2.2
 If a puzzle is picked from the seed and the word lists together, then removing one word after launch (from the exclusion list or blocklist) reshuffles every date: past puzzles whose results people have shared, and today's, while people are playing it.
-- **Option A, puzzle schedule (suggested):** a build script writes a schedule file of start, target and par for each date from launch, a year or so ahead. Published dates never change; a list change only affects dates added after it. The browser reads one line and needs no search to load a game. A determined player could read ahead in the file, which is fine for a game among friends.
+- **Option A, puzzle schedule (suggested):** a build script writes a schedule file of start and target for each date from launch, a year or so ahead. Published dates never change; a list change only affects dates added after it. The browser reads one line; `createGame` then runs one search to work out par (1.10), which the end screen needs anyway (D9). A determined player could read ahead in the file, which is fine for a game among friends.
 - **Option B, freeze the lists at launch:** generate in the browser as planned, and never change the lists after launch. A word found to be offensive after launch can't be removed without reshuffling.
 - **Option C, generate from a stable order:** make generation depend only on puzzle words added before a date. This is harder to get right and to test than A.
 - Either way, a check that today's puzzle is still solvable with the current accepted list belongs in the build.

@@ -10,7 +10,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | Milestone | Chunks | Outcome | Status |
 |-----------|--------|---------|--------|
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
-| M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | 1.10 left |
+| M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | Not started |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | Not started; 2.2 blocked by D24 |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
@@ -165,6 +165,8 @@ Given accepted words, puzzle words, a range of shortest-path lengths and a seed.
 - the same seed produces the same puzzle
 - reports failure when no puzzle fits the range
 
+*Carried forward:* a puzzle needs only start and target: `createGame(start, target, dictionary)` works out par itself and rejects a start or target that isn't an accepted word, or can't be reached (1.10 intent choice 3).
+
 **2.3 Daily par range (S)** · Depends: 2.2, **D16**
 - the daily puzzle's shortest path is within the agreed range (par follows from it, D27)
 
@@ -247,6 +249,8 @@ Browser storage only; no backend.
 
 *Carried forward:* the saved game must keep its undo count (1.13), or a reload would clear the undos from the score (D26). As with the chain, `Game`'s type checks only code, not JSON read from storage, so restore must also reject a saved count that isn't a whole number of 0 or more, with a test (1.13 intent choice 4).
 
+*Carried forward:* don't restore par from storage: take it from `createGame` for today's puzzle, so a saved par can't disagree with the words (1.10 intent choice 5).
+
 ---
 
 ## Phase 4 — After launch (order by feedback)
@@ -302,7 +306,7 @@ Turn one `.dic`/`.aff` pair into a filtered list of lowercase words.
 - every pair of puzzle words is connected through accepted words
 - the same inputs always produce the same output files
 
-*Carried forward:* time `findShortestPath` on the built accepted list (worst case: a target it can't reach) and record it. On a synthetic list, 1.9 measured about 310 ms for 4,096 words on a PC, so about 200 ms for 3,300 words (1.9 review 5). If it's too slow for 2.2, or for loading a game on a phone (less likely with a schedule, D24), speed up `getWordsOneLetterAway` behind its 1.4 tests (1.9 intent choice 3).
+*Carried forward:* time `findShortestPath` on the built accepted list (worst case: a target it can't reach) and record it. On a synthetic list, 1.9 measured about 310 ms for 4,096 words on a PC, so about 200 ms for 3,300 words (1.9 review 5). If it's too slow for 2.2, or for loading a game on a phone (`createGame` runs one search per game, 1.10), speed up `getWordsOneLetterAway` behind its 1.4 tests (1.9 intent choice 3).
 
 **6.2 Review exclusion list (S)** · Depends: 6.1b · *human-owned*
 The script lists candidate abbreviations (no vowels, or in SCOWL but missing from a common-words cross-check). A human confirms each one before it goes into `data/words/exclude.txt`.

@@ -140,8 +140,9 @@ describe("createGame", () => {
 
   it("rejects creating a game with a target that is not an accepted word", () => {
     // Arrange
+    // One letter apart, so a one-move shortcut can't skip the dictionary check.
     const start = "cold";
-    const target = "wart";
+    const target = "colt";
 
     // Act
     const result = createGame(start, target, dictionary);

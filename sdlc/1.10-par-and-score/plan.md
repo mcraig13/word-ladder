@@ -38,14 +38,14 @@ Par for `cold → warm` is 6 (shortest path 4 moves). Score = (chain length − 
 | a game in progress has no score | in-progress; cold, cord, card; par 6 | — | `{ ok: false, reason: "in-progress" }` | Only a won game is scored |
 | a new game's par comes from a shortest path between start and target | cold → warm; also bold, bald, bard (a 6-move route) | 4 moves → 6, not 9 | `par: 6` | Par from a shortest path (D27) |
 | rejects creating a game with a start that is not an accepted word | colt → warm | colt not in list | `not-a-word` | Start is an accepted word (D8) |
-| rejects creating a game with a target that is not an accepted word | cold → wart | wart not in list | `not-a-word` | Target is an accepted word (D8) |
+| rejects creating a game with a target that is not an accepted word | cold → colt (one letter apart, review round 2 finding 1) | colt not in list | `not-a-word` | Target is an accepted word (D8) |
 | rejects creating a game whose target can't be reached | cold, cord, ward, warm (no card) | no link cord → ward | `unreachable` | Every puzzle is solvable (D8) |
 | reports same-word before checking the dictionary | colt → COLT | both reasons apply | `same-word` | Check order (intent choice 3) |
 
 Undos 3 rather than 1 or 2 so the result (+1) differs from ignoring undos (−2), counting them twice (+4) and subtracting them (−5).
 
 ### Size
-`src/` and `tests/`: +362 / −18 after moving par into `createGame`. About 60 lines are `par` on existing literals and the dictionary on existing calls; the rest is the new functions and changes (about 50) and their tests. Over ~200, approved at the human stop.
+`src/` and `tests/`: +365 / −18 after moving par into `createGame` and review round 2. About 60 lines are `par` on existing literals and the dictionary on existing calls; the rest is the new functions and changes (about 50) and their tests. Over ~200, approved at the human stop.
 
 ## Self-review
 Diff matches the intent and touches only the files listed; `applyMove.ts`, `undoLastMove.ts` and `giveUp.ts` are unchanged. Lint and all 119 tests pass. 22 breaks run with `npm run break`: 21 went red, 1 stayed green as predicted (below). No test needed strengthening at the time, but the review found par-keeping was only checked against 0 (review finding 1; strengthened after review, below).
@@ -88,6 +88,8 @@ Reorder doesn't apply: `getScore` has one check. Use the wrong input: the hard-c
 - Break: search start to start (wrong input) → red: `a new game's par…`, `…target that is not an accepted word`, `…can't be reached`, `…par it was created with`
 - Break: search with the raw start and target instead of the lowercased ones → **all green**. Equivalent: `findShortestPath` lowercases and trims its own inputs, and the earlier checks have already rejected anything `normaliseWord` rejects.
 - Break: `applyMove`, `undoLastMove`, `giveUp` each set par 6 → red, as after review finding 1
+- Also equivalent (review round 2, finding 4): deleting `createGame`'s `different-lengths` guard, or its `invalid-word` guard, and searching target to start. `findShortestPath` makes the same checks with the same reasons, and path length works the same both ways. The guards stay, with a comment saying why.
+- **After review round 2 (finding 1):** a one-move shortcut before the search (par 2 for any start and target one letter apart) stayed green. The target test now uses `cold → colt`; rerun → red: `…target that is not an accepted word`.
 - The earlier 22 breaks rerun: the two that edited `createGame`'s old `par,` line no longer apply and are replaced by the ones above; the rest unchanged.
 
 ## Step 5

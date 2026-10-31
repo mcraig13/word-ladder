@@ -43,6 +43,8 @@ export function createGame(
   target: string,
   dictionary: Dictionary,
 ): CreateGameResult {
+  // findShortestPath makes the first two checks too, but making them here
+  // skips the search for bad input and keeps createGame's reasons in view.
   const normalisedStart = normaliseWord(start);
   const normalisedTarget = normaliseWord(target);
 

@@ -149,6 +149,20 @@ After 1.4–1.12, a look back at how the loop actually ran.
 - **Revisit at** the start of 3.1, together with D7 and D20: how UI code is tested, and whether the coverage gate and break checks still fit.
 - **Revisit sooner if** a skipped review lets through a gap that the human review or a later chunk finds.
 
+## D24 — Keeping puzzles fixed when a word list changes
+**Open** · blocks 2.2
+If a puzzle is picked from the seed and the word lists together, then removing one word after launch (from the exclusion list or blocklist) reshuffles every date: past puzzles whose results people have shared, and today's, while people are playing it.
+- **Option A, puzzle schedule (suggested):** a build script writes a schedule file of start, target and par for each date from launch, a year or so ahead. Published dates never change; a list change only affects dates added after it. The browser reads one line and needs no search to load a game. A determined player could read ahead in the file, which is fine for a game among friends.
+- **Option B, freeze the lists at launch:** generate in the browser as planned, and never change the lists after launch. A word found to be offensive after launch can't be removed without reshuffling.
+- **Option C, generate from a stable order:** make generation depend only on puzzle words added before a date. This is harder to get right and to test than A.
+- Either way, a check that today's puzzle is still solvable with the current accepted list belongs in the build.
+
+## D25 — Resume today's game is part of soft launch
+**Decided** · 2026-10-31 · amends D14
+Reloading the page and keeping today's chain moves from after launch (4.3) to soft launch, as 3.9. On a phone, friends will reload or switch apps by accident and lose their chain in the first week. Stats and streaks stay after launch, as 4.3.
+- The restore check for a saved chain carried forward from 1.6 and 1.12 moves with it; D20's branch note now refers to 3.9.
+- Backlog review on the same day: 6.1 split into 6.1a (reading Hunspell) and 6.1b (building the lists); a new 3.0 chunk decides D7 and how UI code is tested, so the 3.1 revisits in D20 and D23 happen at 3.0; 1.11 depends on 6.1b and 3.0 rather than 6.2 and 6.3, which now block only 3.8 launch checks.
+
 ---
 
 ## Ideas for later (not scheduled)

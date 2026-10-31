@@ -1,8 +1,7 @@
 import type { Game } from "./createGame";
 
 export type UndoLastMoveResult =
-  | { ok: true; game: Game }
-  | { ok: false; reason: "game-over" | "nothing-to-undo" };
+  { ok: true; game: Game } | { ok: false; reason: "game-over" | "nothing-to-undo" };
 
 /**
  * The game without its last word, or the reason it can't be undone

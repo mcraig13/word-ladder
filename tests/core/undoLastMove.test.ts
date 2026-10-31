@@ -33,7 +33,12 @@ describe("undoLastMove", () => {
 
   it("can undo the first move back to the start word", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    };
 
     // Act
     const result = undoLastMove(game);
@@ -44,13 +49,23 @@ describe("undoLastMove", () => {
 
   it("undoing leaves the game it was given as it was", () => {
     // Arrange
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    };
 
     // Act
     undoLastMove(game);
 
     // Assert
-    expect(game).toEqual({ start: "cold", target: "warm", chain: ["cold", "cord"], status: "in-progress" });
+    expect(game).toEqual({
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "in-progress",
+    });
   });
 
   it("cannot undo past the start word", () => {
@@ -104,7 +119,12 @@ describe("undoLastMove", () => {
   it("undo is not available after giving up", () => {
     // Arrange
     // The last word is not the target, so only the status says the game ended.
-    const game: Game = { start: "cold", target: "warm", chain: ["cold", "cord"], status: "given-up" };
+    const game: Game = {
+      start: "cold",
+      target: "warm",
+      chain: ["cold", "cord"],
+      status: "given-up",
+    };
 
     // Act
     const result = undoLastMove(game);

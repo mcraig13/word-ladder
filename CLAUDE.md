@@ -41,7 +41,8 @@ If a task seems to need a rule change, stop and ask. Don't change rules inside a
 ## Stack
 
 - TypeScript 6.0 (strict mode). Pinned below 6.1 until typescript-eslint supports TypeScript 7 (D18)
-- ESLint with typescript-eslint (`strict` rules)
+- ESLint with typescript-eslint (`strictTypeChecked` and `stylisticTypeChecked` rules), plus rules that keep `src/core/` pure (D21)
+- Prettier for code and config formatting; Markdown is formatted by hand (D21)
 - Vite for dev server and build
 - Vitest for tests
 - Static hosting; no server, no database in v1
@@ -69,7 +70,8 @@ DECISIONS.md   # Short log of decisions and why
 - `npm run test:watch` — run tests on change
 - `npm run test:coverage` — run tests once with coverage; fails below the thresholds in `vite.config.ts` (D20). Report in `coverage/index.html`
 - `npm run build` — type-check, then production build to `dist/`
-- `npm run lint` — type-check, then ESLint; fails on any error or warning
+- `npm run lint` — type-check, ESLint, then Prettier check; fails on any error, warning or unformatted file
+- `npm run format` — format code and config with Prettier
 
 CI (`.github/workflows/ci.yml`) runs lint, tests with coverage and build on every pull request and push to `main`. A pull request can only merge when CI is green.
 

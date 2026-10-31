@@ -1,0 +1,7 @@
+# Prettier formats code and config only. Markdown records and docs are
+# written by hand; data and generated files are never reformatted.
+*.md
+data/
+dist/
+coverage/
+package-lock.json

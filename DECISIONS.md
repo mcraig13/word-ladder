@@ -121,6 +121,14 @@ CI runs the tests with V8 coverage (`@vitest/coverage-v8`) over `src/` and `scri
 - Considered: 100% everywhere (needs a code change first); report only (nothing stops an untested file).
 - **Revisit at** 3.1, when UI code arrives.
 
+## D21 — Stricter lint, a lint-enforced pure core, and Prettier
+**Decided** · 2026-10-31
+- **Type-aware lint:** typescript-eslint `strictTypeChecked` and `stylisticTypeChecked` replace `strict`. They passed on the existing code with no changes; they catch promises nobody waits for and conditions that are always true, which matter once UI and async code arrive.
+- **Pure core in lint:** `src/core/` can't use DOM or storage globals, `fetch` or timers, `Date`, `performance`, `crypto`, `Math.random`, Node modules, or imports from `ui/` or `puzzles/`. The rule was only in prose before.
+- **Prettier** (`printWidth` 100, otherwise defaults) formats code and config; `npm run lint` checks it, so CI does too. Markdown is left to hand formatting so tables and records aren't reflowed.
+- SOLID isn't adopted as a standard: it targets class design, and this code is pure functions over plain data. Where it translates (one job per function, dependencies passed in, small interfaces) the conventions already cover it.
+- New dependency: `prettier` (dev only, exact version).
+
 ---
 
 ## Ideas for later (not scheduled)

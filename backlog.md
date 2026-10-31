@@ -11,7 +11,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 |-----------|--------|---------|--------|
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
-| Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | Not started |
+| Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a done; 6.1b next |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | Not started; 2.2 blocked by D24 |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
@@ -301,6 +301,7 @@ Turn one `.dic`/`.aff` pair into a filtered list of lowercase words.
 - drops words SCOWL flags as taboo and words on the blocklist
 
 **6.1b Build the word list files (M)** · Depends: 6.1a, 1.4
+*Carried forward:* read the four files as UTF-8 text and call `getWordsFromHunspell` once per dictionary (`en_GB-large`, `en_GB-ise`) with the same exclusion list and blocklist; it returns words of every length, so keep the 4-letter ones here (D4). On an `ok: false` result, stop the build and print the file and line. The entry script lives outside `scripts/words/`, which D21's purity lint covers; decide here how it runs (Node's type stripping needs `.ts` import extensions, which `tsconfig.json` doesn't allow yet) (6.1a intent, choices 1 and 2).
 - accepted words are the largest 4-letter Word Cloud of the size-70 list
 - puzzle words are size-60 words that are also accepted words
 - every pair of puzzle words is connected through accepted words
@@ -310,6 +311,7 @@ Turn one `.dic`/`.aff` pair into a filtered list of lowercase words.
 
 **6.2 Review exclusion list (S)** · Depends: 6.1b · *human-owned*
 The script lists candidate abbreviations (no vowels, or in SCOWL but missing from a common-words cross-check). A human confirms each one before it goes into `data/words/exclude.txt`.
+*Carried forward:* the format is one word per line, any case, with blank lines and `#` comments allowed; a line that isn't a word stops the build. Each form is matched exactly, so list `govts` as well as `govt` if both should go. The same format serves 6.3's blocklist (6.1a intent, choice 8). Prefixes on abbreviation entries make more abbreviations that Hunspell also accepts: in en_GB-large, `conc, conj, dept, intr, proa, pron, recd, rees, reis, revs, unis, univ`, and in en_GB-ise also `incs, prob`. Review these as candidates (6.1a plan, Self-review).
 - every excluded word has been reviewed and is listed alphabetically
 
 **6.3 Offensive-words blocklist (S)** · Depends: 6.1b · *human-owned*

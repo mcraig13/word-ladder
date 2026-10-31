@@ -144,7 +144,8 @@ export function getWordsFromHunspell(files: HunspellFiles): GetWordsFromHunspell
     const isTaboo = flags.includes(affixFile.tabooFlag);
     for (const form of getFormsOfEntry(word, flags, affixFile.rulesByFlag)) {
       if (isTaboo) {
-        tabooWords.add(form);
+        // Lowercased, so a capitalised taboo entry also drops its lowercase twin.
+        tabooWords.add(form.toLowerCase());
       } else if (
         isLowercaseWord(form) &&
         !isRomanNumeral(form) &&
@@ -211,11 +212,12 @@ function readAffixFile(affixText: string): AffixFile | Failure {
       tabooFlag = value;
       continue;
     }
-    if (!AFFIX_HEADER.test(line)) {
+    const [flag, crossProduct, count] = values as [string, string, string];
+    // A second group for a flag would replace the first one's rules.
+    if (!AFFIX_HEADER.test(line) || rulesByFlag.has(flag)) {
       return failure("unsupported-line", "affix", lineNumber);
     }
 
-    const [flag, crossProduct, count] = values as [string, string, string];
     const rules: AffixRule[] = [];
     rulesByFlag.set(flag, rules);
     openGroup = {

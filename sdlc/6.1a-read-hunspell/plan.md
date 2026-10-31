@@ -16,7 +16,7 @@ Config, so `scripts/` is checked like `src/` (intent choice 1):
 
 ## Files
 - `scripts/words/getWordsFromHunspell.ts`: new, 305 lines (237 without comments and blank lines; the estimate was 170, before Prettier split the long conditions and types)
-- `tests/scripts/words/getWordsFromHunspell.test.ts`: new, 49 tests, 731 lines (3 added after approval, see Self-review)
+- `tests/scripts/words/getWordsFromHunspell.test.ts`: new, 54 tests (3 added after approval, see Self-review; 5 after review, see `review.md`)
 - `tests/scripts/words/getWordsFromHunspell.scowl.test.ts`: new, 3 tests × 2 dictionaries, 68 lines
 - `tsconfig.json`, `eslint.config.js`: as above, a few lines each
 - `backlog.md`: Word lists status; *Carried forward* lines on 6.1b (what it calls) and 6.2 (abbreviations made by prefixes)
@@ -37,6 +37,7 @@ Fixtures are short `.aff`/`.dic` strings in each test, with rules copied from SC
 | adds an ending only to words that meet its condition (box/S gives boxes, not boxs) | SCOWL's 4-line S rule; `box, carry, cold, play` | `box, boxes, carries, carry, cold, colds, play, plays` | Expand endings: conditions |
 | checks a condition of more than one letter (hate/B gives hatable, toe/B gives nothing) | SCOWL's B rule; `free, hate, toe` | `free, freeable, hatable, hate, toe` | Expand endings: `ee`, `[^aeiou]e` |
 | does not apply an ending that would remove the whole word (e/G does not give ing) | `SFX G e ing e`; `e/G, hate/G` | `e, hate, hating` | Match Hunspell (no `FULLSTRIP`) |
+| applies an ending that leaves one letter of the word (ye/G gives ying) *(after review 4)* | `SFX G e ing e`; `ye/G` | `ye, ying` | Whole-word guard, other side |
 | adds prefixes (tie/U gives untie) | `PFX U 0 un .`; `tie/U` | `tie, untie` | Expand endings: prefixes |
 | adds a prefix only to words that meet its condition (possible/I gives impossible) | `PFX I 0 im p`, `PFX I 0 in [^p]`; `active, possible` | `active, impossible, inactive, possible` | Prefix conditions, matched at the start |
 | combines a prefix and an ending when both allow it (tie/UD gives untied) | `PFX U … Y`, `SFX D … Y`; `tie/UD` | `tie, tied, untie, untied` | Cross-product |
@@ -63,6 +64,7 @@ Fixtures are short `.aff`/`.dic` strings in each test, with rules copied from SC
 | drops only the exact word on the exclusion list, not its other forms | list `cold`; `cold/S` | `colds` | List format (intent 8) |
 | drops every form of a word SCOWL flags as taboo | `NOSUGGEST !`; `cold, darn/S!` | `cold` | Taboo (D17) |
 | drops a taboo word even when another entry also makes it | `cold, darn/S!, darns` | `cold` | Taboo wins (intent 7) |
+| drops the lowercase form of a capitalised taboo word *(after review 6)* | `Darn/!, cold, darn` | `cold` | Taboo wins, in any case (intent 7) |
 | reads the taboo flag from the affix file's NOSUGGEST line | `NOSUGGEST X`; `cold, darn/X` | `cold` | Taboo flag not hard-coded |
 | drops words on the blocklist | list `# …`, `DARN`; `cold, darn` | `cold` | Blocklist (D17) |
 
@@ -80,11 +82,14 @@ Fixtures are short `.aff`/`.dic` strings in each test, with rules copied from SC
 | reports an affix directive it does not support (FLAG long) | `SET UTF-8`, `FLAG long` | `unsupported-line`, affix, 2 | No silent drops (intent 3) |
 | reports an affix file that is not UTF-8 | `SET ISO8859-1` | affix, 1 | 〃 |
 | reports a NOSUGGEST line that does not name one flag | `NOSUGGEST` | affix, 2 | 〃 |
+| reports a NOSUGGEST line that names more than one flag *(after review 5)* | `NOSUGGEST !X` | affix, 1 | 〃 |
+| reports a second affix group for a flag already defined *(after review 1)* | two `SFX S` groups | affix, 3 | 〃 |
 | reports an affix header whose cross-product is not Y or N | `SFX S X 1` | affix, 1 | 〃 |
 | reports an affix header whose rule count is not a number *(strengthened in self-review)* | `SFX S Y one`, then a D group | affix, 1 | 〃 |
 | reports an affix group with fewer rules than its header says | count 2, one rule | affix, 1 | 〃 |
 | reports an affix group with more rules than its header says | count 1, two rules | affix, 3 | 〃 |
 | reports an affix rule inside another flag's group *(added after approval)* | S group of 2, then a D rule | affix, 3 | 〃 |
+| reports a prefix rule inside a suffix group *(after review 2)* | `PFX S 0 un .` in an `SFX S` group | affix, 3 | 〃 |
 | reports an affix rule that adds further flags (s/M) | `SFX S 0 s/M …` | affix, 2 | 〃 |
 | reports an affix rule with extra fields | `… is:plural` | affix, 2 | 〃 |
 | reports an affix condition it cannot read | `[^sxzhy` | affix, 2 | 〃 |

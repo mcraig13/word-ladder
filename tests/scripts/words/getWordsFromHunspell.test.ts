@@ -108,6 +108,18 @@ describe("getWordsFromHunspell: endings", () => {
     expect(result).toEqual({ ok: true, words: ["e", "hate", "hating"] });
   });
 
+  it("applies an ending that leaves one letter of the word (ye/G gives ying)", () => {
+    // Arrange
+    const affixText = joinLines("SFX G Y 1", "SFX G e ing e");
+    const dictionaryText = joinLines("1", "ye/G");
+
+    // Act
+    const result = getWordsFromHunspell({ affixText, dictionaryText, ...emptyLists });
+
+    // Assert
+    expect(result).toEqual({ ok: true, words: ["ye", "ying"] });
+  });
+
   it("adds prefixes (tie/U gives untie)", () => {
     // Arrange
     const affixText = joinLines("PFX U Y 1", "PFX U 0 un .");
@@ -414,6 +426,18 @@ describe("getWordsFromHunspell: cleaning", () => {
     expect(result).toEqual({ ok: true, words: ["cold"] });
   });
 
+  it("drops the lowercase form of a capitalised taboo word", () => {
+    // Arrange
+    const affixText = "NOSUGGEST !";
+    const dictionaryText = joinLines("3", "Darn/!", "cold", "darn");
+
+    // Act
+    const result = getWordsFromHunspell({ affixText, dictionaryText, ...emptyLists });
+
+    // Assert
+    expect(result).toEqual({ ok: true, words: ["cold"] });
+  });
+
   it("reads the taboo flag from the affix file's NOSUGGEST line", () => {
     // Arrange
     const affixText = "NOSUGGEST X";
@@ -513,6 +537,31 @@ describe("getWordsFromHunspell: lines it does not support", () => {
     expect(result).toEqual({ ok: false, reason: "unsupported-line", file: "affix", lineNumber: 2 });
   });
 
+  it("reports a NOSUGGEST line that names more than one flag", () => {
+    // Arrange
+    const affixText = "NOSUGGEST !X";
+    const dictionaryText = joinLines("1", "cold");
+
+    // Act
+    const result = getWordsFromHunspell({ affixText, dictionaryText, ...emptyLists });
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "unsupported-line", file: "affix", lineNumber: 1 });
+  });
+
+  it("reports a second affix group for a flag already defined", () => {
+    // Arrange
+    // The second group would otherwise replace the first, losing "colds".
+    const affixText = joinLines("SFX S Y 1", "SFX S 0 s .", "SFX S Y 1", "SFX S 0 es .");
+    const dictionaryText = joinLines("1", "cold/S");
+
+    // Act
+    const result = getWordsFromHunspell({ affixText, dictionaryText, ...emptyLists });
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "unsupported-line", file: "affix", lineNumber: 3 });
+  });
+
   it("reports an affix header whose cross-product is not Y or N", () => {
     // Arrange
     const affixText = joinLines("SFX S X 1", "SFX S 0 s [^sxzhy]");
@@ -570,6 +619,18 @@ describe("getWordsFromHunspell: lines it does not support", () => {
   it("reports an affix rule inside another flag's group", () => {
     // Arrange
     const affixText = joinLines("SFX S Y 2", "SFX S 0 s [^sxzhy]", "SFX D 0 ed [^ey]");
+    const dictionaryText = joinLines("1", "cold/S");
+
+    // Act
+    const result = getWordsFromHunspell({ affixText, dictionaryText, ...emptyLists });
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "unsupported-line", file: "affix", lineNumber: 3 });
+  });
+
+  it("reports a prefix rule inside a suffix group", () => {
+    // Arrange
+    const affixText = joinLines("SFX S Y 2", "SFX S 0 s [^sxzhy]", "PFX S 0 un .");
     const dictionaryText = joinLines("1", "cold/S");
 
     // Act

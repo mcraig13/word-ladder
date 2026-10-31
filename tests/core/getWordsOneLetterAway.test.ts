@@ -20,7 +20,30 @@ describe("getWordsOneLetterAway", () => {
 
   it("does not include the word itself", () => {
     // Arrange
-    const dictionary = createDictionaryFromWords(["cold", "cord"]);
+    const dictionary = createDictionaryFromWords(["bold", "cold"]);
+
+    // Act
+    const result = getWordsOneLetterAway("cold", dictionary);
+
+    // Assert
+    expect(result).toEqual(["bold"]);
+  });
+
+  it("does not include a word with two letters changed", () => {
+    // Arrange
+    const dictionary = createDictionaryFromWords(["cold", "card", "cord"]);
+
+    // Act
+    const result = getWordsOneLetterAway("cold", dictionary);
+
+    // Assert
+    expect(result).toEqual(["cord"]);
+  });
+
+  it("does not include a word that changes one letter but moves the others", () => {
+    // Arrange
+    // "load" has the letters of "cold" with one changed, but not in the same places.
+    const dictionary = createDictionaryFromWords(["cold", "load", "cord"]);
 
     // Act
     const result = getWordsOneLetterAway("cold", dictionary);
@@ -83,5 +106,28 @@ describe("getWordsOneLetterAway", () => {
 
     // Assert
     expect(result).toEqual(["cord"]);
+  });
+
+  it("ignores spaces around the word it is given", () => {
+    // Arrange
+    // If the trailing space counted as a letter, "cold " would match "colds".
+    const dictionary = createDictionaryFromWords(["cold", "cord", "colds"]);
+
+    // Act
+    const result = getWordsOneLetterAway("cold ", dictionary);
+
+    // Assert
+    expect(result).toEqual(["cord"]);
+  });
+
+  it("returns nothing when given something that is not a word", () => {
+    // Arrange
+    const dictionary = createDictionaryFromWords(["cold", "cord"]);
+
+    // Act
+    const result = getWordsOneLetterAway("co1d", dictionary);
+
+    // Assert
+    expect(result).toEqual([]);
   });
 });

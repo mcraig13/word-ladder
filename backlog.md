@@ -270,7 +270,7 @@ Runs at build time to produce the files in `data/words/` from the SCOWL sources 
 - the same inputs always produce the same output files
 Tests use tiny hand-written `.dic`/`.aff` fixtures, not the real dictionaries.
 
-*Carried forward:* time `findShortestPath` on the built accepted list (worst case: a target it can't reach) and record it. 1.9 estimated about 80 ms on a PC from a synthetic list. If it's too slow for 2.2, speed up `getWordsOneLetterAway` behind its 1.4 tests (1.9 intent choice 3).
+*Carried forward:* time `findShortestPath` on the built accepted list (worst case: a target it can't reach) and record it. On a synthetic list, 1.9 measured about 310 ms for 4,096 words on a PC, so about 200 ms for 3,300 words (1.9 review 5). If it's too slow for loading a game on a phone, or for 2.2, speed up `getWordsOneLetterAway` behind its 1.4 tests (1.9 intent choice 3).
 
 **6.2 Review exclusion list (S)** · Depends: 6.1 · *human-owned*
 The script lists candidate abbreviations (no vowels, or in SCOWL but missing from a common-words cross-check). A human confirms each one before it goes into `data/words/exclude.txt`.

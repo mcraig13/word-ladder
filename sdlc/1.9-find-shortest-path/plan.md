@@ -9,7 +9,7 @@
 
 ## Files
 - `src/core/findShortestPath.ts`: new, 60 lines
-- `tests/core/findShortestPath.test.ts`: new, 15 tests, 198 lines (258 with the source; over the ~200 guide, see intent choice 6)
+- `tests/core/findShortestPath.test.ts`: new, 17 tests, 222 lines (282 with the source; over the ~200 guide, see intent choice 6 and review 6)
 - `backlog.md`: 1.9 and 6.1 *Carried forward* lines
 - `sdlc/1.9-find-shortest-path/`: these records
 
@@ -28,17 +28,19 @@ Fixtures are real 4-letter words, worked by hand. "Moves" counts words after the
 | returns a single-word path when start equals target | `cold → cold` | `cold` | Backlog 1.9 |
 | ignores the case of the start and target and returns the path in lowercase | `COLD → Card` | `cold, cord, card` | Case-insensitive (CLAUDE.md) |
 | ignores spaces around the start and target *(added with the tests)* | `" cold" → "card "` | `cold, cord, card` | Input normalised (1.1) |
-| returns no path, with reason unreachable, when the target is unreachable | `cold → warm`, only `cord` between | `unreachable` | Backlog 1.9 |
-| returns no path, with reason different-lengths, for words of different lengths | `cold → colds` | `different-lengths` | Same length (CLAUDE.md) |
+| returns no path, with reason unreachable, when the target is unreachable | `cold → warm`; `cord` and `card` reachable, a loop *(loop added after review 4)* | `unreachable` | Backlog 1.9 |
+| returns no path, with reason different-lengths, for words of different lengths | `cold → colds`, `colds` not listed *(after review 1)* | `different-lengths`, not `not-a-word` | Same length (CLAUDE.md) |
 | returns no path, with reason not-a-word, when the start is not in the dictionary | `colt → cord`; `colt` is one letter from `cold` | `not-a-word`, not `colt, cold, cord` | Accepted words only |
 | returns no path, with reason not-a-word, when the target is not in the dictionary | `cold → card`, `card` not listed | `not-a-word`, not `unreachable` | Intent choice 1 |
 | returns no path, with reason invalid-word, when given something that is not a word | `co1d → cord` | `invalid-word` | Result with a reason (Conventions) |
+| returns no path, with reason not-a-word, when start equals target but is not a word *(after review 3)* | `colt → colt`, only `cold` listed | `not-a-word` | Accepted words only |
+| returns no path, with reason invalid-word, when the target is empty *(after review 2)* | `cold → ""` | `invalid-word` | Empty input (CLAUDE.md) |
 
 Notes for review:
 - **Added with the tests:** "ignores spaces…". `normaliseWord` trims, but an implementation that only lowercased would pass the case test and still search from `" cold"`.
 - **The step invariant uses `areWordsOneLetterApart` and `containsWord`** in its assertion. That's the property check CLAUDE.md encourages for a solver, not a copy of the solver's logic. The exact-path tests above it carry the hand-worked values.
 - **"does not step through a word not in the dictionary"** can't go red through a small break of today's code, because `getWordsOneLetterAway` only returns listed words. It protects against a future faster lookup that generates candidates and skips the dictionary check. Self-review will run that as a break.
-- **The order the reasons are checked in** has no test of its own. Each failure test has only one reason that applies.
+- **The order the reasons are checked in** is tested where it shows: length before the dictionary (added after review 1).
 
 ## Self-review
 The diff matches the intent and touches only the files listed. Lint passes. 102 tests pass, with 100% on all four coverage measures (60/60 branches). Every break was restored.
@@ -65,4 +67,11 @@ Type break (`tsc --noEmit`, by hand):
 - Search starts from `path: []` → error: `[]` is not assignable to `Chain`
 
 ## Stryker trial
-*(after self-review; results held back until the independent review is in)*
+Run once, after the self-review breaks. Results were kept out of this file until the independent review was in.
+- **Setup:** a scratch copy of the repo, with `npm install --no-save @stryker-mutator/core@10.1.1 @stryker-mutator/vitest-runner@10.1.1` (Vitest 5.0.5 worked with the Vitest runner). Config: `mutate: ["src/core/findShortestPath.ts"]`, `coverageAnalysis: "perTest"`, and a Vitest config that includes only `tests/core/findShortestPath.test.ts`. Run with `npx stryker run`, which took 3 s. Nothing was committed.
+- **First run (tests as reviewed): 48 mutants, 45 killed, 1 timeout, 2 survived. Score 95.8%.**
+  - Survived: `reachedWords.add(nextWord)` deleted. Words are queued again, and with a loop in the words an unreachable target never finishes. The `unreachable` fixture had no loop. **A real gap: the reviewer's finding 4.**
+  - Survived: `new Set([startWord])` → `new Set([])`. The start can be queued again from a neighbour, but only behind paths that are already shorter, so no result changes. **Equivalent mutant**: it only costs a little extra work.
+  - Timeout (counts as caught): the "already reached" check replaced with `true`, an endless loop.
+- **After the review fixes: 48 mutants, 45 killed, 2 timeouts, 1 survived (the equivalent one). Score 97.9%.**
+- **Compared with the other checks:** Stryker found one gap the hand-made breaks missed, the missing loop. The independent reviewer found it too. Stryker found nothing the reviewer missed. The reviewer found three gaps Stryker didn't: the order of reasons, an invalid target, and start equals target when it isn't a word. Those need a reordered or added statement, which Stryker's operators don't produce.

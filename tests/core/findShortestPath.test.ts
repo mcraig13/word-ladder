@@ -140,8 +140,9 @@ describe("findShortestPath", () => {
 
   it("returns no path, with reason unreachable, when the target is unreachable", () => {
     // Arrange
-    // "cord" is one move from "cold", but nothing leads on to "warm".
-    const dictionary = createDictionaryFromWords(["cold", "cord", "warm"]);
+    // "cord" and "card" can be reached, but nothing leads on to "warm". The
+    // search must stop once it has tried them, not go back and forth between them.
+    const dictionary = createDictionaryFromWords(["cold", "cord", "card", "warm"]);
 
     // Act
     const result = findShortestPath("cold", "warm", dictionary);
@@ -152,7 +153,8 @@ describe("findShortestPath", () => {
 
   it("returns no path, with reason different-lengths, for words of different lengths", () => {
     // Arrange
-    const dictionary = createDictionaryFromWords(["cold", "colds"]);
+    // "colds" isn't listed either, but lengths are checked before the dictionary.
+    const dictionary = createDictionaryFromWords(["cold"]);
 
     // Act
     const result = findShortestPath("cold", "colds", dictionary);
@@ -185,12 +187,34 @@ describe("findShortestPath", () => {
     expect(result).toEqual({ ok: false, reason: "not-a-word" });
   });
 
+  it("returns no path, with reason not-a-word, when start equals target but is not a word", () => {
+    // Arrange
+    const dictionary = createDictionaryFromWords(["cold"]);
+
+    // Act
+    const result = findShortestPath("colt", "colt", dictionary);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "not-a-word" });
+  });
+
   it("returns no path, with reason invalid-word, when given something that is not a word", () => {
     // Arrange
     const dictionary = createDictionaryFromWords(["cold", "cord"]);
 
     // Act
     const result = findShortestPath("co1d", "cord", dictionary);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "invalid-word" });
+  });
+
+  it("returns no path, with reason invalid-word, when the target is empty", () => {
+    // Arrange
+    const dictionary = createDictionaryFromWords(["cold", "cord"]);
+
+    // Act
+    const result = findShortestPath("cold", "", dictionary);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "invalid-word" });

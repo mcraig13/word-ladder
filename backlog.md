@@ -115,6 +115,8 @@ Breadth-first search.
 - returns no path when the target is unreachable
 - returns a single-word path when start equals target
 
+*Carried forward:* if the solver uses a faster neighbour lookup than `getWordsOneLetterAway`, it must still pass 1.4's move-rule tests (two letters changed, letters moved), and check speed on the full ~3,300-word list (1.4 review 1, 1.4 intent).
+
 **1.10 `getPar` and `getScore` (S)** · Depends: 1.9, 1.6
 - par counts moves, not words (`cold → cord → card → ward → warm` is par 4)
 - a win in par moves scores 0
@@ -175,6 +177,8 @@ Choose the UI framework at the start of 3.1 and log it in `DECISIONS.md` (D7). U
 - an invalid word does not change the move count
 - the input clears after a valid move
 
+*Carried forward:* clean up input such as `İ` and zero-width spaces here; `checkMove` reports them as `wrong-length` (1.5 review 6).
+
 **3.3 Undo button (S)** · Depends: 3.2, 1.7
 - undo removes the last word from the chain shown
 - undo is unavailable when only the start word is shown
@@ -227,6 +231,8 @@ Browser storage only; no backend. Split into resume and stats if it grows.
 - giving up counts as a loss
 - a win on consecutive days extends the streak
 - a missed day or a give-up resets the streak
+
+*Carried forward:* restoring a saved game must reject an empty chain (1.6 review 6); once that's tested, raise the branch coverage threshold to 100 (D20).
 
 ---
 

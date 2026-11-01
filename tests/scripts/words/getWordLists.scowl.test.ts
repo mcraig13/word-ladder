@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { getWordLists } from "../../../scripts/words/getWordLists";
-import { createDictionaryFromWords } from "../../../src/core/createDictionaryFromWords";
+import {
+  createDictionaryFromWords,
+  type Dictionary,
+} from "../../../src/core/createDictionaryFromWords";
 import { findShortestPath } from "../../../src/core/findShortestPath";
+import { getWordsOneLetterAway } from "../../../src/core/getWordsOneLetterAway";
 import largeAffixText from "../../../data/source/scowl/en_GB-large/en_GB-large.aff?raw";
 import largeDictionaryText from "../../../data/source/scowl/en_GB-large/en_GB-large.dic?raw";
 import iseAffixText from "../../../data/source/scowl/en_GB-ise/en_GB-ise.aff?raw";
@@ -33,6 +37,19 @@ function getWordsFromListFile(text: string): string[] {
 // LF, a newline at the end, so a blank line added by hand fails the check.
 function createListFileText(words: readonly string[]): string {
   return words.map((word) => `${word}\n`).join("");
+}
+
+// Every dictionary word a chain of moves can reach from the start word. A
+// property check of the built list, using the core move rule, not the build's
+// own cloud search.
+function getWordsReachableFrom(start: string, dictionary: Dictionary): Set<string> {
+  const reachedWords = new Set([start]);
+  for (const word of reachedWords) {
+    for (const neighbour of getWordsOneLetterAway(word, dictionary)) {
+      reachedWords.add(neighbour);
+    }
+  }
+  return reachedWords;
 }
 
 describe("getWordLists on the real SCOWL files", () => {
@@ -81,6 +98,20 @@ describe("getWordLists on the real SCOWL files", () => {
     const acceptedWords = new Set(result.ok ? result.acceptedWords : []);
     const puzzleWords = result.ok ? result.puzzleWords : ["no lists were built"];
     expect(puzzleWords.filter((word) => !acceptedWords.has(word))).toEqual([]);
+  });
+
+  it("joins every accepted word to cold through accepted words, so every puzzle is solvable", () => {
+    // Arrange
+    const acceptedWords = getWordsFromListFile(committedAcceptedText);
+    const dictionary = createDictionaryFromWords(acceptedWords);
+
+    // Act
+    const reachedWords = getWordsReachableFrom("cold", dictionary);
+
+    // Assert
+    // cold is checked too, so an empty list can't pass with nothing to reach.
+    expect(acceptedWords).toContain("cold");
+    expect(acceptedWords.filter((word) => !reachedWords.has(word))).toEqual([]);
   });
 
   it("does not accept evil, exam or hymn, which are outside the cloud at any size", () => {

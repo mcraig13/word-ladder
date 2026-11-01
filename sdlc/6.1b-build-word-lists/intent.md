@@ -27,7 +27,7 @@
 ## What I'm least sure of
 - **Size:** about 120 lines of code but about 380 of tests, so over the ~200 limit. I'd keep it as one chunk (the tests are fixtures and most of it); splitting off `getLargestWordCloud` is the alternative.
 - **Choice 1:** `tsx` adds a dev dependency, and the build and the tests now run the code through different transformers (esbuild and Vite). The committed-list tests would catch a difference. CI doesn't run `build:words`, so a broken build shows only when someone rebuilds.
-- **The connectivity criterion has no real-data test of its own:** a check of every pair would take minutes. It rests on the fixture tests plus "every puzzle word is accepted" on the real list.
+- **Real-data connectivity** (updated after review): one breadth-first search from cold over the committed list, using the core move rule, checks it in about 0.2 s; checking every pair, as first planned, isn't needed.
 
 ## Out of scope
 - Loading the lists in the app (1.11); filling the exclusion list (6.2) and blocklist (6.3)

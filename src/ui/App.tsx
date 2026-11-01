@@ -28,6 +28,7 @@ export function App({ gameDataResult, today, launchDate }: AppProps) {
   return (
     <>
       <h1>Word Golf</h1>
+      {/* gameDataResult.ok is true whenever gameResult.ok is; it lets TypeScript see gameData. */}
       {gameResult.ok && gameDataResult.ok ? (
         <TodaysGame
           puzzleNumber={gameResult.puzzleNumber}
@@ -58,22 +59,22 @@ function TodaysGame({ puzzleNumber, firstGame, acceptedWords }: TodaysGameProps)
 
   function playTypedWord(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    const normalised = normaliseWord(cleanUpTypedWord(typedWord));
-    if (!normalised.ok) {
+    const normaliseResult = normaliseWord(cleanUpTypedWord(typedWord));
+    if (!normaliseResult.ok) {
       // An empty word isn't a move, and there's nothing to explain.
-      if (normalised.reason === "not-letters") {
-        setRejectionMessage(getRejectionMessage(normalised.reason, typedWord, game));
+      if (normaliseResult.reason === "not-letters") {
+        setRejectionMessage(getRejectionMessage(normaliseResult.reason, typedWord, game));
       }
       return;
     }
     // Moves are checked against the accepted words, never the puzzle words (D8).
-    const move = applyMove(game, normalised.word, acceptedWords);
+    const move = applyMove(game, normaliseResult.word, acceptedWords);
     if (!move.ok) {
-      setRejectionMessage(getRejectionMessage(move.reason, normalised.word, game));
+      setRejectionMessage(getRejectionMessage(move.reason, normaliseResult.word, game));
       return;
     }
     setGame(move.game);
-    setTypedWord(normalised.word);
+    setTypedWord(normaliseResult.word);
     setRejectionMessage("");
   }
 

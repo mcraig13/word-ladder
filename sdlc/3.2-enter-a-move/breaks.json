@@ -1,0 +1,206 @@
+[
+  {
+    "label": "D8: moves checked against puzzle words instead of accepted words",
+    "file": "src/ui/App.tsx",
+    "find": "acceptedWords={gameDataResult.gameData.acceptedWords}",
+    "replace": "acceptedWords={gameDataResult.gameData.puzzleWords}"
+  },
+  {
+    "label": "Wrong input: check each move against the first game, not the current one",
+    "file": "src/ui/App.tsx",
+    "find": "applyMove(game, normaliseResult.word, acceptedWords)",
+    "replace": "applyMove(firstGame, normaliseResult.word, acceptedWords)"
+  },
+  {
+    "label": "Forget state: don't store the game after a valid move",
+    "file": "src/ui/App.tsx",
+    "find": "    setGame(move.game);\n",
+    "replace": ""
+  },
+  {
+    "label": "Stale state: render the chain from the first game",
+    "file": "src/ui/App.tsx",
+    "find": "{game.chain.map((word) => (",
+    "replace": "{firstGame.chain.map((word) => ("
+  },
+  {
+    "label": "Stale state: count moves from the first game",
+    "file": "src/ui/App.tsx",
+    "find": "<p>Moves {game.chain.length - 1}</p>",
+    "replace": "<p>Moves {firstGame.chain.length - 1}</p>"
+  },
+  {
+    "label": "Off-by-one: move count includes the start word",
+    "file": "src/ui/App.tsx",
+    "find": "<p>Moves {game.chain.length - 1}</p>",
+    "replace": "<p>Moves {game.chain.length}</p>"
+  },
+  {
+    "label": "Delete guard: skip cleanUpTypedWord",
+    "file": "src/ui/App.tsx",
+    "find": "normaliseWord(cleanUpTypedWord(typedWord))",
+    "replace": "normaliseWord(typedWord)"
+  },
+  {
+    "label": "Skip lowercase: pass the cleaned raw word to applyMove (checkMove lowercases too)",
+    "file": "src/ui/App.tsx",
+    "find": "applyMove(game, normaliseResult.word, acceptedWords)",
+    "replace": "applyMove(game, cleanUpTypedWord(typedWord), acceptedWords)"
+  },
+  {
+    "label": "Wrong input: rejection message names the raw typed word, not the normaliseResult one",
+    "file": "src/ui/App.tsx",
+    "find": "getRejectionMessage(move.reason, normaliseResult.word, game)",
+    "replace": "getRejectionMessage(move.reason, typedWord, game)"
+  },
+  {
+    "label": "D36 stale input: show the raw typed word after a valid move",
+    "file": "src/ui/App.tsx",
+    "find": "setTypedWord(normaliseResult.word);",
+    "replace": "setTypedWord(typedWord);"
+  },
+  {
+    "label": "D36: input not prefilled with the start word",
+    "file": "src/ui/App.tsx",
+    "find": "useState(firstGame.start);",
+    "replace": "useState(\"\");"
+  },
+  {
+    "label": "D36: input reset to the start word after a valid move",
+    "file": "src/ui/App.tsx",
+    "find": "setTypedWord(normaliseResult.word);",
+    "replace": "setTypedWord(firstGame.start);"
+  },
+  {
+    "label": "D36/D13: clear the input after a rejected word",
+    "file": "src/ui/App.tsx",
+    "find": "      setRejectionMessage(getRejectionMessage(move.reason, normaliseResult.word, game));\n      return;",
+    "replace": "      setRejectionMessage(getRejectionMessage(move.reason, normaliseResult.word, game));\n      setTypedWord(\"\");\n      return;"
+  },
+  {
+    "label": "Stale message: don't clear the reason after a valid move",
+    "file": "src/ui/App.tsx",
+    "find": "    setRejectionMessage(\"\");\n  }",
+    "replace": "  }"
+  },
+  {
+    "label": "Delete guard: no message for not-letters",
+    "file": "src/ui/App.tsx",
+    "find": "      if (normaliseResult.reason === \"not-letters\") {\n        setRejectionMessage(getRejectionMessage(normaliseResult.reason, typedWord, game));\n      }\n",
+    "replace": ""
+  },
+  {
+    "label": "Change in place: not-letters gets the wrong-length message",
+    "file": "src/ui/App.tsx",
+    "find": "getRejectionMessage(normaliseResult.reason, typedWord, game)",
+    "replace": "getRejectionMessage(\"wrong-length\", typedWord, game)"
+  },
+  {
+    "label": "Empty submission: message shown for an empty word",
+    "file": "src/ui/App.tsx",
+    "find": "if (normaliseResult.reason === \"not-letters\") {",
+    "replace": "if (normaliseResult.reason === \"empty\" || normaliseResult.reason === \"not-letters\") { if (normaliseResult.reason === \"empty\") { setRejectionMessage(\"Type a word.\"); return; }"
+  },
+  {
+    "label": "Empty submission: passed on to applyMove",
+    "file": "src/ui/App.tsx",
+    "find": "if (!normaliseResult.ok) {",
+    "replace": "if (!normaliseResult.ok && normaliseResult.reason !== \"empty\") {"
+  },
+  {
+    "label": "D4: length message hard-coded to 4",
+    "file": "src/ui/App.tsx",
+    "find": "String(game.start.length)",
+    "replace": "String(4)"
+  },
+  {
+    "label": "Reorder: swap the not-one-change and not-a-word messages",
+    "file": "src/ui/App.tsx",
+    "find": "    case \"not-one-change\":\n      return \"Change exactly one letter.\";\n    case \"not-a-word\":\n      return `${word} isn't in the word list.`;",
+    "replace": "    case \"not-a-word\":\n      return \"Change exactly one letter.\";\n    case \"not-one-change\":\n      return `${word} isn't in the word list.`;"
+  },
+  {
+    "label": "Change in place: repeated-word message",
+    "file": "src/ui/App.tsx",
+    "find": "`${word} is already in your chain.`",
+    "replace": "`${word} isn't in the word list.`"
+  },
+  {
+    "label": "Change in place: game-over message",
+    "file": "src/ui/App.tsx",
+    "find": "return \"The game is over.\";",
+    "replace": "return \"Change exactly one letter.\";"
+  },
+  {
+    "label": "Screen readers: remove the status role",
+    "file": "src/ui/App.tsx",
+    "find": "<p role=\"status\">{rejectionMessage}</p>",
+    "replace": "<p>{rejectionMessage}</p>"
+  },
+  {
+    "label": "Screen readers: status region only added with its text",
+    "file": "src/ui/App.tsx",
+    "find": "<p role=\"status\">{rejectionMessage}</p>",
+    "replace": "{rejectionMessage !== \"\" && <p role=\"status\">{rejectionMessage}</p>}"
+  },
+  {
+    "label": "Remove element: the input's accessible name",
+    "file": "src/ui/App.tsx",
+    "find": "Next word{\" \"}",
+    "replace": ""
+  },
+  {
+    "label": "Remove element: Play button doesn't submit",
+    "file": "src/ui/App.tsx",
+    "find": "<button type=\"submit\">Play</button>",
+    "replace": "<button type=\"button\">Play</button>"
+  },
+  {
+    "label": "Remove element: no Play button",
+    "file": "src/ui/App.tsx",
+    "find": "<button type=\"submit\">Play</button>",
+    "replace": ""
+  },
+  {
+    "label": "Only clicking plays: submit handler moved from the form to the button",
+    "file": "src/ui/App.tsx",
+    "find": "<form onSubmit={playTypedWord}>",
+    "replace": "<form onSubmit={(event) => { event.preventDefault(); }}>"
+  },
+  {
+    "label": "Delete guard: no preventDefault on submit",
+    "file": "src/ui/App.tsx",
+    "find": "    event.preventDefault();\n",
+    "replace": ""
+  },
+  {
+    "label": "Input ignores typing (onChange doesn't update state)",
+    "file": "src/ui/App.tsx",
+    "find": "setTypedWord(event.target.value);",
+    "replace": "void event;"
+  },
+  {
+    "label": "cleanUpTypedWord: removes only zero-width spaces",
+    "file": "src/ui/cleanUpTypedWord.ts",
+    "find": "/\\p{Cf}/gu",
+    "replace": "/\\u200B/gu"
+  },
+  {
+    "label": "cleanUpTypedWord: removes only the first format character (no g flag)",
+    "file": "src/ui/cleanUpTypedWord.ts",
+    "find": "/\\p{Cf}/gu",
+    "replace": "/\\p{Cf}/u"
+  },
+  {
+    "label": "cleanUpTypedWord: also strips spaces and punctuation, silently changing the word",
+    "file": "src/ui/cleanUpTypedWord.ts",
+    "find": "/\\p{Cf}/gu",
+    "replace": "/[\\p{Cf}\\p{P}\\p{Zs}]/gu"
+  },
+  {
+    "label": "cleanUpTypedWord: returns the word unchanged",
+    "file": "src/ui/cleanUpTypedWord.ts",
+    "find": "return typedWord.replace(FORMAT_CHARACTERS, \"\");",
+    "replace": "return typedWord;"
+  }
+]

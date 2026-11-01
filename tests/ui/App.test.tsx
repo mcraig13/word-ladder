@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { userEvent, type UserEvent } from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import {
@@ -210,7 +210,7 @@ describe("App: valid moves", () => {
     const { user, input } = renderTodaysPuzzle();
 
     // Act
-    await playWord(user, input, "co​rd");
+    await playWord(user, input, "co\u200Brd");
 
     // Assert
     expect(getChainWords()).toEqual(["cold", "cord"]);
@@ -227,6 +227,23 @@ describe("App: valid moves", () => {
 
     // Assert
     expect(getChainWords()).toEqual(["cold", "cord"]);
+  });
+
+  it("doesn't reload the page when a word is played", () => {
+    // Arrange
+    // jsdom doesn't navigate, so the test checks the form's default is
+    // prevented: a reload in a browser would reset the game.
+    const { input } = renderTodaysPuzzle();
+    const form = (input as HTMLInputElement).form;
+    if (form === null) {
+      throw new Error("The Next word input isn't in a form.");
+    }
+
+    // Act
+    const isDefaultAllowed = fireEvent.submit(form);
+
+    // Assert
+    expect(isDefaultAllowed).toBe(false);
   });
 
   it("starts the input holding the start word", () => {
@@ -300,6 +317,17 @@ describe("App: rejected words", () => {
 
     // Act
     await playWord(user, input, "colt");
+
+    // Assert
+    expect(screen.getByText("colt isn't in the word list.")).toBeVisible();
+  });
+
+  it("names a rejected word in lowercase, as it's compared", async () => {
+    // Arrange
+    const { user, input } = renderTodaysPuzzle();
+
+    // Act
+    await playWord(user, input, "COLT");
 
     // Assert
     expect(screen.getByText("colt isn't in the word list.")).toBeVisible();

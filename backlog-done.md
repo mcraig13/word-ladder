@@ -139,3 +139,9 @@ Turn one `.dic`/`.aff` pair into a filtered list of lowercase words.
 - drops Roman numerals (`xiii`, `clix`) but keeps real words made of the same letters (`mild`, `mill`, `dill`)
 - drops words on the exclusion list
 - drops words SCOWL flags as taboo and words on the blocklist
+
+**6.1b Build the word list files (M)** · Depends: 6.1a, 1.4
+- accepted words are the largest 4-letter Word Cloud of the size-70 list
+- puzzle words are size-60 words that are also accepted words
+- every pair of puzzle words is connected through accepted words
+- the same inputs always produce the same output files

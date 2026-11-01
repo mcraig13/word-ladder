@@ -13,7 +13,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
 | M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | Done |
-| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0, 1.11, 3.1 done; 3.2 next |
+| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0, 1.11, 3.1, 3.2 done; 3.3 next |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
 | Tech debt | 7.1 | Clean-ups with no change in behaviour | Not started |
@@ -46,20 +46,6 @@ Done: 2.1–2.6c. Finished chunks are in `backlog-done.md` (D29).
 
 UI tests check what the player sees and can do, not component internals.
 
-**3.2 Enter a move (M)** · Depends: 3.1, 1.6
-- a valid word is added to the chain
-- an invalid word shows a message that explains the reason
-- an invalid word does not change the move count
-- the input shows the start word before the first move (D36)
-- the input shows the new word after a valid move (D36)
-- the reason for a rejected word is announced to screen readers
-
-Plain semantic HTML; the tiles and on-screen keyboard come in 3.6a and 3.6b, typing into this same input (D36).
-
-*Carried forward:* clean up input such as `İ` and zero-width spaces here; `checkMove` reports them as `wrong-length` (1.5 review 6).
-
-*Carried forward:* `App` runs `findGameForDate`'s shortest-path search on every render; when the game moves into `useState`, use a lazy initialiser (`useState(() => …)`) so it runs once, not on every move (3.1 review, note 3).
-
 **3.3 Undo button (S)** · Depends: 3.2, 1.7
 - undo removes the last word from the chain shown
 - undo is unavailable when only the start word is shown
@@ -79,6 +65,8 @@ The Give up button sits beside Undo (+1), between the chain and the keyboard (D3
 - shows the score as "par", "−N" or "+N"
 - shows the player's chain beside a shortest path
 
+*Carried forward:* after a win, a word that isn't letters (`c0rd`) gets "Use letters only." rather than "The game is over.", because the letters check runs first. If the input stays after a win, check `game.status` first (3.2 review, note 4).
+
 **3.6a Look and tiles (S)** · Depends: 3.2 · *split from 3.6 Mobile layout (D36)*
 The centred column, letter tiles and Clubhouse colours in D36. Layout tests run in Vitest browser mode (D33).
 - each word in the chain is shown as a row of letter tiles
@@ -90,6 +78,8 @@ The centred column, letter tiles and Clubhouse colours in D36. Layout tests run 
 - rejected tiles don't shake when the player prefers reduced motion
 - colours follow the device's light or dark setting
 - text and tile colours meet WCAG AA contrast in light and dark
+
+*Carried forward:* an empty submission after a rejection leaves the old reason showing; decide whether it clears, and test it (3.2 review, note 2). The same rejection twice in a row sets the same status text, so a screen reader may not announce it again; clearing the reason when a letter changes mostly fixes this (3.2 review, note 3).
 
 **3.6b On-screen keyboard (M)** · Depends: 3.6a · *split from 3.6 Mobile layout (D36)*
 Keys and tiles type into the real "Next word" input from 3.2; the phone's own keyboard stays closed (D36).

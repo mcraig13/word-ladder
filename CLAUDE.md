@@ -58,6 +58,7 @@ src/
 data/
   source/      # Original SCOWL Hunspell files (D17). Never edit by hand.
   words/       # Built word lists (accepted, puzzle), exclusion list, blocklist, SCOWL licence
+  puzzles/     # Built puzzle schedule: line N is puzzle #N (D24)
 scripts/       # Build-time scripts, e.g. building word lists from a source dictionary
 tests/         # Mirrors src/ structure
 DECISIONS.md   # Short log of decisions and why
@@ -74,6 +75,7 @@ backlog.md     # Chunks still to do; finished ones are in backlog-done.md
 - `npm run lint` — type-check, ESLint, then Prettier check; fails on any error, warning or unformatted file
 - `npm run format` — format code and config with Prettier
 - `npm run build:words` — build `data/words/accepted.txt` and `puzzle.txt` from the SCOWL sources, exclusion list and blocklist. Commit the rebuilt lists; a test fails if they don't match a fresh build
+- `npm run build:schedule` — build `data/puzzles/schedule.txt` from the built word lists, about a minute. Commit the rebuilt schedule
 
 CI (`.github/workflows/ci.yml`) runs lint, tests with coverage and build on every pull request and push to `main`. A pull request can only merge when CI is green.
 

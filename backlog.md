@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.5 done; 2.6 next |
+| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.5 done; 2.6a next |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -20,7 +20,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 
 Update the Status column when a chunk merges, and move its entry to `backlog-done.md`.
 
-Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.6 → 2.4 → 2.3 → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
+Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.6a → 2.4, 2.6b → 2.3 → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
 
 ---
 
@@ -41,7 +41,7 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 *Carried forward:* `data/words/accepted.txt` and `puzzle.txt` are one lowercase word per line, LF, a newline at the end, no comments or blank lines, in alphabetical order (6.1b intent, choice 5).
 
-*Carried forward:* also load the puzzle schedule that 2.6 builds; 2.4 looks up a date's puzzle in it (D24).
+*Carried forward:* also load the puzzle schedule that 2.6a builds; 2.4 looks up a date's puzzle in it (D24).
 
 ---
 
@@ -49,11 +49,11 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 Done: 2.1, 2.2, 2.5. Finished chunks are in `backlog-done.md` (D29).
 
-**2.3 Daily par range (S)** · Depends: 2.6, **D16**
+**2.3 Daily par range (S)** · Depends: 2.6b, **D16**
 Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).
 - every scheduled puzzle's shortest path is within the agreed range (par follows from it, D27)
 
-**2.4 Puzzle for a date (S)** · Depends: 2.5, 2.6
+**2.4 Puzzle for a date (S)** · Depends: 2.5, 2.6a
 Given a date, the launch date and the schedule, find that date's start and target (D24). The app passes in the player's local date; nothing reads the clock. Loading the schedule file at app start goes with 1.11.
 - the launch date gets the first puzzle in the schedule
 - the same date gets the same puzzle
@@ -61,18 +61,18 @@ Given a date, the launch date and the schedule, find that date's start and targe
 - a date after the schedule ends has no puzzle
 - an invalid date, or a date before launch, has no puzzle, with the reason from `getPuzzleNumber`
 
-**2.6 Puzzle schedule (M)** · Depends: 2.2, 6.1b
-A build script writes the schedule file: a start and target for each date from launch, about a year ahead (D24). Generate with D16's suggested range until 2.3 sets it. Where the file lives and its format are decided in the intent. If the script and its checks go over the size limit, split them.
+**2.6a Build the puzzle schedule (M)** · Depends: 2.2, 6.1b · in progress, `sdlc/2.6a-build-schedule/`
+`extendSchedule`, `getScheduleText` and `npm run build:schedule`, which writes `data/puzzles/schedule.txt` (format in the intent). Repeat window D30.
+
+**2.6b Extend and check the schedule (M)** · Depends: 2.6a
+Read `data/puzzles/schedule.txt` back, make `build:schedule` extend it rather than rebuild from #1 (D24), and add the build checks.
 - every scheduled start and target is a puzzle word
 - every scheduled puzzle is solvable with the current accepted words
-- every scheduled puzzle's shortest path is within the requested range
-- the same seed builds the same schedule
-- extending the schedule keeps every existing date unchanged
 - extending the schedule adds dates up to the requested length ahead
-
-*Carried forward:* `generatePuzzle` takes about 180–370 ms a call on the real lists (2.2 reviews), so a year of schedule is one to two and a quarter minutes, and a failing range about 2 s. Its neighbour memo lasts one call, so dates share nothing. If that's too slow, pass in a faster neighbour lookup; the search's cut-off at the most moves is untested, since it costs time, not correctness, so a timing check here would cover it (2.2 review B1).
 - the check fails when fewer than 60 days of schedule remain
 - the check fails when a list change alters the shortest path of a published date
+
+*Carried forward:* `npm run build:schedule` took 63 s for 365 puzzles in 2.6a (each date runs `generatePuzzle` and a `findShortestPath`). `generatePuzzle`'s cut-off at the most moves is still untested, since dropping it costs time, not correctness; a check on the build's time would cover it (2.2 review B1).
 
 *Carried forward:* `createSeededRandom` doesn't check its seed. `NaN`, `Infinity` and `-Infinity` give the seed-0 sequence, and a fraction is truncated (`1.9` acts as `1`), so an invalid date would quietly give the seed-0 puzzle. Make sure every date turns into a whole number from 0 to 2³² − 1, and that an invalid date is reported rather than seeded (2.1 review 1; moved from 2.4 by D24).
 

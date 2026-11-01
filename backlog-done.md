@@ -168,6 +168,27 @@ The game records how many undos the player has used, so `getScore` can add them 
 - reports an invalid date before launch as invalid, not before launch
 - rejects an invalid date that is the same as the launch date
 
+**2.6a Build the puzzle schedule (M)** · Depends: 2.2, 6.1b · repeat window D30
+- builds one puzzle for each number up to the last puzzle number
+- every scheduled puzzle's shortest path is within the requested range
+- records each puzzle's shortest path moves
+- measures each puzzle's shortest path over the accepted words, not the puzzle words
+- builds puzzles of the requested word length
+- keeps every existing puzzle unchanged when extending
+- adds puzzles after the existing ones up to the last puzzle number
+- leaves a schedule that already reaches the last puzzle number as it is
+- the same seed builds the same schedule
+- extending gives the same puzzles as building the whole schedule at once
+- a schedule seed one higher doesn't put the same puzzles on neighbouring dates
+- gives different puzzle numbers different puzzles
+- never uses a start or target word again within the repeat window
+- counts the existing schedule's last puzzles in the repeat window
+- uses a word again once the repeat window has passed
+- reports the puzzle number that has no puzzle in range
+- reports the puzzle number that has no puzzle partway through a run
+- writes one line per puzzle, in order, as start, target and moves
+- writes an empty file for an empty schedule
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

@@ -286,6 +286,14 @@ D7 (React), D33 (how UI is tested and covered) and the UI break kinds (D31) were
 - shows the start word, target word and par
 - shows the chain so far
 
+**3.2 Enter a move (M)** · Depends: 3.1, 1.6 · `cleanUpTypedWord` in `src/ui/`; the input starts as the last word (D36); `@testing-library/user-event` added
+- a valid word is added to the chain
+- an invalid word shows a message that explains the reason
+- an invalid word does not change the move count
+- the input shows the start word before the first move (D36)
+- the input shows the new word after a valid move (D36)
+- the reason for a rejected word is announced to screen readers
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

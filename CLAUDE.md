@@ -1,10 +1,10 @@
-# CLAUDE.md — Word Ladder
+# CLAUDE.md — Word Golf
 
 Context for AI-assisted development. Read this before starting any task. Keep it up to date as decisions land.
 
 ## What we're building
 
-A web-based word ladder game. The player gets from a start word to a target word by changing one letter per turn, and every step must be a real word.
+Word Golf, a web-based word ladder game. The repository and its URL keep the name `word-ladder` (D35, lands with 3.0). The player gets from a start word to a target word by changing one letter per turn, and every step must be a real word.
 
 Example: `COLD → CORD → CARD → WARD → WARM`
 

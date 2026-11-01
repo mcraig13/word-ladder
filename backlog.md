@@ -1,4 +1,4 @@
-# Word Ladder — Backlog
+# Word Golf — Backlog
 
 Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CLAUDE.md`: spec → tests (reviewed) → implement → review → merge. Rules and their reasons are in `CLAUDE.md` and `DECISIONS.md`.
 

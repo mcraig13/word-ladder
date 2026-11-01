@@ -12,6 +12,7 @@
 - `scripts/buildSchedule.mjs` — about 10 lines changed
 - `tests/puzzles/checkSchedule.test.ts`, `checkSchedule.scowl.test.ts`, `tests/scripts/buildSchedule.test.ts` — new
 - `tests/puzzles/getExtendedScheduleText.test.ts` — `fewestPuzzlesAhead: 0` in the shared options, two tests added
+- `src/core/getWordsOneLetterAway.ts` — added after the human stop: looks up each one-letter change instead of scanning every word (see Self-check)
 - `package.json`, `package-lock.json` — `@types/node` 24.x as a dev dependency, for the script test only (intent, least sure 2)
 - `backlog.md` — as in step 4
 - `sdlc/2.6c-check-schedule/` — these records
@@ -44,3 +45,6 @@ About 70 lines of `src/` and `scripts/`, 410 of tests, over the ~200 guide on te
 The order between different reasons isn't a rule, so only same-start-before-shortest-path is tested.
 
 ## Self-check
+- Files: match the list, plus `getWordsOneLetterAway.ts`, agreed with the human after implementing. Under `test:coverage` the committed-files test took 135 s, past its 60 s timeout, and the scan made 4 billion calls to `areWordsOneLetterApart`, overflowing v8's counter so a covered branch read as missed. Order and results are unchanged: a full rebuild matches the committed schedule byte for byte. `src/` and `scripts/` 145 lines added, 19 removed
+- Lint, tests and coverage: pass (310 tests, 100%, about 7 s). By hand: the script leaves the committed file unchanged, extends its first 10 lines back to the committed file, and a wrong stored count on line 3 prints `Puzzle #3: shortest-path-changed` and exits 1
+- Diff against intent: every check from the signature, run by the script before writing and by a test on the committed files; no rule changes. The intent's timings (25 s, 60 s timeouts) predate the speed-up; the timeouts stay as approved

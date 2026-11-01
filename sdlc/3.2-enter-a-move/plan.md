@@ -51,3 +51,8 @@ Rules stay in `applyMove` and `checkMove`; the UI only cleans up what was typed,
 | announces the reason for a rejected word in the status region | backlog 3.2 |
 
 The 3.1 App tests are unchanged.
+
+## Self-check
+- Files (`git diff --name-only origin/main...HEAD`): `package-lock.json`, `package.json`, `sdlc/3.2-enter-a-move/intent.md`, `plan.md`, `src/ui/App.tsx`, `src/ui/cleanUpTypedWord.ts`, `tests/ui/App.test.tsx`, `tests/ui/cleanUpTypedWord.test.ts` — match the plan (local `main` was behind `origin/main`, which added D36)
+- Lint, tests and coverage: `All matched files use Prettier code style!` (tsc and ESLint silent) · `Tests 379 passed (379)` · `Statements 100% (449/449) Branches 100% (259/259) Functions 100% (75/75) Lines 100% (435/435)`
+- Diff against intent: `App` finds the game once and `TodaysGame` plays typed words through `cleanUpTypedWord`, `normaliseWord` and `applyMove` over the accepted words, with Moves, the prefilled input and the status region; nothing from 3.3–3.6b

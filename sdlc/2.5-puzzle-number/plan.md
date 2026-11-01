@@ -1,7 +1,7 @@
 # 2.5 plan
 
 ## Approach
-`getPuzzleNumber` checks both dates first, then counts the days between them. Each date becomes a day count with `Date.UTC(year, month − 1, day) / MILLISECONDS_PER_DAY`: UTC has no clock changes, so the count is exact, and nothing reads the clock. A date is valid if it's whole numbers and builds back to the same year, month and day (`getUTCFullYear` and so on), which catches 29 February in a year that isn't a leap year, month 13, day 0 and fractions. Then `daysSinceLaunch < 0` is `before-launch`, otherwise `puzzleNumber = daysSinceLaunch + 1`.
+`getPuzzleNumber` checks both dates first, then counts the days between them. Each date becomes a day count with `Date.UTC(year, month − 1, day) / MILLISECONDS_PER_DAY`: UTC has no clock changes, so the count is exact, and nothing reads the clock. A date is valid if it builds back to the same year, month and day (`getUTCFullYear` and so on), which catches 29 February in a year that isn't a leap year, month 13, day 0 and fractions. Then `daysSinceLaunch < 0` is `before-launch`, otherwise `puzzleNumber = daysSinceLaunch + 1`.
 
 `CalendarDate` is exported from the same file so 2.4 and the app can use it. The file goes in `src/puzzles/`, the home of daily numbering (CLAUDE.md, Project layout).
 
@@ -18,15 +18,18 @@
 | counts across a month boundary | Every calendar day counts, whatever the month (D15) |
 | counts across a year boundary | As above, across years; catches counting from the day of the year |
 | counts February 29 in a leap year | Leap days are days (D15) |
-| goes straight from February 28 to March 1 in a year that isn't a leap year | No made-up leap day; with the one above, catches a fixed year length |
+| goes straight from February 28 to March 1 in a year that isn't a leap year | No made-up leap day |
+| counts a leap year as 366 days | Catches a fixed year length (added after review) |
+| counts whole days across a change to summer time | Catches counting in local time, on a device with summer time (added after review) |
 | the day before launch has no puzzle number | No puzzle number before launch (backlog 2.5); catches `<= 0` becoming `< -1` and comparing month and day only |
 | rejects February 29 in a year that isn't a leap year | An invalid date is reported, not rolled on to 1 March |
 | rejects month 13 | As above, not rolled on to next January |
 | rejects a day that isn't a whole number | As above, not truncated (2.4's carried-forward note) |
 | rejects an invalid launch date | Both dates are checked, not just the first |
 | reports an invalid date before launch as invalid, not before launch | Checks run in order: validity, then launch |
+| rejects an invalid date that is the same as the launch date | Both dates are checked before any shortcut (added after review) |
 
 ## Self-check
 - Files: match the list above; `getDayCount` is a private helper in `getPuzzleNumber.ts`
-- Lint, tests and coverage: pass; 226 tests, 100% coverage
+- Lint, tests and coverage: pass; 229 tests, 100% coverage (after review)
 - Diff against intent: dates are checked, then counted with `Date.UTC`, and the clock is never read; nothing outside 2.5

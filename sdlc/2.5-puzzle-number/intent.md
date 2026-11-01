@@ -18,12 +18,15 @@
 - counts across a year boundary
 - counts February 29 in a leap year
 - goes straight from February 28 to March 1 in a year that isn't a leap year
+- counts a leap year as 366 days
+- counts whole days across a change to summer time
 - the day before launch has no puzzle number
 - rejects February 29 in a year that isn't a leap year
 - rejects month 13
 - rejects a day that isn't a whole number
 - rejects an invalid launch date
 - reports an invalid date before launch as invalid, not before launch
+- rejects an invalid date that is the same as the launch date
 
 ## What I'm least sure of
 - **`{ year, month, day }` rather than a JS `Date` or an ISO string.** A `Date` carries a time and a timezone, so the same `Date` gives different days on different devices, and counting milliseconds across a clock change is out by an hour. A plain date makes the local-date rule (D6) the app's job, visibly. An ISO string `"2027-01-15"` would also work and needs parsing. If 3.0's framework or 3.9's storage favours strings, I'd switch.

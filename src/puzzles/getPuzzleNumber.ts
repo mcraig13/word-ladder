@@ -17,14 +17,13 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 /**
  * Days since 1 January 1970, or undefined if the date isn't on the calendar
  * (29 February in a year that isn't a leap year, month 13, a fraction).
+ * Date.UTC drops fractions and rolls over out-of-range parts, so building the
+ * date back and comparing catches all of these.
  * UTC has no clock changes, so every day is the same length, and the clock is
  * never read. Date.UTC treats years 0–99 as 1900–1999, so those are invalid.
  */
 function getDayCount(date: CalendarDate): number | undefined {
   const { year, month, day } = date;
-  if (![year, month, day].every((part) => Number.isInteger(part))) {
-    return undefined;
-  }
   const milliseconds = Date.UTC(year, month - 1, day);
   const builtDate = new Date(milliseconds);
   const isSameDate =

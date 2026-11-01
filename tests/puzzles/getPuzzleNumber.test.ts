@@ -82,6 +82,34 @@ describe("getPuzzleNumber", () => {
     expect(result).toEqual({ ok: true, puzzleNumber: 2 });
   });
 
+  it("counts a leap year as 366 days", () => {
+    // Arrange
+    // 2028 is a leap year, so 1 January 2029 is 366 days after 1 January 2028.
+    const launchDate = { year: 2028, month: 1, day: 1 };
+    const date = { year: 2029, month: 1, day: 1 };
+
+    // Act
+    const result = getPuzzleNumber(date, launchDate);
+
+    // Assert
+    expect(result).toEqual({ ok: true, puzzleNumber: 367 });
+  });
+
+  it("counts whole days across a change to summer time", () => {
+    // Arrange
+    // January to June is 31 + 28 + 31 + 30 + 31 + 30 = 181 days. Catches
+    // counting in local time only where the device's timezone has summer
+    // time, so it passes either way in a UTC-only CI.
+    const launchDate = { year: 2027, month: 1, day: 1 };
+    const date = { year: 2027, month: 7, day: 1 };
+
+    // Act
+    const result = getPuzzleNumber(date, launchDate);
+
+    // Assert
+    expect(result).toEqual({ ok: true, puzzleNumber: 182 });
+  });
+
   it("the day before launch has no puzzle number", () => {
     // Arrange
     // In the year before, so comparing only the month and day would miss it.
@@ -151,6 +179,19 @@ describe("getPuzzleNumber", () => {
     // 2026 isn't a leap year, and the date is before launch either way.
     const launchDate = { year: 2027, month: 1, day: 1 };
     const date = { year: 2026, month: 2, day: 29 };
+
+    // Act
+    const result = getPuzzleNumber(date, launchDate);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "invalid-date" });
+  });
+
+  it("rejects an invalid date that is the same as the launch date", () => {
+    // Arrange
+    // Matching dates must not shortcut to #1 before both are checked.
+    const launchDate = { year: 2027, month: 2, day: 29 };
+    const date = { year: 2027, month: 2, day: 29 };
 
     // Act
     const result = getPuzzleNumber(date, launchDate);

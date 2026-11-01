@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.5, 2.6a done; 2.4, 2.6b next |
+| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4, 2.5, 2.6a done; 2.6b next |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -47,19 +47,11 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
 
-Done: 2.1, 2.2, 2.5, 2.6a. Finished chunks are in `backlog-done.md` (D29).
+Done: 2.1, 2.2, 2.4, 2.5, 2.6a. Finished chunks are in `backlog-done.md` (D29).
 
 **2.3 Daily par range (S)** · Depends: 2.6b, **D16**
 Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).
 - every scheduled puzzle's shortest path is within the agreed range (par follows from it, D27)
-
-**2.4 Puzzle for a date (S)** · Depends: 2.5, 2.6a
-Given a date, the launch date and the schedule, find that date's start and target (D24). The app passes in the player's local date; nothing reads the clock. Loading the schedule file at app start goes with 1.11.
-- the launch date gets the first puzzle in the schedule
-- the same date gets the same puzzle
-- consecutive dates get the puzzles on consecutive lines
-- a date after the schedule ends has no puzzle
-- an invalid date, or a date before launch, has no puzzle, with the reason from `getPuzzleNumber`
 
 **2.6b Extend and check the schedule (M)** · Depends: 2.6a
 Read `data/puzzles/schedule.txt` back, make `build:schedule` extend it rather than rebuild from #1 (D24), and add the build checks.

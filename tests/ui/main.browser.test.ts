@@ -14,8 +14,6 @@ describe("main", () => {
     await import("../../src/main");
 
     // Assert
-    await expect
-      .element(page.getByRole("heading", { level: 1, name: "Word Golf" }))
-      .toBeVisible();
+    await expect.element(page.getByRole("heading", { level: 1, name: "Word Golf" })).toBeVisible();
   });
 });

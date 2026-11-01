@@ -2,7 +2,30 @@
 // Naming rules back up the Naming section of CLAUDE.md; whether a name reads
 // well is still checked in review.
 import js from "@eslint/js";
+import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
+
+const namingRules = [
+  // camelCase for functions, variables, parameters and properties.
+  { selector: "default", format: ["camelCase"], leadingUnderscore: "forbid" },
+  // Module-level constants may be UPPER_CASE, e.g. LETTERS_ONLY.
+  {
+    selector: "variable",
+    modifiers: ["const", "global"],
+    format: ["camelCase", "UPPER_CASE"],
+  },
+  // PascalCase for types, interfaces and classes, e.g. Dictionary.
+  { selector: "typeLike", format: ["PascalCase"] },
+];
+// Yes/no values start with a question word, e.g. isWon.
+const booleanNamingRule = {
+  selector: ["variable", "parameter"],
+  types: ["boolean"],
+  format: ["PascalCase"],
+  prefix: ["is", "are", "has", "contains", "can", "should"],
+};
+// React components are PascalCase functions, e.g. App (3.0 intent, least sure 3).
+const componentNamingRule = { selector: "function", format: ["camelCase", "PascalCase"] };
 
 export default [
   { ignores: ["dist/", "coverage/", "node_modules/", "data/"] },
@@ -21,49 +44,38 @@ export default [
     },
   },
   {
-    files: ["**/*.ts"],
+    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
-    rules: {
-      "@typescript-eslint/naming-convention": [
-        "error",
-        // camelCase for functions, variables, parameters and properties.
-        { selector: "default", format: ["camelCase"], leadingUnderscore: "forbid" },
-        // Module-level constants may be UPPER_CASE, e.g. LETTERS_ONLY.
-        {
-          selector: "variable",
-          modifiers: ["const", "global"],
-          format: ["camelCase", "UPPER_CASE"],
-        },
-        // PascalCase for types, interfaces and classes, e.g. Dictionary.
-        { selector: "typeLike", format: ["PascalCase"] },
-      ],
-    },
+    rules: { "@typescript-eslint/naming-convention": ["error", ...namingRules] },
   },
   {
     // Yes/no values in game code and build scripts start with a question word.
     // Tests are exempt so they can keep the AAA convention of `const result = ...`.
-    files: ["src/**/*.ts", "scripts/**/*.ts"],
+    files: ["src/**/*.ts", "src/**/*.tsx", "scripts/**/*.ts"],
+    rules: {
+      "@typescript-eslint/naming-convention": ["error", ...namingRules, booleanNamingRule],
+    },
+  },
+  { files: ["**/*.tsx"], ...reactHooks.configs.flat.recommended },
+  {
+    files: ["tests/**/*.tsx"],
+    rules: {
+      "@typescript-eslint/naming-convention": ["error", ...namingRules, componentNamingRule],
+    },
+  },
+  {
+    files: ["src/**/*.tsx"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
-        { selector: "default", format: ["camelCase"], leadingUnderscore: "forbid" },
-        {
-          selector: "variable",
-          modifiers: ["const", "global"],
-          format: ["camelCase", "UPPER_CASE"],
-        },
-        { selector: "typeLike", format: ["PascalCase"] },
-        {
-          selector: ["variable", "parameter"],
-          types: ["boolean"],
-          format: ["PascalCase"],
-          prefix: ["is", "are", "has", "contains", "can", "should"],
-        },
+        ...namingRules,
+        booleanNamingRule,
+        componentNamingRule,
       ],
     },
   },

@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4, 2.5, 2.6a done; 2.6b next |
+| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4, 2.5, 2.6a done; 2.6b, 2.6c next |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -20,7 +20,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 
 Update the Status column when a chunk merges, and move its entry to `backlog-done.md`.
 
-Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.6a → 2.4, 2.6b → 2.3 → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
+Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.6a → 2.4, 2.6b → 2.3, 2.6c → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
 
 ---
 
@@ -53,11 +53,18 @@ Done: 2.1, 2.2, 2.4, 2.5, 2.6a. Finished chunks are in `backlog-done.md` (D29).
 Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).
 - every scheduled puzzle's shortest path is within the agreed range (par follows from it, D27)
 
-**2.6b Extend and check the schedule (M)** · Depends: 2.6a
-Read `data/puzzles/schedule.txt` back, make `build:schedule` extend it rather than rebuild from #1 (D24), and add the build checks.
+**2.6b Read back and extend the schedule (M)** · Depends: 2.6a · *split from the backlogged 2.6b at intent (size)*
+Read `data/puzzles/schedule.txt` back and make `build:schedule` extend it rather than rebuild from #1 (D24). Criteria in `sdlc/2.6b-extend-schedule/intent.md`.
+- extending the schedule adds dates up to the requested length ahead
+
+*Carried forward:* when reading the file back, lowercase each line or reject one that isn't lowercase, and test mixed case: `extendSchedule` compares the existing schedule's words as given, so a capitalised hand edit (D24) would slip past the repeat window (2.6a reviews A2, B4).
+
+*Carried forward:* no test ties a seed to a particular puzzle, so a change to the per-puzzle seed in `extendSchedule` would reshuffle every date and only a rebuild would show it. The published-dates check should compare start and target as well as moves (2.6a review B3). 2.6b answers this by keeping existing lines exactly; a seed change then affects only new dates.
+
+**2.6c Check the schedule (M)** · Depends: 2.6b
+Add the build checks, run by `build:schedule` before it writes and by a test on the committed files.
 - every scheduled start and target is a puzzle word
 - every scheduled puzzle is solvable with the current accepted words
-- extending the schedule adds dates up to the requested length ahead
 - the check fails when fewer than 60 days of schedule remain
 - the check fails when a list change alters the shortest path of a published date
 
@@ -65,11 +72,13 @@ Read `data/puzzles/schedule.txt` back, make `build:schedule` extend it rather th
 
 *Carried forward:* `createSeededRandom` doesn't check its seed (2.1 review 1). Dates no longer seed anything: `extendSchedule` seeds puzzle #N with `getPuzzleSeed`, a hash of `scheduleSeed` and N, always in range. What's left is that `scheduleSeed` itself isn't checked: `0` and `0.5` build the same schedule, and `-1` is accepted (2.6a review A6).
 
-*Carried forward:* when reading the file back, lowercase each line or reject one that isn't lowercase, and test mixed case: `extendSchedule` compares the existing schedule's words as given, so a capitalised hand edit (D24) would slip past the repeat window (2.6a reviews A2, B4).
-
 *Carried forward:* check that a hand edit to a published date doesn't bring back a start or target within D30's window (2.6a intent, least sure 3; review A1).
 
-*Carried forward:* no test ties a seed to a particular puzzle, so a change to the per-puzzle seed in `extendSchedule` would reshuffle every date and only a rebuild would show it. The published-dates check should compare start and target as well as moves (2.6a review B3).
+*Carried forward:* "published" needs the launch date, which 3.8 sets; until then today is #0 and nothing is published (2.6b intent).
+
+*Carried forward:* the reader accepts a line whose start and target are the same word (`cold cold 1`); check that they differ (2.6b review G3).
+
+*Carried forward:* no test runs `scripts/buildSchedule.mjs`, so reading the existing file (rather than `""`) is checked only by hand. The test on the committed files can cover it, e.g. that extending the committed schedule leaves it unchanged (2.6b review B4).
 
 ---
 
@@ -125,10 +134,12 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 
 *Carried forward:* the rules say each undo adds one to the score (D26).
 
-**3.8 Launch checks (S)** · Depends: 3.1–3.7, 3.9, 6.2, 6.3
+**3.8 Launch checks (S)** · Depends: 3.1–3.7, 3.9, 6.2, 6.3, 2.6c
 - a full game can be played on a phone browser, from link to win
 - tomorrow's date shows a different puzzle with the next number
 Set the launch date (puzzle #1) here. Don't change it once results are shared (D15).
+
+*Carried forward:* when `build:schedule` works today's puzzle number out from the date, a bad value (`NaN`, negative, a fraction) makes `getExtendedScheduleText` add nothing and still succeed; check it, or rely on 2.6c's 60-days check (2.6b review G4).
 
 **3.9 Resume today's game (S)** · Depends: 3.2 · *moved from 4.3 (D25)*
 Browser storage only; no backend.

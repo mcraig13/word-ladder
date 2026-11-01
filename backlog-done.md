@@ -1,4 +1,4 @@
-# Word Ladder — Finished chunks
+# Word Golf — Finished chunks
 
 Backlog entries for chunks that have merged, moved here from `backlog.md` (D29) so a session reads only the chunks still to do. Each chunk's `sdlc/` folder (from 1.4 on) has the detail.
 

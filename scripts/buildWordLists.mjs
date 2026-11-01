@@ -2,15 +2,15 @@
 //
 //   npm run build:words
 //
-// All the logic is in scripts/words/getWordLists.ts, which this loads through
-// Vite's runnerImport so the TypeScript imports work unchanged (6.1b intent,
-// choice 1). On a failure it prints `<file>:<line> <reason>` and exits 1,
-// writing nothing. Never edit the built lists by hand (CLAUDE.md, Don'ts).
+// All the logic is in scripts/words/getWordLists.ts. The npm script runs this
+// with tsx, so the TypeScript imports work unchanged (6.1b intent, choice 1).
+// On a failure it prints `<file>:<line> <reason>` and exits 1, writing
+// nothing. Never edit the built lists by hand (CLAUDE.md, Don'ts).
 
 import console from "node:console";
 import process from "node:process";
 import { readFileSync, writeFileSync } from "node:fs";
-import { runnerImport } from "vite";
+import { getWordLists } from "./words/getWordLists.ts";
 
 const sourceFolder = "data/source/scowl";
 const wordsFolder = "data/words";
@@ -42,9 +42,7 @@ function writeWordList(file, words) {
   console.log(`Wrote ${words.length} words to ${file}`);
 }
 
-const { module } = await runnerImport("./scripts/words/getWordLists.ts", { configFile: false });
-
-const result = module.getWordLists({
+const result = getWordLists({
   acceptedWordsSource: readSource(sourceFiles.accepted),
   puzzleWordsSource: readSource(sourceFiles.puzzle),
   exclusionListText: readText(exclusionFile),

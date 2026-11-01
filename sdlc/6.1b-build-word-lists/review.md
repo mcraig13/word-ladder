@@ -4,6 +4,8 @@ Two reviewers in parallel (M chunk, D29) on `f9a5d58..453a6a7`. Fixes are in d1f
 
 **Tests changed after human review:** `builds the lists for the word length asked for` (bigger 4-letter cloud in the fixture, same expected result), `gives the same cloud … whatever order` (new input and expected value), and the two committed-list tests (compare whole file text, not words). Added: `counts Cold and cold as one word when comparing cloud sizes`, `leaves out entries that aren't words`, `reports the size-70 list first when both dictionaries can't be read`.
 
+**Changed after review, by the human reviewer:** `build:words` runs the entry script with `tsx` instead of Vite's experimental `runnerImport` (intent, choice 1). New dev dependency; the rebuilt lists are byte for byte the same, and the failure output is unchanged.
+
 ## Reviewer A: breaks
 
 **Reviewer:** independent agent, fresh context · **Verdict:** approve with changes
@@ -35,4 +37,4 @@ Two reviewers in parallel (M chunk, D29) on `f9a5d58..453a6a7`. Fixes are in d1f
 5. **nit** The real-data file rebuilds the lists in five tests (about 2 s); one shared build would cut it to 0.4 s. — *Response:* not changed. Each test keeps its one Act (CLAUDE.md, AAA); the cost was accepted in intent choice 3.
 6. **note** A real-data connectivity check doesn't take minutes: one breadth-first search covers the cloud (about 235 ms). — *Response:* not changed. Reusing `getLargestWordCloud` is the weak check the reviewer describes, and a second search in the test would copy the logic under test. Least-sure point corrected in the PR description; the fixture tests and `makes every puzzle word an accepted word` carry the rule.
 
-**Notes:** type-check, ESLint, Prettier, 205 tests and coverage pass; the build takes about 1 s and rebuilds both lists byte for byte; a bad `.dic` line prints its file and line, exit 1; a missing source file gives a Node stack trace, acceptable through `npm run`; `runnerImport` works with Vite 8.3.5; word length 0 gives two empty lists; tests, fixtures and names meet CLAUDE.md; the SCOWL licence is untouched.
+**Notes:** type-check, ESLint, Prettier, 205 tests and coverage pass; the build takes about 1 s and rebuilds both lists byte for byte; a bad `.dic` line prints its file and line, exit 1; a missing source file gives a Node stack trace, acceptable through `npm run`; `runnerImport` works with Vite 8.3.5 (since replaced by `tsx`, see below); word length 0 gives two empty lists; tests, fixtures and names meet CLAUDE.md; the SCOWL licence is untouched.

@@ -18,7 +18,7 @@
 - Also: ties, repeats, no words, word length 3, exclusion and blocklist before the cloud, failures naming each list, D17's sample words, and cold → warm in 4 moves on the real list
 
 ## Choices (beyond the backlog entry)
-1. **Running the `.ts` code: `scripts/buildWordLists.mjs` loads `getWordLists.ts` through Vite's `runnerImport`.** No new dependency, no change to imports. Node's own type stripping would need `.ts` on every import in `src/core`. `runnerImport` is marked experimental in Vite 8; if it breaks, `tsx` is the fallback (a new dependency).
+1. **Running the `.ts` code: `npm run build:words` runs `scripts/buildWordLists.mjs` with `tsx`.** Changed after review, by the human reviewer, from Vite's `runnerImport`, which is marked experimental in Vite 8. `tsx` is a new dev dependency (it uses esbuild, which Vite already installs) but stable, and needs no change to imports. Node's own type stripping would need `.ts` on every import along the way.
 2. **The entry script is `.mjs`, has no logic and no tests.** Coverage counts only `.ts`, so it stays out without a config change. Everything testable is in the two pure functions in `scripts/words/`.
 3. **The committed lists are tested against a fresh build** (`getWordLists.scowl.test.ts`), so CI fails if they're stale or edited by hand. Cost: about a second or two of test time.
 4. **Ties between clouds of equal size** go to the one with the alphabetically first word. They can't happen with the real lists (the largest is 96%), but the result must not depend on input order.
@@ -26,7 +26,7 @@
 
 ## What I'm least sure of
 - **Size:** about 120 lines of code but about 380 of tests, so over the ~200 limit. I'd keep it as one chunk (the tests are fixtures and most of it); splitting off `getLargestWordCloud` is the alternative.
-- **Choice 1:** `runnerImport` is experimental. If you'd rather add `.ts` import extensions across `src/core` and use plain `node`, that's a separate change first.
+- **Choice 1:** `tsx` adds a dev dependency, and the build and the tests now run the code through different transformers (esbuild and Vite). The committed-list tests would catch a difference. CI doesn't run `build:words`, so a broken build shows only when someone rebuilds.
 - **The connectivity criterion has no real-data test of its own:** a check of every pair would take minutes. It rests on the fixture tests plus "every puzzle word is accepted" on the real list.
 
 ## Out of scope

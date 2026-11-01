@@ -3,13 +3,13 @@
 ## Approach
 - `getLargestWordCloud`: put the words in a dictionary (`createDictionaryFromWords` dedupes and sorts). Go through them alphabetically; for each word not yet in a cloud, breadth-first search with `getWordsOneLetterAway` to collect its cloud. Keep a cloud only if it's strictly bigger than the best so far, so ties go to the first word. Return the cloud sorted.
 - `getWordLists`: call `getWordsFromHunspell` for the accepted source, then the puzzle source, with the same two lists; return the first failure with its `wordList`. Keep words of `wordLength`. Accepted = largest cloud; puzzle = puzzle-source words in the accepted set, in order.
-- `scripts/buildWordLists.mjs`: `runnerImport` the `.ts` module (`configFile: false`), read the six files with `node:fs` as UTF-8, call with `wordLength: 4`, then write or print and exit 1. Style as `break.mjs`.
+- `scripts/buildWordLists.mjs`, run with `tsx` (changed after review from `runnerImport`): import `getWordLists.ts`, read the six files with `node:fs` as UTF-8, call with `wordLength: 4`, then write or print and exit 1. Style as `break.mjs`.
 - Session B times `findShortestPath` on the built list from a scratch script (worst case: an unreachable target) and records it under Self-check.
 
 ## Files
 - `scripts/words/getLargestWordCloud.ts`, `scripts/words/getWordLists.ts` — new, pure (D21 lint applies)
 - `scripts/buildWordLists.mjs` — new entry script
-- `package.json` — `build:words` script
+- `package.json`, `package-lock.json` — `build:words` script; `tsx` dev dependency (after review)
 - `data/words/exclude.txt`, `blocklist.txt` — new, header comment only; `accepted.txt`, `puzzle.txt` — built; `.gitkeep` removed
 - `tests/scripts/words/getLargestWordCloud.test.ts`, `getWordLists.test.ts`, `getWordLists.scowl.test.ts` — new
 - `CLAUDE.md` Commands — add `npm run build:words`; `backlog.md` — status line on merge

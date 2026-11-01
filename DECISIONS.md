@@ -190,6 +190,18 @@ Par is 1.5 × the moves in a shortest path, rounded up. `cold → warm` has a sh
 - The independent reviewer also reads `intent.md`, so it sees the list. That's accepted: the brief still asks for its own breaks, and checking named doubts is cheap. If reviews start only answering the list, revisit at 3.0.
 - Considered: waiting for the 3.0 process review (another ten or so chunks reviewed without it); a full risk register per chunk (too heavy for S chunks).
 
+## D29 — Two sessions per chunk, reviewer-only breaks, and reading less
+**Decided** · 2026-11-01 · amends D19, D23
+The 6.1a session's context grew very large. A look at the last three sessions' transcripts showed the code is a small part of it (`src/core/` is about 15k characters). Most came from reading whole documents at the start (20–27k characters each time: `backlog.md`, `DECISIONS.md`, an earlier chunk's records), writing and editing ever longer records (1.4's intent and plan were about 4k together, 6.1a's 33k), and running breaks in the main session (22 in 1.10). Reviewer agents returned 1–4k characters each.
+- **Two sessions per chunk,** split at the human stop. The records are the handoff. At each handoff point the author says so and gives a ready-to-paste prompt for the next session (`sdlc/README.md`).
+- **The author runs no breaks; the reviewer runs them all,** for every chunk, through the full checklist. In 6 of the 9 reviewed chunks, the reviewer found gaps the author's breaks had missed: the author writes breaks with the same blind spots as the tests. Self-review found real gaps only in the bigger chunks (1.5, 1.9, 6.1a), and the reviewer still found more in each. Self-review never found something the reviewer then missed. The author keeps a three-line self-check.
+- **No more skipped reviews.** D23's skip depended on self-review breaks, and saved one review (1.13). The reviewer costs the main session a few thousand characters.
+- **Two reviewers in parallel for M chunks,** one on breaks only and one on everything else, as the two kinds of work find different gaps.
+- **Read less:** finished chunks move to `backlog-done.md`; read only the backlog entries and decisions a chunk cites; size limits for `intent.md` and `plan.md`; research and, from Phase 3, browser checks go to subagents.
+- Another exception to D23's process freeze, made by the human reviewer: without it, every chunk until 3.0 pays the same context cost.
+- Considered: keeping self-review breaks but running them in a subagent (cheaper for the main session, but still the author's blind spots, and the reviewer then repeats them); dropping self-review entirely (the self-check costs almost nothing and catches, before review, the kind of slip reviewers found in 1.4, a file outside the chunk's scope, and 6.1a, a listed file not committed).
+- **Revisit at** 3.0 with D23. **Revisit sooner if** the human finds a gap at PR review that author breaks would plausibly have caught, or session B often needs to reread session A's chat.
+
 ---
 
 ## Ideas for later (not scheduled)

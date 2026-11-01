@@ -27,6 +27,6 @@
 | reports an invalid date before launch as invalid, not before launch | Checks run in order: validity, then launch |
 
 ## Self-check
-- Files:
-- Lint, tests and coverage:
-- Diff against intent:
+- Files: match the list above; `getDayCount` is a private helper in `getPuzzleNumber.ts`
+- Lint, tests and coverage: pass; 226 tests, 100% coverage
+- Diff against intent: dates are checked, then counted with `Date.UTC`, and the clock is never read; nothing outside 2.5

@@ -111,6 +111,15 @@ Breadth-first search.
 - a game that was given up has no score
 - a game in progress has no score
 
+**1.11 Load word lists (S)** · Depends: 1.2, 6.1b, 3.0 · *part of M3* · `createGameDataFromText` and `getBundledGameData` in `src/puzzles/`
+Load the built accepted and puzzle word lists into dictionaries at app start. Bundle them into the app at build time (Vite `?raw` imports, about 33 KB with the schedule) rather than fetching them, so there's no async loading, loading state or network error to handle (process review at 3.0). This is app wiring, not core logic: D21's lint bans `fetch` in `src/core/`, so it lives in `src/puzzles/` (or beside the UI, per 3.0). Done after 3.0, just before 3.1. It works with empty exclusion and block lists, so it doesn't wait for 6.2 and 6.3. The ID is kept so references stay valid.
+- loads accepted words and puzzle words as separate dictionaries
+- every puzzle word is also an accepted word
+
+*Carried forward:* `data/words/accepted.txt` and `puzzle.txt` are one lowercase word per line, LF, a newline at the end, no comments or blank lines, in alphabetical order (6.1b intent, choice 5).
+
+*Carried forward:* also load the puzzle schedule that 2.6a builds; 2.4 looks up a date's puzzle in it (D24).
+
 **1.12 Non-empty chain (S)** · Depends: 1.8
 Type `Game.chain` so an empty chain can't be built, and drop `checkMove`'s `?? ""` fallback (1.5 review 5, 1.6 review 6). Types only; behaviour unchanged.
 - every existing test passes with its values and assertions unchanged

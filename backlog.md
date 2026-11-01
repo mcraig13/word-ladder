@@ -13,7 +13,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
 | M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | Done |
-| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0 done; 1.11 next |
+| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0, 1.11 done; 3.1 next |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
 | Tech debt | 7.1 | Clean-ups with no change in behaviour | Not started |
@@ -32,16 +32,7 @@ Done: 0.1–0.3, 0.5. Finished chunks are in `backlog-done.md` (D29).
 
 ## Phase 1 — Rules engine (pure functions in `src/core/`)
 
-Done: 1.1–1.10, 1.12, 1.13. Finished chunks are in `backlog-done.md` (D29).
-
-**1.11 Load word lists (S)** · Depends: 1.2, 6.1b, 3.0 · *part of M3*
-Load the built accepted and puzzle word lists into dictionaries at app start. Bundle them into the app at build time (Vite `?raw` imports, about 33 KB with the schedule) rather than fetching them, so there's no async loading, loading state or network error to handle (process review at 3.0). This is app wiring, not core logic: D21's lint bans `fetch` in `src/core/`, so it lives in `src/puzzles/` (or beside the UI, per 3.0). Done after 3.0, just before 3.1. It works with empty exclusion and block lists, so it doesn't wait for 6.2 and 6.3. The ID is kept so references stay valid.
-- loads accepted words and puzzle words as separate dictionaries
-- every puzzle word is also an accepted word
-
-*Carried forward:* `data/words/accepted.txt` and `puzzle.txt` are one lowercase word per line, LF, a newline at the end, no comments or blank lines, in alphabetical order (6.1b intent, choice 5).
-
-*Carried forward:* also load the puzzle schedule that 2.6a builds; 2.4 looks up a date's puzzle in it (D24).
+Done: 1.1–1.13. Finished chunks are in `backlog-done.md` (D29).
 
 ---
 
@@ -59,6 +50,8 @@ UI tests check what the player sees and can do, not component internals.
 - shows the puzzle number
 - shows the start word, target word and par
 - shows the chain so far
+
+*Carried forward:* `getBundledGameData()` returning `ok: true` doesn't mean the schedule's words are in the lists; CI checks that (2.6c). Decide what the player sees for `ok: false`, likely the same "no puzzle" message as `after-schedule` (1.11 review 2, intent).
 
 **3.2 Enter a move (M)** · Depends: 3.1, 1.6
 - a valid word is added to the chain
@@ -183,6 +176,8 @@ Clean-ups that change no behaviour. Pick them up between chunks; each one still 
 No unexplained numbers in the code: each constant gets a name or a one-line comment saying where it comes from and what it does. Start with `createSeededRandom` (2.1): mulberry32's increment `0x6d2b79f5`, the shifts `15`, `7` and `14`, the multipliers `| 1` and `| 61`, and `2 ** 32`. Link the published mulberry32 so the code can still be checked against it line by line, which is how the 2.1 review confirmed the pinned sequence. Then go through `src/` and `scripts/` for others.
 - seed 2026 picks the same sequence it always has (2.1's existing test, unchanged: the constants must not change)
 - all existing tests pass unchanged
+
+*Carried forward:* `scripts/buildSchedule.mjs`, `tests/puzzles/checkSchedule.scowl.test.ts` and `generatePuzzle.scowl.test.ts` split the list files and build dictionaries themselves; consider one shared reader such as `createGameDataFromText` (1.11 review 1).
 
 ## Decisions needed before their chunks
 

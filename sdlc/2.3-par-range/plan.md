@@ -21,6 +21,7 @@ Add the range check to `findPuzzleFailure` in `checkSchedule`, after the shortes
 | leaves today's and earlier puzzles out of the range check | D24, published dates don't change |
 | range-checks the first puzzle after today's | D16, from the first unpublished date |
 | reports a changed shortest path as changed, not out of range | D24, 2.6c: the changed check comes first |
+| rejects a puzzle after today's when an end of the range isn't a number | D16, 2.6b G4 (added after review, finding 1) |
 | extending checks the file's lines against the shortest-path range it is given | D16, D24: lines already in the file are checked |
 | the committed schedule passes the checks with the committed word lists | D16 on the real files (backlog 2.3) |
 

@@ -13,7 +13,8 @@
 // against the word lists, D30's repeat window, D16's range for puzzles after
 // today's and the 60 puzzles that must remain after today's (chunks 2.6c and
 // 2.3, D24). On a failure it prints the unreadable line, the failing puzzle's
-// number, or how few puzzles remain, and exits 1, writing nothing. A full rebuild takes about 15 s.
+// number, or how few puzzles remain, and exits 1, writing nothing. A full
+// rebuild takes about 15 s.
 
 import console from "node:console";
 import process from "node:process";

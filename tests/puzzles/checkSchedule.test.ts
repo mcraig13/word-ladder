@@ -417,4 +417,18 @@ describe("checkSchedule", () => {
     // Assert
     expect(result).toEqual({ ok: false, reason: "shortest-path-changed", puzzleNumber: 1 });
   });
+
+  it("rejects a puzzle after today's when an end of the range isn't a number", () => {
+    // Arrange
+    // Review finding 1. cold-warm is 4 moves, but a range that isn't a
+    // number must not let it through (2.6b review G4).
+    const options = { ...ladderOptions, shortestPathMoves: { fewest: Number.NaN, most: 4 } };
+    const schedule = [createScheduledPuzzle("cold", "warm", 4)];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-out-of-range", puzzleNumber: 1 });
+  });
 });

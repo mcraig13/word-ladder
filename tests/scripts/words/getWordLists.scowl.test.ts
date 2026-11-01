@@ -100,12 +100,14 @@ describe("getWordLists on the real SCOWL files", () => {
     expect(puzzleWords.filter((word) => !acceptedWords.has(word))).toEqual([]);
   });
 
-  it("joins every accepted word to cold through accepted words, so every puzzle is solvable", () => {
+  it("connects every accepted word to every other, so every puzzle is solvable", () => {
     // Arrange
     const acceptedWords = getWordsFromListFile(committedAcceptedText);
     const dictionary = createDictionaryFromWords(acceptedWords);
 
     // Act
+    // Moves work both ways, so if every word reaches one word, any two words
+    // reach each other through it. cold is only where the search starts.
     const reachedWords = getWordsReachableFrom("cold", dictionary);
 
     // Assert

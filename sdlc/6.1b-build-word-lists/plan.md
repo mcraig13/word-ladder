@@ -39,7 +39,7 @@
 | builds the same puzzle words as the committed puzzle.txt | same output files; no hand edits |
 | makes cold, warm and high puzzle words, high being joined only through size-70 words | D17 evidence |
 | makes every puzzle word an accepted word, so every puzzle is inside the cloud | backlog connectivity |
-| joins every accepted word to cold through accepted words, so every puzzle is solvable | backlog connectivity, real data (added after review) |
+| connects every accepted word to every other, so every puzzle is solvable | backlog connectivity, real data (added after review) |
 | does not accept evil, exam or hymn, which are outside the cloud at any size | D17 evidence |
 | finds a 4-move shortest path from cold to warm over the committed accepted words | CLAUDE.md example; par 6 (D27) |
 

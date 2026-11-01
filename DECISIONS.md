@@ -76,8 +76,10 @@ Launch includes: today's puzzle with par, entering moves, undo, give up, win scr
 Puzzle #1 is the launch date; the number goes up by one each day. Fixed once people start sharing results, so don't change it after launch.
 
 ## D16 — Daily par range
-**Open** · blocks 2.3
-How long should daily puzzles be? Suggested starting point: a shortest path of 4–6 moves (par 6–9, D27), adjusted from player feedback.
+**Decided** · 2026-11-01 · for now · 2.3
+Every daily puzzle has a shortest path of 4–6 moves, so par is 6–9 (D27). The range is in moves of the shortest path, as generation and the schedule store it.
+- Why: on the real lists most words are 4–6 moves from each other (D17's spike from `cold`), and the committed schedule, built with this range as a placeholder, has 97 puzzles of 4 moves, 159 of 5 and 109 of 6 with no date failing under D30's window.
+- Agreed "for now": adjust from friends' shared scores (4.1) once there are some. Before launch, a new range means deleting `schedule.txt` and rebuilding (D24). After launch, published dates keep the range they were made with; the dates already scheduled after today would need dropping first, which nothing does yet (2.3 intent, Out of scope).
 
 ## D17 — Dictionary source: SCOWL, two sizes
 **Decided** · 2026-10-30 · supersedes D3 and the puzzle-word source in D8

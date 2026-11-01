@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4–2.6c done; 2.3 next (waits on D16) |
+| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4–2.6c done; 2.3 next |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -199,4 +199,3 @@ No unexplained numbers in the code: each constant gets a name or a one-line comm
 | ID | Decision | Blocks |
 |----|----------|--------|
 | D7 | UI framework | 3.0 |
-| D16 | Daily par range, in moves of the shortest path (suggest 4–6, so par 6–9); decide once 6.1b gives real data | 2.3 |

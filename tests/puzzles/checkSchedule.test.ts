@@ -8,7 +8,9 @@ import type { ScheduledPuzzle } from "../../src/puzzles/extendSchedule";
 // shortest path still has the moves stored for it, so par can't shift
 // unnoticed (D24, D27); no start or target comes back within the repeat
 // window (D30); at least the fewest allowed puzzles remain after today's
-// (D24, 60 in the build).
+// (D24, 60 in the build). Chunk 2.3: every puzzle after today's has a
+// shortest path within the range (D16, 4-6 in the build); published ones
+// keep the range they were made with (D24).
 //
 // LADDER is a line: each word is one move from the next and no others, so the
 // moves between two words are how far apart they are in the list.
@@ -16,11 +18,12 @@ import type { ScheduledPuzzle } from "../../src/puzzles/extendSchedule";
 
 const LADDER = ["cold", "cord", "card", "ward", "warm"];
 
-// Every check but the one a test is about passes: no repeat window, and no
-// puzzles needed after today's.
+// Every check but the one a test is about passes: no repeat window, no
+// puzzles needed after today's, and a range that takes in every pair.
 const ladderOptions = {
   acceptedWords: createDictionaryFromWords(LADDER),
   puzzleWords: createDictionaryFromWords(LADDER),
+  shortestPathMoves: { fewest: 1, most: 4 },
   daysBeforeWordRepeats: 0,
   todaysPuzzleNumber: 0,
   fewestPuzzlesAhead: 0,
@@ -307,5 +310,125 @@ describe("checkSchedule", () => {
       reason: "too-few-puzzles-ahead",
       puzzlesAhead: Number.NaN,
     });
+  });
+
+  // Chunk 2.3.
+
+  it("rejects a puzzle after today's whose shortest path is shorter than the range allows", () => {
+    // Arrange
+    // cord-card is 1 move, fewer than 2.
+    const options = { ...ladderOptions, shortestPathMoves: { fewest: 2, most: 4 } };
+    const schedule = [
+      createScheduledPuzzle("cold", "warm", 4),
+      createScheduledPuzzle("cord", "card", 1),
+    ];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-out-of-range", puzzleNumber: 2 });
+  });
+
+  it("rejects a puzzle after today's whose shortest path is longer than the range allows", () => {
+    // Arrange
+    // cold-warm is 4 moves, more than 3.
+    const options = { ...ladderOptions, shortestPathMoves: { fewest: 1, most: 3 } };
+    const schedule = [
+      createScheduledPuzzle("cord", "card", 1),
+      createScheduledPuzzle("cold", "warm", 4),
+    ];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-out-of-range", puzzleNumber: 2 });
+  });
+
+  it("passes puzzles at exactly the fewest and the most moves the range allows", () => {
+    // Arrange
+    // cord-ward is 2 moves and cold-ward 3, the ends of a range of 2-3.
+    const options = { ...ladderOptions, shortestPathMoves: { fewest: 2, most: 3 } };
+    const schedule = [
+      createScheduledPuzzle("cord", "ward", 2),
+      createScheduledPuzzle("cold", "ward", 3),
+    ];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: true });
+  });
+
+  it("leaves today's and earlier puzzles out of the range check", () => {
+    // Arrange
+    // Today is #2. #1 and #2 are 1 and 2 moves, outside a range of exactly
+    // 4, but published; #3 is 4 moves.
+    const options = {
+      ...ladderOptions,
+      shortestPathMoves: { fewest: 4, most: 4 },
+      todaysPuzzleNumber: 2,
+    };
+    const schedule = [
+      createScheduledPuzzle("cord", "card", 1),
+      createScheduledPuzzle("ward", "cord", 2),
+      createScheduledPuzzle("cold", "warm", 4),
+    ];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: true });
+  });
+
+  it("range-checks the first puzzle after today's", () => {
+    // Arrange
+    // Today is #1, so #2, 2 moves, is the first one checked against a range of 4.
+    const options = {
+      ...ladderOptions,
+      shortestPathMoves: { fewest: 4, most: 4 },
+      todaysPuzzleNumber: 1,
+    };
+    const schedule = [
+      createScheduledPuzzle("cord", "card", 1),
+      createScheduledPuzzle("ward", "cord", 2),
+    ];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-out-of-range", puzzleNumber: 2 });
+  });
+
+  it("reports a changed shortest path as changed, not out of range", () => {
+    // Arrange
+    // 5 stored moves are outside a range of 4, but cold-warm is now 4 moves,
+    // so the stored number is what's wrong.
+    const options = { ...ladderOptions, shortestPathMoves: { fewest: 4, most: 4 } };
+    const schedule = [createScheduledPuzzle("cold", "warm", 5)];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-changed", puzzleNumber: 1 });
+  });
+
+  it("rejects a puzzle after today's when an end of the range isn't a number", () => {
+    // Arrange
+    // Review finding 1. cold-warm is 4 moves, but a range that isn't a
+    // number must not let it through (2.6b review G4).
+    const options = { ...ladderOptions, shortestPathMoves: { fewest: Number.NaN, most: 4 } };
+    const schedule = [createScheduledPuzzle("cold", "warm", 4)];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-out-of-range", puzzleNumber: 1 });
   });
 });

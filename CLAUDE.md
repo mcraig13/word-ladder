@@ -179,5 +179,4 @@ it("rejects a move that changes two letters", () => {
 
 See `DECISIONS.md` for detail.
 - D7 UI framework (decide in 3.0)
-- D24 Keeping puzzles fixed when a word list changes (blocks 2.2)
 - D16 Daily par range, in moves of the shortest path (blocks 2.3; suggested 4–6, so par 6–9)

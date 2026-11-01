@@ -114,4 +114,31 @@ describe("findPuzzleForDate", () => {
     // Assert
     expect(result).toEqual({ ok: false, reason: "invalid-date" });
   });
+
+  it("a date before launch has no puzzle even when the schedule is empty", () => {
+    // Arrange
+    // Both checks fail; the date is checked first, so the reason is the date's.
+    const launchDate = { year: 2027, month: 1, day: 15 };
+    const date = { year: 2027, month: 1, day: 14 };
+    const emptySchedule: Schedule = [];
+
+    // Act
+    const result = findPuzzleForDate(date, launchDate, emptySchedule);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "before-launch" });
+  });
+
+  it("an invalid launch date has no puzzle, even on the launch date itself", () => {
+    // Arrange
+    // 2027 isn't a leap year, so 29 February isn't a date, as launch or as today.
+    const launchDate = { year: 2027, month: 2, day: 29 };
+    const date = { year: 2027, month: 2, day: 29 };
+
+    // Act
+    const result = findPuzzleForDate(date, launchDate, threeDaySchedule);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "invalid-date" });
+  });
 });

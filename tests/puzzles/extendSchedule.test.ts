@@ -129,6 +129,29 @@ describe("extendSchedule", () => {
     ]);
   });
 
+  it("measures each puzzle's shortest path over the accepted words, not the puzzle words", () => {
+    // Arrange
+    // cord and ward are accepted but not puzzle words, so cold-card goes
+    // through cord and card-warm through ward: two moves each. Over the
+    // puzzle words alone no two words are one move apart.
+    const options = {
+      ...ladderOptions,
+      puzzleWords: createDictionaryFromWords(["cold", "card", "warm"]),
+      shortestPathMoves: { fewest: 2, most: 2 },
+      lastPuzzleNumber: MANY_PUZZLES,
+    };
+
+    // Act
+    const result = extendSchedule([], options);
+
+    // Assert
+    const schedule = result.ok ? result.schedule : [];
+    expect(listDifferent(schedule.map(describePairAndMoves))).toEqual([
+      "card-cold 2",
+      "card-warm 2",
+    ]);
+  });
+
   it("builds puzzles of the requested word length", () => {
     // Arrange
     // cat 0, cot 1, dot 2, dog 3. Three moves in LADDER would give cold-ward
@@ -338,6 +361,24 @@ describe("extendSchedule", () => {
 
     // Act
     const result = extendSchedule(EXISTING_SCHEDULE, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "no-puzzle-in-range", puzzleNumber: 3 });
+  });
+
+  it("reports the puzzle number that has no puzzle partway through a run", () => {
+    // Arrange
+    // Puzzles 1 and 2 use four of LADDER's five words, and a window of two
+    // holds them all back for puzzle 3, which leaves one word and no pair.
+    const options = {
+      ...ladderOptions,
+      shortestPathMoves: { fewest: 1, most: 4 },
+      daysBeforeWordRepeats: 2,
+      lastPuzzleNumber: 5,
+    };
+
+    // Act
+    const result = extendSchedule([], options);
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "no-puzzle-in-range", puzzleNumber: 3 });

@@ -65,14 +65,18 @@ export function extendSchedule(
     // A separate search from the one that picked the puzzle, so the stored
     // moves are a cross-check rather than a copy (2.6a plan). Every generated
     // puzzle has a path over the accepted words, so only generation fails.
-    const shortestPath = generated.ok
+    const shortestPathOrFailure = generated.ok
       ? findShortestPath(generated.puzzle.start, generated.puzzle.target, acceptedWords)
       : generated;
-    if (!generated.ok || !shortestPath.ok) {
+    if (!generated.ok || !shortestPathOrFailure.ok) {
       return { ok: false, reason: "no-puzzle-in-range", puzzleNumber };
     }
     const { start, target } = generated.puzzle;
-    extendedSchedule.push({ start, target, shortestPathMoves: shortestPath.path.length - 1 });
+    extendedSchedule.push({
+      start,
+      target,
+      shortestPathMoves: shortestPathOrFailure.path.length - 1,
+    });
   }
 
   return { ok: true, schedule: extendedSchedule };

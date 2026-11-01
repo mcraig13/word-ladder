@@ -18,7 +18,9 @@ const wordsFolder = "data/words";
 const puzzlesFolder = "data/puzzles";
 const scheduleFile = `${puzzlesFolder}/schedule.txt`;
 
-// Any fixed whole number; changing it reshuffles every unpublished date.
+// Any fixed whole number. Puzzle #N uses this plus N, so a seed one higher
+// shifts most dates by a day; to reshuffle, change it by more than the
+// puzzles in the schedule (2.6a review).
 const scheduleSeed = 2026;
 // About a year ahead (D24).
 const puzzlesInSchedule = 365;

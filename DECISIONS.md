@@ -262,6 +262,12 @@ The soft launch runs for a week with friends, then the site goes offline while a
 - Licence: a notice for dsojevic/profanity-list (link, commit date, "filtered and added to by hand", the MIT text) goes in `data/words` beside the SCOWL notice.
 - Considered: LDNOOBW (CC-BY-4.0, no severity, blocks butt and suck); a Google-derived list (data licence doubtful); CMU's list (no licence, blocks fire and kill); hand-written only.
 
+## D35 — The game is called Word Golf
+**Decided** · 2026-11-01 · in 3.0
+Players see the name Word Golf: the page heading and the browser tab title. The puzzle is still a word ladder, and the repository, its URL (`/word-ladder/`) and the docs keep the old name for now.
+- Why: it goes with the par theming (D9, D27): a score of par, −1, +1 reads like golf.
+- Considered: keeping Word Ladder (a generic name for the puzzle type, not the game).
+
 ---
 
 ## Ideas for later (not scheduled)

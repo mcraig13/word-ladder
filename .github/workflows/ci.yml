@@ -32,6 +32,10 @@ jobs:
       - name: Lint and type-check
         run: npm run lint
 
+      # The browser tests run in headless Chromium (D33).
+      - name: Install Chromium for browser tests
+        run: npx playwright install --with-deps chromium
+
       - name: Test with coverage
         run: npm run test:coverage
 

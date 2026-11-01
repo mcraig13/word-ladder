@@ -54,4 +54,15 @@ describe("getLocalCalendarDate", () => {
     // Assert
     expect(date).toEqual({ year: 2026, month: 12, day: 31 });
   });
+
+  it("a time just after midnight is already the new day, and the new year", () => {
+    // Arrange
+    const justAfterMidnightNewYear = new Date(2027, 0, 1, 0, 0, 1);
+
+    // Act
+    const date = getLocalCalendarDate(justAfterMidnightNewYear);
+
+    // Assert
+    expect(date).toEqual({ year: 2027, month: 1, day: 1 });
+  });
 });

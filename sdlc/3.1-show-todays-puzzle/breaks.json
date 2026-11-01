@@ -1,0 +1,146 @@
+[
+  {
+    "label": "findGameForDate: date and launch date swapped",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "findPuzzleForDate(date, launchDate, gameData.schedule)",
+    "replace": "findPuzzleForDate(launchDate, date, gameData.schedule)"
+  },
+  {
+    "label": "findGameForDate: par over the puzzle words",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "createGame(start, target, gameData.acceptedWords)",
+    "replace": "createGame(start, target, gameData.puzzleWords)"
+  },
+  {
+    "label": "findGameForDate: start and target swapped",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "createGame(start, target, gameData.acceptedWords)",
+    "replace": "createGame(target, start, gameData.acceptedWords)"
+  },
+  {
+    "label": "findGameForDate: puzzle number off by one",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "puzzleNumber: puzzleResult.puzzleNumber,",
+    "replace": "puzzleNumber: puzzleResult.puzzleNumber - 1,"
+  },
+  {
+    "label": "findGameForDate: puzzle failure guard deleted",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "if (!puzzleResult.ok) {\n    return puzzleResult;\n  }",
+    "replace": ""
+  },
+  {
+    "label": "findGameForDate: game failure guard deleted",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "if (!gameResult.ok) {\n    return gameResult;\n  }",
+    "replace": ""
+  },
+  {
+    "label": "findGameForDate: game failure reported with the wrong reason",
+    "file": "src/puzzles/findGameForDate.ts",
+    "find": "return gameResult;",
+    "replace": "return { ok: false, reason: \"after-schedule\" } as const;"
+  },
+  {
+    "label": "getLocalCalendarDate: UTC date",
+    "file": "src/ui/getLocalCalendarDate.ts",
+    "find": "day: now.getDate()",
+    "replace": "day: now.getUTCDate()"
+  },
+  {
+    "label": "getLocalCalendarDate: UTC month",
+    "file": "src/ui/getLocalCalendarDate.ts",
+    "find": "month: now.getMonth() + 1",
+    "replace": "month: now.getUTCMonth() + 1"
+  },
+  {
+    "label": "getLocalCalendarDate: UTC year",
+    "file": "src/ui/getLocalCalendarDate.ts",
+    "find": "year: now.getFullYear()",
+    "replace": "year: now.getUTCFullYear()"
+  },
+  {
+    "label": "getLocalCalendarDate: months from 0",
+    "file": "src/ui/getLocalCalendarDate.ts",
+    "find": "month: now.getMonth() + 1",
+    "replace": "month: now.getMonth()"
+  },
+  {
+    "label": "getLocalCalendarDate: day of week, not of month",
+    "file": "src/ui/getLocalCalendarDate.ts",
+    "find": "day: now.getDate()",
+    "replace": "day: now.getDay()"
+  },
+  {
+    "label": "App: today and launch date swapped",
+    "file": "src/ui/App.tsx",
+    "find": "findGameForDate(today, launchDate,",
+    "replace": "findGameForDate(launchDate, today,"
+  },
+  {
+    "label": "App: unreadable-data guard deleted",
+    "file": "src/ui/App.tsx",
+    "find": "const gameResult = gameDataResult.ok",
+    "replace": "const gameResult = true"
+  },
+  {
+    "label": "App: puzzle number not a heading",
+    "file": "src/ui/App.tsx",
+    "find": "<h2>Puzzle #{gameResult.puzzleNumber}</h2>",
+    "replace": "<p>Puzzle #{gameResult.puzzleNumber}</p>"
+  },
+  {
+    "label": "App: start and target swapped on screen",
+    "file": "src/ui/App.tsx",
+    "find": "From {gameResult.game.start} to {gameResult.game.target}",
+    "replace": "From {gameResult.game.target} to {gameResult.game.start}"
+  },
+  {
+    "label": "App: par element removed",
+    "file": "src/ui/App.tsx",
+    "find": "<p>Par {gameResult.game.par}</p>",
+    "replace": ""
+  },
+  {
+    "label": "App: chain shows the target",
+    "file": "src/ui/App.tsx",
+    "find": "{gameResult.game.chain.map((word) => (",
+    "replace": "{[gameResult.game.target].map((word) => ("
+  },
+  {
+    "label": "App: chain loses its accessible name",
+    "file": "src/ui/App.tsx",
+    "find": "<ol aria-label=\"Your chain\">",
+    "replace": "<ol>"
+  },
+  {
+    "label": "App: no-puzzle message shown with the puzzle too",
+    "file": "src/ui/App.tsx",
+    "find": "<ol aria-label=\"Your chain\">",
+    "replace": "<p>There&apos;s no puzzle today.</p><ol aria-label=\"Your chain\">"
+  },
+  {
+    "label": "App: no-puzzle message removed",
+    "file": "src/ui/App.tsx",
+    "find": "<p>There&apos;s no puzzle today.</p>",
+    "replace": "<p></p>"
+  },
+  {
+    "label": "main: today wired as the launch date, not the clock",
+    "file": "src/main.tsx",
+    "find": "today={getLocalCalendarDate(new Date())}",
+    "replace": "today={launchDate}"
+  },
+  {
+    "label": "main: launch date wired as today",
+    "file": "src/main.tsx",
+    "find": "launchDate={launchDate}",
+    "replace": "launchDate={getLocalCalendarDate(new Date())}"
+  },
+  {
+    "label": "main: game data not wired in",
+    "file": "src/main.tsx",
+    "find": "gameDataResult={getBundledGameData()}",
+    "replace": "gameDataResult={{ ok: false, reason: \"unreadable-schedule-line\", lineNumber: 1 }}"
+  }
+]

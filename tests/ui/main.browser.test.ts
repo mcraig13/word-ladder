@@ -10,12 +10,14 @@ function parseIndexHtml() {
 }
 
 // The entry file mounts the app once per page, so it's imported once, here,
-// with the clock set to noon on the launch date: today is then puzzle #1
-// whatever the real date (D15). Noon keeps it the same day in any timezone.
-const launchDayNoon = new Date(launchDate.year, launchDate.month - 1, launchDate.day, 12);
+// with the clock set to noon on the day after launch: today is then puzzle #2
+// whatever the real date (D15). Not the launch date itself, where passing the
+// launch date as today would pass too. Noon keeps it the same day in any
+// timezone.
+const dayAfterLaunchNoon = new Date(launchDate.year, launchDate.month - 1, launchDate.day + 1, 12);
 
 beforeAll(async () => {
-  vi.setSystemTime(launchDayNoon);
+  vi.setSystemTime(dayAfterLaunchNoon);
   const indexPage = parseIndexHtml();
   document.body.innerHTML = indexPage.body.innerHTML;
   const entryFile = indexPage.querySelector("script[type=module]")?.getAttribute("src") ?? "";
@@ -38,9 +40,9 @@ describe("main", () => {
     await expect.element(heading).toBeVisible();
   });
 
-  it("shows puzzle #1 when the entry file mounts the app on the launch date", async () => {
+  it("shows puzzle #2 when the entry file mounts the app the day after launch", async () => {
     // Arrange
-    const puzzleHeading = "Puzzle #1";
+    const puzzleHeading = "Puzzle #2";
 
     // Act
     const heading = page.getByRole("heading", { level: 2, name: puzzleHeading });

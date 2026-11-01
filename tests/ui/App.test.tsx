@@ -101,8 +101,10 @@ describe("App", () => {
 
   it("tells the player there's no puzzle when the game data can't be read", () => {
     // Arrange
+    // The accepted words link cold to warm, so the capital in the schedule
+    // line is the only reason there's no puzzle.
     const unreadableGameData = createGameDataFromText({
-      acceptedWordsText: "cold\nwarm\n",
+      acceptedWordsText: "cold\ncord\ncard\nward\nwarm\n",
       puzzleWordsText: "cold\nwarm\n",
       scheduleText: "Cold warm 4\n",
     });

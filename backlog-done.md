@@ -281,6 +281,11 @@ D7 (React), D33 (how UI is tested and covered) and the UI break kinds (D31) were
 - a browser-mode test finds the heading on the page mounted from the entry file
 - `npm run lint`, `npm run test:coverage` and `npm run build` pass with the framework added
 
+**3.1 Show today's puzzle (M)** · Depends: 3.0, 1.11 · `findGameForDate` in `src/puzzles/`, `getLocalCalendarDate` in `src/ui/`, placeholder `launchDate` (3.8 sets the real one); one "There's no puzzle today." message for every no-puzzle reason
+- shows the puzzle number
+- shows the start word, target word and par
+- shows the chain so far
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

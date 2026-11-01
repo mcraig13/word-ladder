@@ -13,7 +13,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
 | M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | Done |
-| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0, 1.11 done; 3.1 next |
+| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0, 1.11, 3.1 done; 3.2 next |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
 | Tech debt | 7.1 | Clean-ups with no change in behaviour | Not started |
@@ -46,13 +46,6 @@ Done: 2.1–2.6c. Finished chunks are in `backlog-done.md` (D29).
 
 UI tests check what the player sees and can do, not component internals.
 
-**3.1 Show today's puzzle (M)** · Depends: 3.0, 1.11
-- shows the puzzle number
-- shows the start word, target word and par
-- shows the chain so far
-
-*Carried forward:* `getBundledGameData()` returning `ok: true` doesn't mean the schedule's words are in the lists; CI checks that (2.6c). Decide what the player sees for `ok: false`, likely the same "no puzzle" message as `after-schedule` (1.11 review 2, intent).
-
 **3.2 Enter a move (M)** · Depends: 3.1, 1.6
 - a valid word is added to the chain
 - an invalid word shows a message that explains the reason
@@ -61,6 +54,8 @@ UI tests check what the player sees and can do, not component internals.
 - the reason for a rejected word is announced to screen readers
 
 *Carried forward:* clean up input such as `İ` and zero-width spaces here; `checkMove` reports them as `wrong-length` (1.5 review 6).
+
+*Carried forward:* `App` runs `findGameForDate`'s shortest-path search on every render; when the game moves into `useState`, use a lazy initialiser (`useState(() => …)`) so it runs once, not on every move (3.1 review, note 3).
 
 **3.3 Undo button (S)** · Depends: 3.2, 1.7
 - undo removes the last word from the chain shown

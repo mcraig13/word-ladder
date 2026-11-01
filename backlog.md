@@ -60,17 +60,7 @@ Add the build checks, run by `build:schedule` before it writes and by a test on 
 - the check fails when fewer than 60 days of schedule remain
 - the check fails when a list change alters the shortest path of a published date
 
-*Carried forward:* `npm run build:schedule` took about 65 s for 365 puzzles in 2.6a (each date runs `generatePuzzle` and a `findShortestPath`). `generatePuzzle`'s cut-off at the most moves is still untested, since dropping it costs time, not correctness; a check on the build's time would cover it (2.2 review B1).
-
-*Carried forward:* `createSeededRandom` doesn't check its seed (2.1 review 1). Dates no longer seed anything: `extendSchedule` seeds puzzle #N with `getPuzzleSeed`, a hash of `scheduleSeed` and N, always in range. What's left is that `scheduleSeed` itself isn't checked: `0` and `0.5` build the same schedule, and `-1` is accepted (2.6a review A6).
-
-*Carried forward:* check that a hand edit to a published date doesn't bring back a start or target within D30's window (2.6a intent, least sure 3; review A1).
-
-*Carried forward:* "published" needs the launch date, which 3.8 sets; until then today is #0 and nothing is published (2.6b intent).
-
-*Carried forward:* the reader accepts a line whose start and target are the same word (`cold cold 1`); check that they differ (2.6b review G3).
-
-*Carried forward:* no test runs `scripts/buildSchedule.mjs`, so reading the existing file (rather than `""`) is checked only by hand. The test on the committed files can cover it, e.g. that extending the committed schedule leaves it unchanged (2.6b review B4).
+*Answered in 2.6c:* the repeat window is checked (2.6a review A1), start and target must differ (2.6b review G3), and a test runs the script on a copy of the file (2.6b review B4). The shortest path is checked for every date, not only published ones (2.6c intent, least sure 1). Checking `scheduleSeed` (2.6a review A6) is dropped: a bad value still builds a schedule the checks pass. The build-time check (2.2 review B1) moved to 3.8.
 
 ---
 
@@ -131,7 +121,11 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 - tomorrow's date shows a different puzzle with the next number
 Set the launch date (puzzle #1) here. Don't change it once results are shared (D15).
 
-*Carried forward:* when `build:schedule` works today's puzzle number out from the date, a bad value (`NaN`, negative, a fraction) makes `getExtendedScheduleText` add nothing and still succeed; check it, or rely on 2.6c's 60-days check (2.6b review G4).
+*Carried forward:* when `build:schedule` works today's puzzle number out from the date, a bad value (`NaN`, negative, a fraction) makes `getExtendedScheduleText` add nothing and still succeed; check it, or rely on 2.6c's 60-days check (2.6b review G4). 2.6c's check catches `NaN`, since it fails unless at least 60 puzzles remain; a negative number or a fraction still passes it.
+
+*Carried forward:* `npm run build:schedule` took about 65 s for 365 puzzles in 2.6a, about 15 s since 2.6c sped up `getWordsOneLetterAway`. `generatePuzzle`'s cut-off at the most moves is still untested, since dropping it costs time, not correctness; a check on the build's time would cover it (2.2 review B1, moved from 2.6c).
+
+*Carried forward:* no test shows `build:schedule` refuses fewer than 60 puzzles ahead: its `fewestPuzzlesAhead` can be set to 0 with every test green, because the script always extends 365 ahead before checking. Once today's number comes from the date, test the script with a today that leaves too few (2.6c review, breaks finding 3).
 
 **3.9 Resume today's game (S)** · Depends: 3.2 · *moved from 4.3 (D25)*
 Browser storage only; no backend.

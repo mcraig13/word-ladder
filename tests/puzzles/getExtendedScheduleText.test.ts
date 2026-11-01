@@ -19,6 +19,8 @@ const ladderOptions = {
   shortestPathMoves: { fewest: 4, most: 4 },
   scheduleSeed: 2026,
   daysBeforeWordRepeats: 0,
+  // 2.6c's check that the schedule doesn't run out, off except where a test sets it.
+  fewestPuzzlesAhead: 0,
 };
 
 // Two lines generation wouldn't pick for a range of 4 moves.
@@ -106,5 +108,106 @@ describe("getExtendedScheduleText", () => {
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "no-puzzle-in-range", puzzleNumber: 3 });
+  });
+
+  it("extending reports a line already in the file that fails the checks", () => {
+    // Arrange
+    // Chunk 2.6c. cord-card is 1 move, not 2, as if a list change made a shortcut.
+    const options = { ...ladderOptions, todaysPuzzleNumber: 2, puzzlesAhead: 3 };
+
+    // Act
+    const result = getExtendedScheduleText("cord card 2\nward cord 2\n", options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-changed", puzzleNumber: 1 });
+  });
+
+  it("extending reports too few puzzles ahead", () => {
+    // Arrange
+    // Chunk 2.6c. The file's two puzzles already reach 1 ahead of #0, so
+    // nothing is added, and 2 is fewer than 3.
+    const options = {
+      ...ladderOptions,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+      fewestPuzzlesAhead: 3,
+    };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "too-few-puzzles-ahead", puzzlesAhead: 2 });
+  });
+
+  // Added after review (breaks finding 2): the checks run on the extended
+  // schedule with the options the build was given.
+
+  it("extending checks the new puzzles as well as the file's lines", () => {
+    // Arrange
+    // The empty file has none ahead; the three added reach exactly the fewest.
+    const options = {
+      ...ladderOptions,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 3,
+      fewestPuzzlesAhead: 3,
+    };
+
+    // Act
+    const result = getExtendedScheduleText("", options);
+
+    // Assert
+    expect(result.ok).toBe(true);
+  });
+
+  it("extending checks the file's lines with the repeat window it is given", () => {
+    // Arrange
+    // card is #1's target and #2's start, within a window of 2.
+    const options = {
+      ...ladderOptions,
+      daysBeforeWordRepeats: 2,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+    };
+
+    // Act
+    const result = getExtendedScheduleText("cord card 1\ncard ward 1\n", options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "word-repeats-too-soon", puzzleNumber: 2 });
+  });
+
+  it("extending checks the file's lines against the puzzle words, not the accepted words", () => {
+    // Arrange
+    // cord is accepted but not a puzzle word.
+    const options = {
+      ...ladderOptions,
+      puzzleWords: createDictionaryFromWords(["cold", "card", "ward", "warm"]),
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+    };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "not-a-puzzle-word", puzzleNumber: 1 });
+  });
+
+  it("extending counts the puzzles ahead from today's puzzle number", () => {
+    // Arrange
+    // Today is #1 of the file's two, so one is ahead, fewer than 2.
+    const options = {
+      ...ladderOptions,
+      todaysPuzzleNumber: 1,
+      puzzlesAhead: 1,
+      fewestPuzzlesAhead: 2,
+    };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "too-few-puzzles-ahead", puzzlesAhead: 1 });
   });
 });

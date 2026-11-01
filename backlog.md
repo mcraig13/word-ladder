@@ -80,6 +80,8 @@ A build script writes the schedule file: a start and target for each date from l
 - the same seed builds the same schedule
 - extending the schedule keeps every existing date unchanged
 - extending the schedule adds dates up to the requested length ahead
+
+*Carried forward:* `generatePuzzle` takes about 180–370 ms a call on the real lists (2.2 reviews), so a year of schedule is one to two and a quarter minutes, and a failing range about 2 s. Its neighbour memo lasts one call, so dates share nothing. If that's too slow, pass in a faster neighbour lookup; the search's cut-off at the most moves is untested, since it costs time, not correctness, so a timing check here would cover it (2.2 review B1).
 - the check fails when fewer than 60 days of schedule remain
 - the check fails when a list change alters the shortest path of a published date
 
@@ -186,6 +188,8 @@ Browser storage only; no backend. Resuming today's game moved to 3.9 (D25).
 **5.1 Practice mode (M)** · Depends: 2.2
 - starts a fresh generated puzzle on demand
 - practice games don't affect daily stats or streaks
+
+*Carried forward:* this runs `generatePuzzle` in the browser, which 2.2 assumed it wouldn't (D24). At 180–370 ms a call on a PC, and slower on a phone (1.9 review 5), it may need a faster neighbour lookup or a worker (2.2 review A3).
 
 ---
 

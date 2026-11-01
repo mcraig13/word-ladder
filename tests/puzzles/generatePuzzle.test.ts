@@ -104,6 +104,25 @@ describe("generatePuzzle", () => {
     ]);
   });
 
+  it("measures a target by its shortest path when a longer route also reaches it", () => {
+    // Arrange
+    // A loop: bold, bald and bard join cold to card and ward the long way.
+    // Shortest paths: cold-ward 3; cold-card, cold-bald, card-bald and
+    // ward-bald 2; card-ward 1. A longer route would put more pairs at 3 or 4.
+    const options = {
+      acceptedWords: createDictionaryFromWords([...LADDER, "bold", "bald", "bard"]),
+      puzzleWords: createDictionaryFromWords(["cold", "card", "ward", "bald"]),
+      wordLength: 4,
+      shortestPathMoves: { fewest: 3, most: 4 },
+    };
+
+    // Act
+    const puzzles = SEEDS.map((seed) => describePuzzle(generatePuzzle({ ...options, seed })));
+
+    // Assert
+    expect(listDifferentPuzzles(puzzles)).toEqual(["cold-ward"]);
+  });
+
   it("every generated puzzle is solvable", () => {
     // Arrange
     // "mint" and "mist" are a cloud of their own: nothing reaches LADDER.
@@ -157,8 +176,8 @@ describe("generatePuzzle", () => {
 
   it("the same seed produces the same puzzle", () => {
     // Arrange
-    // Ten possible puzzles, counting direction, so twenty seeds matching by
-    // chance is about 1 in 10²⁰.
+    // Ten pairs, so twenty puzzles counting direction: twenty seeds matching
+    // by chance is well under 1 in 10²⁰.
     const options = {
       acceptedWords: createDictionaryFromWords(LADDER),
       puzzleWords: createDictionaryFromWords(LADDER),

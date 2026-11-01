@@ -22,6 +22,7 @@ Options object rather than five positional arguments, so a call reads by name. T
 | never picks a puzzle word that isn't an accepted word | `createGame` rejects a start or target that isn't accepted (1.10); "wold" would reach targets if it slipped through |
 | never picks a target closer than the fewest moves | Shortest path inside the range (D16, D27); catches `>` for `>=` |
 | never picks a target farther than the most moves | Same, upper bound; catches `<` for `<=`, and the search cut-off one move short |
+| measures a target by its shortest path when a longer route also reaches it | The range is in moves of the shortest path (D27); added after review (A1), catches a depth-first search |
 | every generated puzzle is solvable | Every puzzle is solvable (D8); a word in another cloud is never paired |
 | never picks the start as its own target, even when the range starts at 0 moves | `createGame` rejects the same word (1.10) |
 | tries another start when the first one picked has no target in range | A puzzle that exists is found, rather than failing on an unlucky first pick |

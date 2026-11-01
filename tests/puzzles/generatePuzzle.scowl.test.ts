@@ -27,6 +27,7 @@ describe("generatePuzzle on the real word lists", () => {
     const result = generatePuzzle(options);
 
     // Assert
+    expect(result.ok).toBe(true);
     const puzzle = result.ok ? result.puzzle : { start: "", target: "" };
     const shortestPath = findShortestPath(puzzle.start, puzzle.target, acceptedWords);
     const shortestPathMoves = shortestPath.ok ? shortestPath.path.length - 1 : 0;

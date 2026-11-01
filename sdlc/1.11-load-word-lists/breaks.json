@@ -1,0 +1,98 @@
+[
+  {
+    "label": "accepted words built from the puzzle text",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "acceptedWords: createDictionaryFromWords(texts.acceptedWordsText",
+    "replace": "acceptedWords: createDictionaryFromWords(texts.puzzleWordsText"
+  },
+  {
+    "label": "puzzle words built from the accepted text",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "puzzleWords: createDictionaryFromWords(texts.puzzleWordsText",
+    "replace": "puzzleWords: createDictionaryFromWords(texts.acceptedWordsText"
+  },
+  {
+    "label": "accepted and puzzle dictionaries swapped",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "acceptedWords: createDictionaryFromWords(texts.acceptedWordsText.split(\"\\n\")),\n      puzzleWords: createDictionaryFromWords(texts.puzzleWordsText.split(\"\\n\")),",
+    "replace": "acceptedWords: createDictionaryFromWords(texts.puzzleWordsText.split(\"\\n\")),\n      puzzleWords: createDictionaryFromWords(texts.acceptedWordsText.split(\"\\n\")),"
+  },
+  {
+    "label": "accepted list drops its last word as well as the empty piece",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "texts.acceptedWordsText.split(\"\\n\")",
+    "replace": "texts.acceptedWordsText.split(\"\\n\").slice(0, -2)"
+  },
+  {
+    "label": "puzzle list drops its last word as well as the empty piece",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "texts.puzzleWordsText.split(\"\\n\")",
+    "replace": "texts.puzzleWordsText.split(\"\\n\").slice(0, -2)"
+  },
+  {
+    "label": "accepted list split on CRLF instead of LF",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "texts.acceptedWordsText.split(\"\\n\")",
+    "replace": "texts.acceptedWordsText.split(\"\\r\\n\")"
+  },
+  {
+    "label": "schedule failure ignored (guard deleted)",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "if (!scheduleResult.ok) {",
+    "replace": "if (false) {"
+  },
+  {
+    "label": "schedule failure line number off by one",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "lineNumber: scheduleResult.lineNumber,",
+    "replace": "lineNumber: scheduleResult.lineNumber - 1,"
+  },
+  {
+    "label": "schedule failure passes on the inner reason",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "reason: \"unreadable-schedule-line\",",
+    "replace": "reason: scheduleResult.reason,"
+  },
+  {
+    "label": "schedule read from the accepted words text",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "createScheduleFromText(texts.scheduleText)",
+    "replace": "createScheduleFromText(texts.acceptedWordsText)"
+  },
+  {
+    "label": "schedule reversed (line N no longer puzzle #N)",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "schedule: scheduleResult.schedule,",
+    "replace": "schedule: [...scheduleResult.schedule].reverse(),"
+  },
+  {
+    "label": "schedule drops its last puzzle",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "schedule: scheduleResult.schedule,",
+    "replace": "schedule: scheduleResult.schedule.slice(0, -1),"
+  },
+  {
+    "label": "schedule drops its first puzzle",
+    "file": "src/puzzles/createGameDataFromText.ts",
+    "find": "schedule: scheduleResult.schedule,",
+    "replace": "schedule: scheduleResult.schedule.slice(1),"
+  },
+  {
+    "label": "bundle imports puzzle.txt as the accepted words",
+    "file": "src/puzzles/getBundledGameData.ts",
+    "find": "import acceptedWordsText from \"../../data/words/accepted.txt?raw\";",
+    "replace": "import acceptedWordsText from \"../../data/words/puzzle.txt?raw\";"
+  },
+  {
+    "label": "bundle imports accepted.txt as the puzzle words",
+    "file": "src/puzzles/getBundledGameData.ts",
+    "find": "import puzzleWordsText from \"../../data/words/puzzle.txt?raw\";",
+    "replace": "import puzzleWordsText from \"../../data/words/accepted.txt?raw\";"
+  },
+  {
+    "label": "bundle passes the texts swapped",
+    "file": "src/puzzles/getBundledGameData.ts",
+    "find": "createGameDataFromText({ acceptedWordsText, puzzleWordsText, scheduleText })",
+    "replace": "createGameDataFromText({ acceptedWordsText: puzzleWordsText, puzzleWordsText: acceptedWordsText, scheduleText })"
+  }
+]

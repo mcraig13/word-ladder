@@ -1,10 +1,10 @@
 # 2.6a plan
 
 ## Approach
-1. `extendSchedule` copies the existing schedule, then for each puzzle number from `schedule.length + 1` to `lastPuzzleNumber` calls `generatePuzzle` with seed `(scheduleSeed + puzzleNumber) >>> 0` and the range and accepted words passed through. Its puzzle words are the puzzle words of the length less every start and target in the last `daysBeforeWordRepeats` puzzles so far (existing and new), made with `createDictionaryFromWords`, so `generatePuzzle` doesn't change. The first failure returns `no-puzzle-in-range` with that puzzle number. A schedule already at or past the last number comes back unchanged, never cut short (published dates never change).
+1. `extendSchedule` copies the existing schedule, then for each puzzle number from `schedule.length + 1` to `lastPuzzleNumber` calls `generatePuzzle` with a seed from `scheduleSeed` and the number (a hash since PR review; see review.md) and the range and accepted words passed through. Its puzzle words are the puzzle words of the length less every start and target in the last `daysBeforeWordRepeats` puzzles so far (existing and new), made with `createDictionaryFromWords`, so `generatePuzzle` doesn't change. The first failure returns `no-puzzle-in-range` with that puzzle number. A schedule already at or past the last number comes back unchanged, never cut short (published dates never change).
 2. Each puzzle's moves come from `findShortestPath` over the accepted words, a separate search from the one that picked it, so the stored number is a cross-check rather than a copy. It doubles the cost of a date (see timing).
 3. `getScheduleText` writes `start target moves\n` per puzzle.
-4. `scripts/buildSchedule.mjs`, like `buildWordLists.mjs`: reads the built word lists, extends `[]` to 365 puzzles, writes the file or prints the failing puzzle number and exits 1. Named constants: schedule seed, puzzles in the schedule, D16's range, word length, days before a word repeats (365). Until 2.6b it always rebuilds from #1, which D24 allows before launch.
+4. `scripts/buildSchedule.mjs`, like `buildWordLists.mjs`: reads the built word lists, extends `[]` to 365 puzzles, writes the file or prints the failing puzzle number and exits 1. Named constants: schedule seed, puzzles in the schedule, D16's range, word length, days before a word repeats (90 since PR review). Until 2.6b it always rebuilds from #1, which D24 allows before launch.
 5. Run it and commit `data/puzzles/schedule.txt`.
 
 **Timing (measured on the real lists, 10 seeds):** `generatePuzzle` about 100 ms a call, `findShortestPath` about 80 ms, so a year is about 65 s. The 365-day window cost nothing measurable (intent, least sure 3). Fine before soft launch; no test runs it.
@@ -45,5 +45,5 @@ Fixtures use the 2.2 `LADDER` (cold–cord–card–ward–warm, a line), so mov
 
 ## Self-check
 - Files: match the list above. `src/` and `scripts/` are 142 lines; with the tests approved at the human stop, 520 against the ~200 guide (called out in the PR).
-- Lint, tests and coverage: pass, 258 tests, 100% on all four measures. `build:schedule` took 63 s: 365 puzzles, all 4–6 moves, 730 different starts and targets.
+- Lint, tests and coverage: pass, 100% on all four measures. `build:schedule` took 63 s: 365 puzzles, all 4–6 moves, 730 different starts and targets (65 s and 674 different, nearest repeat 94 days, after the PR-review changes).
 - Diff against intent: as intended. The cross-check search can't fail after generation succeeds, so both share one failure return rather than an uncoverable branch (D20).

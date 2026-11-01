@@ -18,17 +18,15 @@ const wordsFolder = "data/words";
 const puzzlesFolder = "data/puzzles";
 const scheduleFile = `${puzzlesFolder}/schedule.txt`;
 
-// Any fixed whole number. Puzzle #N uses this plus N, so a seed one higher
-// shifts most dates by a day; to reshuffle, change it by more than the
-// puzzles in the schedule (2.6a review).
+// Any fixed whole number; changing it reshuffles every unpublished date.
 const scheduleSeed = 2026;
 // About a year ahead (D24).
 const puzzlesInSchedule = 365;
 // D16's suggested range, until 2.3 agrees one.
 const shortestPathMoves = { fewest: 4, most: 6 };
 const wordLength = 4;
-// No start or target comes back within a year (D30).
-const daysBeforeWordRepeats = 365;
+// No start or target comes back within 90 days (D30).
+const daysBeforeWordRepeats = 90;
 
 function readWordList(file) {
   return createDictionaryFromWords(readFileSync(file, "utf8").split("\n"));

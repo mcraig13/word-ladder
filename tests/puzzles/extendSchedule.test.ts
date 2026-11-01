@@ -266,6 +266,27 @@ describe("extendSchedule", () => {
     expect(extendedBuild).toEqual(wholeBuild);
   });
 
+  it("a schedule seed one higher gives different puzzles, not the same ones a day later", () => {
+    // Arrange
+    // With no repeat window, a seed that only added the puzzle number would
+    // give seed 2027's puzzle N as seed 2026's puzzle N + 1.
+    const options = {
+      ...ladderOptions,
+      shortestPathMoves: { fewest: 1, most: 4 },
+      lastPuzzleNumber: MANY_PUZZLES,
+    };
+    const firstBuild = extendSchedule([], options);
+    const firstSchedule = firstBuild.ok ? firstBuild.schedule : [];
+
+    // Act
+    const nextSeedBuild = extendSchedule([], { ...options, scheduleSeed: 2027 });
+
+    // Assert
+    const nextSeedSchedule = nextSeedBuild.ok ? nextSeedBuild.schedule : [];
+    expect(nextSeedSchedule).toHaveLength(MANY_PUZZLES);
+    expect(nextSeedSchedule.slice(0, -1)).not.toEqual(firstSchedule.slice(1));
+  });
+
   it("gives different puzzle numbers different puzzles", () => {
     // Arrange
     const options = {

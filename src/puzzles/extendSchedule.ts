@@ -23,7 +23,7 @@ export interface ExtendScheduleOptions {
   wordLength: number;
   /** The range for the shortest path, in moves, not par (D16, D27). */
   shortestPathMoves: { fewest: number; most: number };
-  /** Puzzle #N is generated from this plus N, so it depends only on N. */
+  /** Puzzle #N's seed is a hash of this and N, so it depends only on N. */
   scheduleSeed: number;
   /** How many puzzles after one a start or target can't be either (D30). */
   daysBeforeWordRepeats: number;
@@ -60,7 +60,7 @@ export function extendSchedule(
       ),
       wordLength,
       shortestPathMoves,
-      seed: (scheduleSeed + puzzleNumber) >>> 0,
+      seed: getPuzzleSeed(scheduleSeed, puzzleNumber),
     });
     // A separate search from the one that picked the puzzle, so the stored
     // moves are a cross-check rather than a copy (2.6a plan). Every generated
@@ -80,4 +80,35 @@ export function extendSchedule(
   }
 
   return { ok: true, schedule: extendedSchedule };
+}
+
+// The two multipliers of MurmurHash3's 32-bit finaliser (fmix32), chosen by
+// its author so that every input bit affects every output bit. Changing them
+// would reshuffle every date (D24).
+const FIRST_MIXING_MULTIPLIER = 0x85ebca6b;
+const SECOND_MIXING_MULTIPLIER = 0xc2b2ae35;
+
+/**
+ * MurmurHash3's finaliser. Each step (an xor with a right shift, or a multiply
+ * by an odd number) can be undone, so different inputs give different outputs.
+ */
+function mixBits(value: number): number {
+  let mixed = value >>> 0;
+  mixed ^= mixed >>> 16;
+  mixed = Math.imul(mixed, FIRST_MIXING_MULTIPLIER);
+  mixed ^= mixed >>> 13;
+  mixed = Math.imul(mixed, SECOND_MIXING_MULTIPLIER);
+  mixed ^= mixed >>> 16;
+  return mixed >>> 0;
+}
+
+/**
+ * A whole number from 0 to 2³² − 1 for puzzle #N (2.6a, review A3). Mixing
+ * the schedule seed first means a seed one higher gives unrelated puzzles,
+ * not the same ones a day later; mixing again keeps nearby puzzle numbers'
+ * seeds unrelated. Both mixes can be undone, so within one schedule every
+ * puzzle number gets a different seed.
+ */
+function getPuzzleSeed(scheduleSeed: number, puzzleNumber: number): number {
+  return mixBits(mixBits(scheduleSeed) ^ puzzleNumber);
 }

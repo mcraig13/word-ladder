@@ -12,7 +12,7 @@
 - Published dates never change: extending keeps every existing puzzle as it is (D24)
 - The shortest path is inside the requested range, D16's suggested 4–6 moves until 2.3 (D16, D27)
 - Word length is a parameter (D4)
-- **New, D30 (D24 left it to 2.6):** a word that was a start or target is neither again for the next `daysBeforeWordRepeats` puzzles, counting the existing schedule. The script uses 365, so no word comes back within a year; 0 turns the rule off. It may still appear in a path.
+- **New, D30 (D24 left it to 2.6):** a word that was a start or target is neither again for the next `daysBeforeWordRepeats` puzzles, counting the existing schedule. The script uses 90 (365 at the human stop, cut at PR review); 0 turns the rule off. It may still appear in a path.
 
 ## Acceptance criteria
 - builds one puzzle for each number up to the last puzzle number
@@ -34,8 +34,8 @@
 
 ## What I'm least sure of
 - **Storing the shortest path's moves.** D24 says par isn't stored, and the app still works it out (1.10). The moves are stored only so 2.6b's check can see that a list change altered a published date's shortest path; without them it has nothing to compare with. The app ignores the number. If you read D24 as "store nothing but words", 2.6b needs another baseline (e.g. the file at the last release), which is harder.
-- **Seed per puzzle = `scheduleSeed + puzzleNumber`.** Each puzzle's seed depends only on its number, so extending later gives the same puzzles a full rebuild would, and a list change only affects the dates it touches. Adjacent seeds are well mixed by Mulberry32 (2.1). Hashing the number first would read as more random but adds constants (no magic numbers).
-- **A 365-day repeat window.** Measured on the real lists with seed 2026 and 4–6 moves: with no rule, a year uses 632 different words for its 730 starts and targets, and 12 dates reuse a word from the 30 days before. With 365 days, all 730 are different, no date fails, and it's no slower (34 s against 38 s, generation only). A year holds 28% of the puzzle words back by its end. A narrower range from 2.3 leaves fewer pairs; if a date then fails, the error gives its number, and a shorter window (e.g. 90) is the fallback. One cost: each date now depends on the ones before it. Dates already in the file are kept, so a hand edit to a published date (D24) changes no other date, but its new words could repeat within the window unless 2.6b checks for it.
+- **Seed per puzzle = `scheduleSeed + puzzleNumber`.** Each puzzle's seed depends only on its number, so extending later gives the same puzzles a full rebuild would, and a list change only affects the dates it touches. Adjacent seeds are well mixed by Mulberry32 (2.1). Hashing the number first would read as more random but adds constants (no magic numbers). **Changed at PR review:** the seed is now a hash of `scheduleSeed` and the number (MurmurHash3's finaliser, constants named), so a seed one higher gives unrelated puzzles rather than shifting dates by a day (review A3).
+- **A 365-day repeat window.** Measured on the real lists with seed 2026 and 4–6 moves: with no rule, a year uses 632 different words for its 730 starts and targets, and 12 dates reuse a word from the 30 days before. With 365 days, all 730 are different, no date fails, and it's no slower (34 s against 38 s, generation only). A year holds 28% of the puzzle words back by its end. A narrower range from 2.3 leaves fewer pairs; if a date then fails, the error gives its number, and a shorter window (e.g. 90) is the fallback. One cost: each date now depends on the ones before it. Dates already in the file are kept, so a hand edit to a published date (D24) changes no other date, but its new words could repeat within the window unless 2.6b checks for it. **Changed at PR review:** cut to 90 days, leaving more words for 2.3 (D30).
 
 ## Out of scope
 - Reading the file, extending rather than rebuilding, the build checks: 2.6b

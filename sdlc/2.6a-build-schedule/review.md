@@ -40,3 +40,9 @@ Two reviewers in parallel (M chunk, D29): A everything except breaks, B breaks. 
 - Failure result: `puzzleNumber - 1` (B31), `continue` (B32) → red. `schedule.length + 1` (B30) → **all green** (finding 2).
 - File format: swapped, no final newline, moves dropped, reversed, CRLF (B33–B37) → red.
 - **Re-run on `d4d7523`:** B28 and B29 → red (`measures each puzzle's shortest path over the accepted words, not the puzzle words`); B30 → red (`reports the puzzle number that has no puzzle partway through a run`).
+
+## Changes at human review (PR)
+
+- **Seed hashed** (the human reviewer, following review A3 and B3): puzzle #N's seed is `mixBits(mixBits(scheduleSeed) ^ N)`, where `mixBits` is MurmurHash3's 32-bit finaliser with its two multipliers named. Every step can be undone, so within a schedule each number gets a different seed, and a seed one higher no longer gives the same puzzles a day later. **Test added after human review:** `a schedule seed one higher gives different puzzles, not the same ones a day later`.
+- **Window cut from 365 to 90 days** (D30 updated). The rebuilt schedule has 674 different starts and targets, the nearest repeat is 94 days apart, and all moves are 4–6 (97 / 159 / 109).
+- Storing the moves (intent, least sure 1) kept as it is.

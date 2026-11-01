@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4–2.6c done; 2.3 next |
+| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | Done |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -47,11 +47,7 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
 
-Done: 2.1, 2.2, 2.4, 2.5, 2.6a, 2.6b, 2.6c. Finished chunks are in `backlog-done.md` (D29).
-
-**2.3 Daily par range (S)** · Depends: 2.6b, **D16**
-Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).
-- every scheduled puzzle's shortest path is within the agreed range (par follows from it, D27)
+Done: 2.1–2.6c. Finished chunks are in `backlog-done.md` (D29).
 
 ---
 

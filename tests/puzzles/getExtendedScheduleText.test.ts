@@ -19,6 +19,8 @@ const ladderOptions = {
   shortestPathMoves: { fewest: 4, most: 4 },
   scheduleSeed: 2026,
   daysBeforeWordRepeats: 0,
+  // 2.6c's check that the schedule doesn't run out, off except where a test sets it.
+  fewestPuzzlesAhead: 0,
 };
 
 // Two lines generation wouldn't pick for a range of 4 moves.
@@ -106,5 +108,35 @@ describe("getExtendedScheduleText", () => {
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "no-puzzle-in-range", puzzleNumber: 3 });
+  });
+
+  it("extending reports a line already in the file that fails the checks", () => {
+    // Arrange
+    // Chunk 2.6c. cord-card is 1 move, not 2, as if a list change made a shortcut.
+    const options = { ...ladderOptions, todaysPuzzleNumber: 2, puzzlesAhead: 3 };
+
+    // Act
+    const result = getExtendedScheduleText("cord card 2\nward cord 2\n", options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-changed", puzzleNumber: 1 });
+  });
+
+  it("extending reports too few puzzles ahead", () => {
+    // Arrange
+    // Chunk 2.6c. The file's two puzzles already reach 1 ahead of #0, so
+    // nothing is added, and 2 is fewer than 3.
+    const options = {
+      ...ladderOptions,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+      fewestPuzzlesAhead: 3,
+    };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "too-few-puzzles-ahead", puzzlesAhead: 2 });
   });
 });

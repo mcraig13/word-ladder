@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4, 2.5, 2.6a done; 2.6b, 2.6c next |
+| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4, 2.5, 2.6a, 2.6b done; 2.3, 2.6c next |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -47,19 +47,11 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
 
-Done: 2.1, 2.2, 2.4, 2.5, 2.6a. Finished chunks are in `backlog-done.md` (D29).
+Done: 2.1, 2.2, 2.4, 2.5, 2.6a, 2.6b. Finished chunks are in `backlog-done.md` (D29).
 
 **2.3 Daily par range (S)** · Depends: 2.6b, **D16**
 Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).
 - every scheduled puzzle's shortest path is within the agreed range (par follows from it, D27)
-
-**2.6b Read back and extend the schedule (M)** · Depends: 2.6a · *split from the backlogged 2.6b at intent (size)*
-Read `data/puzzles/schedule.txt` back and make `build:schedule` extend it rather than rebuild from #1 (D24). Criteria in `sdlc/2.6b-extend-schedule/intent.md`.
-- extending the schedule adds dates up to the requested length ahead
-
-*Carried forward:* when reading the file back, lowercase each line or reject one that isn't lowercase, and test mixed case: `extendSchedule` compares the existing schedule's words as given, so a capitalised hand edit (D24) would slip past the repeat window (2.6a reviews A2, B4).
-
-*Carried forward:* no test ties a seed to a particular puzzle, so a change to the per-puzzle seed in `extendSchedule` would reshuffle every date and only a rebuild would show it. The published-dates check should compare start and target as well as moves (2.6a review B3). 2.6b answers this by keeping existing lines exactly; a seed change then affects only new dates.
 
 **2.6c Check the schedule (M)** · Depends: 2.6b
 Add the build checks, run by `build:schedule` before it writes and by a test on the committed files.

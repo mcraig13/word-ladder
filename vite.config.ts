@@ -35,6 +35,10 @@ export default defineConfig({
       },
       {
         extends: true,
+        // The browser test imports main.tsx by the path in index.html, which Vite
+        // can't scan ahead, so its dependencies are bundled before the run;
+        // otherwise Vite reloads the test mid-run when it finds them.
+        optimizeDeps: { include: ["react", "react-dom/client", "react/jsx-dev-runtime"] },
         test: {
           name: "browser",
           include: [browserTests],

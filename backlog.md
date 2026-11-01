@@ -85,7 +85,7 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 - an example UI test finds the page heading the way a player would see it
 - `npm run lint`, `npm run test:coverage` and `npm run build` pass with the framework added
 
-*Carried forward to the process review:* CI doesn't run `npm run build:words`, so a broken build script shows only when someone rebuilds; a CI step running it and then `git diff --exit-code data/words` would catch that and stale lists together. And when a review fix is meant to make a break go red, or changes production logic, nobody re-runs those breaks (D29: the author runs none); consider a short breaks-only re-review of the fix commit (6.1b PR discussion).
+*Carried forward to the process review:* CI doesn't run `npm run build:words`, so a broken build script shows only when someone rebuilds; a CI step running it and then `git diff --exit-code data/words` would catch that and stale lists together. And when a review fix is meant to make a break go red, or changes production logic, nobody re-runs those breaks (D29: the author runs none); consider a short breaks-only re-review of the fix commit (6.1b PR discussion). Also consider a "no magic numbers" line in `CLAUDE.md` Conventions: every constant gets a name or a comment saying where it comes from (2.1 PR discussion; the existing code is 7.1).
 
 **3.1 Show today's puzzle (M)** · Depends: 3.0, 1.11
 - shows the puzzle number

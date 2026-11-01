@@ -153,12 +153,17 @@ After 1.4–1.12, a look back at how the loop actually ran.
 - **Revisit sooner if** a skipped review lets through a gap that the human review or a later chunk finds.
 
 ## D24 — Keeping puzzles fixed when a word list changes
-**Open** · blocks 2.2
-If a puzzle is picked from the seed and the word lists together, then removing one word after launch (from the exclusion list or blocklist) reshuffles every date: past puzzles whose results people have shared, and today's, while people are playing it.
-- **Option A, puzzle schedule (suggested):** a build script writes a schedule file of start and target for each date from launch, a year or so ahead. Published dates never change; a list change only affects dates added after it. The browser reads one line; `createGame` then runs one search to work out par (1.10), which the end screen needs anyway (D9). A determined player could read ahead in the file, which is fine for a game among friends.
-- **Option B, freeze the lists at launch:** generate in the browser as planned, and never change the lists after launch. A word found to be offensive after launch can't be removed without reshuffling.
-- **Option C, generate from a stable order:** make generation depend only on puzzle words added before a date. This is harder to get right and to test than A.
-- Either way, a check that today's puzzle is still solvable with the current accepted list belongs in the build.
+**Decided** · 2026-11-01 · Option A, a puzzle schedule
+A build script writes a schedule file: a start and target for each date from launch, about a year ahead. The app looks up the line for the date's puzzle number (2.5). Published dates never change, so a word-list change only affects dates added after it.
+- Why: if the browser picks each puzzle from a seed and the word lists, removing one word (from the exclusion list or blocklist) reshuffles every date, including past puzzles whose results people have shared and today's while people are playing it.
+- **Par isn't stored.** `createGame` works it out from the accepted words, as now (1.10). A build check fails if a list change alters the shortest path of a date already published, so par can't shift under players without someone noticing.
+- **Changing the schedule:** before launch it can be regenerated freely, e.g. once D16 sets the par range. After launch the script only adds dates. A published date is changed only by hand, e.g. to remove an offensive word, and then only that date changes.
+- **Running out:** a build check fails when fewer than 60 days remain, two months to notice and extend it. A date past the end reports that there's no puzzle, rather than failing some other way.
+- A check that every scheduled puzzle is still solvable with the current accepted list belongs in the build.
+- Generation runs at build time, so a phone runs one search (par), not a generation search. The whole schedule is visible at once, so rules across dates, such as not repeating a word within a few weeks, are possible; 2.6 decides whether to add one.
+- Accepted risk: a determined player could read ahead in the file, which is fine for a game among friends.
+- Considered: **B**, freeze the lists at launch and generate in the browser (an offensive word found after launch can't be removed without reshuffling); **C**, generate only from puzzle words added before a date (harder to get right and to test than A).
+- Backlog: new chunk 2.6 builds and extends the schedule; 2.4 becomes looking up a date's puzzle in it; 2.3 checks the schedule against D16's range.
 
 ## D25 — Resume today's game is part of soft launch
 **Decided** · 2026-10-31 · amends D14

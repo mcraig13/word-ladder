@@ -4,7 +4,7 @@ Context for AI-assisted development. Read this before starting any task. Keep it
 
 ## What we're building
 
-Word Golf, a web-based word ladder game. The repository and its URL keep the name `word-ladder` (D35, lands with 3.0). The player gets from a start word to a target word by changing one letter per turn, and every step must be a real word.
+Word Golf, a web-based word ladder game. The repository and its URL keep the name `word-ladder` (D35). The player gets from a start word to a target word by changing one letter per turn, and every step must be a real word.
 
 Example: `COLD → CORD → CARD → WARD → WARM`
 
@@ -68,7 +68,7 @@ backlog.md     # Chunks still to do; finished ones are in backlog-done.md
 ## Commands
 
 - `npm run dev` — start local dev server
-- `npm test` — run tests once
+- `npm test` — run tests once. The browser tests need Chromium, installed once with `npx playwright install chromium`
 - `npm run test:watch` — run tests on change
 - `npm run test:coverage` — run tests once with coverage; fails below the thresholds in `vite.config.ts` (D20). Report in `coverage/index.html`
 - `npm run build` — type-check, then production build to `dist/`

@@ -51,16 +51,21 @@ const result = getExtendedScheduleText(scheduleText, {
 });
 
 if (!result.ok) {
-  const where =
+  const failedAt =
     result.reason === "unreadable-line"
       ? `${scheduleFile} line ${result.lineNumber}`
       : `Puzzle #${result.puzzleNumber}`;
-  console.error(`${where}: ${result.reason}`);
+  console.error(`${failedAt}: ${result.reason}`);
   process.exit(1);
+}
+
+// One newline after each puzzle's line.
+function countPuzzles(text) {
+  return text.split("\n").length - 1;
 }
 
 mkdirSync(puzzlesFolder, { recursive: true });
 writeFileSync(scheduleFile, result.scheduleText);
-// One newline after each puzzle's line.
-const puzzleCount = result.scheduleText.split("\n").length - 1;
-console.log(`Wrote ${puzzleCount} puzzles to ${scheduleFile}`);
+const puzzleCount = countPuzzles(result.scheduleText);
+const addedCount = puzzleCount - countPuzzles(scheduleText);
+console.log(`Wrote ${puzzleCount} puzzles to ${scheduleFile}, ${addedCount} added`);

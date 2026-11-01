@@ -21,9 +21,6 @@ export function createScheduleFromText(text: string): CreateScheduleFromTextResu
   // other piece is a line. A last line with no newline is then the last piece.
   const pieces = text.split("\n");
   const lastPiece = pieces.pop();
-  if (lastPiece !== "") {
-    return { ok: false, reason: "unreadable-line", lineNumber: pieces.length + 1 };
-  }
 
   const schedule: ScheduledPuzzle[] = [];
   for (const [index, line] of pieces.entries()) {
@@ -33,6 +30,11 @@ export function createScheduleFromText(text: string): CreateScheduleFromTextResu
     }
     const [, start = "", target = "", moves = ""] = match;
     schedule.push({ start, target, shortestPathMoves: Number(moves) });
+  }
+
+  // Checked after the lines before it, so the first bad line is the one returned.
+  if (lastPiece !== "") {
+    return { ok: false, reason: "unreadable-line", lineNumber: pieces.length + 1 };
   }
 
   return { ok: true, schedule };

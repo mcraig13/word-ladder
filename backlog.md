@@ -84,6 +84,10 @@ Add the build checks, run by `build:schedule` before it writes and by a test on 
 
 *Carried forward:* "published" needs the launch date, which 3.8 sets; until then today is #0 and nothing is published (2.6b intent).
 
+*Carried forward:* the reader accepts a line whose start and target are the same word (`cold cold 1`); check that they differ (2.6b review G3).
+
+*Carried forward:* no test runs `scripts/buildSchedule.mjs`, so reading the existing file (rather than `""`) is checked only by hand. The test on the committed files can cover it, e.g. that extending the committed schedule leaves it unchanged (2.6b review B4).
+
 ---
 
 ## Phase 3 — Soft launch (`src/ui/`)
@@ -142,6 +146,8 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 - a full game can be played on a phone browser, from link to win
 - tomorrow's date shows a different puzzle with the next number
 Set the launch date (puzzle #1) here. Don't change it once results are shared (D15).
+
+*Carried forward:* when `build:schedule` works today's puzzle number out from the date, a bad value (`NaN`, negative, a fraction) makes `getExtendedScheduleText` add nothing and still succeed; check it, or rely on 2.6c's 60-days check (2.6b review G4).
 
 **3.9 Resume today's game (S)** · Depends: 3.2 · *moved from 4.3 (D25)*
 Browser storage only; no backend.

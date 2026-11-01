@@ -160,7 +160,7 @@ A build script writes a schedule file: a start and target for each date from lau
 - **Changing the schedule:** before launch it can be regenerated freely, e.g. once D16 sets the par range. After launch the script only adds dates. A published date is changed only by hand, e.g. to remove an offensive word, and then only that date changes.
 - **Running out:** a build check fails when fewer than 60 days remain, two months to notice and extend it. A date past the end reports that there's no puzzle, rather than failing some other way.
 - A check that every scheduled puzzle is still solvable with the current accepted list belongs in the build.
-- Generation runs at build time, so a phone runs one search (par), not a generation search. The whole schedule is visible at once, so rules across dates, such as not repeating a word within a few weeks, are possible; 2.6 decides whether to add one.
+- Generation runs at build time, so a phone runs one search (par), not a generation search. The whole schedule is visible at once, so rules across dates, such as not repeating a word within a few weeks, are possible; 2.6 decides whether to add one. **D30** adds one: no start or target again within 90 days.
 - Accepted risk: a determined player could read ahead in the file, which is fine for a game among friends.
 - Considered: **B**, freeze the lists at launch and generate in the browser (an offensive word found after launch can't be removed without reshuffling); **C**, generate only from puzzle words added before a date (harder to get right and to test than A).
 - Backlog: new chunk 2.6 builds and extends the schedule; 2.4 becomes looking up a date's puzzle in it; 2.3 checks the schedule against D16's range.
@@ -209,6 +209,15 @@ The 6.1a session's context grew very large. A look at the last three sessions' t
 - Another exception to D23's process freeze, made by the human reviewer: without it, every chunk until 3.0 pays the same context cost.
 - Considered: keeping self-review breaks but running them in a subagent (cheaper for the main session, but still the author's blind spots, and the reviewer then repeats them); dropping self-review entirely (the self-check costs almost nothing and catches, before review, the kind of slip reviewers found in 1.4, a file outside the chunk's scope, and 6.1a, a listed file not committed).
 - **Revisit at** 3.0 with D23. **Revisit sooner if** the human finds a gap at PR review that author breaks would plausibly have caught, or session B often needs to reread session A's chat.
+
+## D30 — No start or target word again within 90 days
+**Decided** · 2026-11-01 · decides the open point in D24 · 2.6a · window cut from 365 to 90 days at PR review
+A word that was a start or target is neither again for the next 90 puzzles, counting the puzzles already in the schedule. It can still appear in a path. The window is a parameter, `daysBeforeWordRepeats`; 0 turns the rule off.
+- Why: measured on the real lists (seed 2026, 4–6 moves), a year with no rule used 632 different words for its 730 starts and targets, and 12 dates reused a word from the 30 days before. Players notice a word coming back days later. With 90 days the year's schedule uses 674 different words, and the nearest a word comes back is 94 days later; no date fails, and generation is no slower.
+- Why 90, not 365: a year was proposed first (all 730 different, nothing measurable lost), but it holds back 28% of the puzzle words by its end, which leaves less room for a narrower range from 2.3. The human reviewer judged three months enough for players not to notice a word coming back.
+- Cost: each new date depends on the ones before it. Dates already in the file are kept, so a hand edit to a published date (D24) changes no other date, though its new words could repeat within the window unless 2.6b checks for it.
+- If a narrower range from 2.3 leaves a date with no puzzle, the error names its number; a shorter window is the fallback.
+- Considered: no rule (the repeats above); a few weeks, as D24 suggested; a year (above).
 
 ---
 

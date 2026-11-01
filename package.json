@@ -13,7 +13,8 @@
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
     "break": "node scripts/break.mjs",
-    "build:words": "tsx scripts/buildWordLists.mjs"
+    "build:words": "tsx scripts/buildWordLists.mjs",
+    "build:schedule": "tsx scripts/buildSchedule.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

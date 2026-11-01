@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | 2.1 done; 2.2 blocked by D24 |
+| M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | 2.1, 2.5 done; 2.2 blocked by D24 |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -45,7 +45,7 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
 
-Done: 2.1. Finished chunks are in `backlog-done.md` (D29).
+Done: 2.1, 2.5. Finished chunks are in `backlog-done.md` (D29).
 
 **2.2 `generatePuzzle` (M)** · Depends: 1.9, 2.1, 6.1b, **D24**
 Given accepted words, puzzle words, a range of shortest-path lengths and a seed. How puzzles are tied to a date, and whether they're generated in the browser or into a schedule at build time, depends on D24.
@@ -67,12 +67,6 @@ The app passes in the player's local date; the core never reads the clock.
 - consecutive dates produce different puzzles
 
 *Carried forward:* `createSeededRandom` doesn't check its seed. `NaN`, `Infinity` and `-Infinity` give the seed-0 sequence, and a fraction is truncated (`1.9` acts as `1`), so an invalid date would quietly give the seed-0 puzzle. Make sure every date turns into a whole number from 0 to 2³² − 1, and that an invalid date is reported rather than seeded (2.1 review 1).
-
-**2.5 Puzzle number (S)** · Depends: 0.1
-- the launch date is puzzle #1
-- the day after launch is puzzle #2
-- the number counts calendar days across month and year boundaries
-- dates before launch have no puzzle number
 
 ---
 

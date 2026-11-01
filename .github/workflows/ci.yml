@@ -37,3 +37,8 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Runs the word-list build script itself, which the tests don't, and
+      # fails if the committed lists are stale (D31).
+      - name: Word lists match a fresh build
+        run: npm run build:words && git diff --exit-code data/words

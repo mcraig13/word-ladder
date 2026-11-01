@@ -31,7 +31,12 @@ One shared puzzle per day. Comparing results with friends is what spreads a soft
 A new puzzle appears at each player's own midnight, as in Wordle. Every date maps to one puzzle, the same for everyone. The app passes the local date into the core; the core never reads the clock itself. Accepted risk: a player in a later timezone may see tomorrow's puzzle first.
 
 ## D7 — UI framework
-**Open** · decide in 3.0 (moved from 3.1 by D25)
+**Decided** · 2026-11-01 · React · set up in 3.0
+React, with components in TSX, plus `eslint-plugin-react-hooks` for the rules of hooks and missing dependencies.
+- Why: the most familiar component model, for the human and for AI-assisted work, and typescript-eslint's type-aware rules and Prettier work on TSX unchanged.
+- Cost: about 45 KB of runtime, more than this game needs; accepted for familiarity.
+- Considered: Preact (the same model at about 4 KB); no framework (rendering the chain, messages, dialogs and win screen by hand gets harder in 3.2–3.9); Svelte (its own ESLint plugin, with weaker type-aware lint).
+- How UI code is tested and covered: D33.
 
 ## D8 — Two word lists, built from the largest Word Cloud
 **Decided** · 2026-10-30 · puzzle-word source superseded by D17 (SCOWL size 60 replaces the frequency list)
@@ -116,7 +121,7 @@ Each chunk gets `sdlc/<id>-<name>/` with `intent.md`, `plan.md` and `review.md`,
 - Cost: a few minutes and three short files per chunk. Keep the files short so the process doesn't become the work.
 
 ## D20 — Coverage gate in CI
-**Decided** · 2026-10-31 · branches raised to 100 in 1.12, which removed the empty-chain fallback instead of testing it
+**Decided** · 2026-10-31 · branches raised to 100 in 1.12, which removed the empty-chain fallback instead of testing it · amended by D33 (UI code)
 **Now:** 100% on all four measures. The empty-chain note below is done (1.12); restoring a saved chain is checked in 3.9 (D25).
 CI runs the tests with V8 coverage (`@vitest/coverage-v8`) over `src/` and `scripts/` and fails below 100% statements, lines and functions, and 97% branches: the level on main when this was added.
 - Why: break-the-code checks show a test protects its rule, but only for code someone thinks to break. Coverage catches code no test runs at all, such as a new untested file, at no review cost.
@@ -142,7 +147,7 @@ Stryker was tried once, on 1.9 `findShortestPath`, in a scratch copy with nothin
 - **Revisit if** an independent review misses a gap that a mutant would have shown.
 
 ## D23 — One human stop, review by risk, and a process freeze
-**Decided** · 2026-10-31 · amends D19 · amended by D28, D29
+**Decided** · 2026-10-31 · amends D19 · amended by D28, D29, D31 (freeze lifted)
 **Now:** the author runs no breaks and no review is skipped (D29); the break checklist is the reviewer's. The one human stop, shorter reviews and the freeze still stand.
 After 1.4–1.12, a look back at how the loop actually ran.
 - **One human stop per chunk**, after intent, plan and tests, before implementing. The two stops planned for M chunks never happened: 1.5 and 1.6 put intent, plan and tests in one commit, and 1.9 had no stop before the PR.
@@ -201,7 +206,7 @@ Par is 1.5 × the moves in a shortest path, rounded up. `cold → warm` has a sh
 - Considered: waiting for the 3.0 process review (another ten or so chunks reviewed without it); a full risk register per chunk (too heavy for S chunks).
 
 ## D29 — Two sessions per chunk, reviewer-only breaks, and reading less
-**Decided** · 2026-11-01 · amends D19, D23
+**Decided** · 2026-11-01 · amends D19, D23 · amended by D31
 The 6.1a session's context grew very large. A look at the last three sessions' transcripts showed the code is a small part of it (`src/core/` is about 15k characters). Most came from reading whole documents at the start (20–27k characters each time: `backlog.md`, `DECISIONS.md`, an earlier chunk's records), writing and editing ever longer records (1.4's intent and plan were about 4k together, 6.1a's 33k), and running breaks in the main session (22 in 1.10). Reviewer agents returned 1–4k characters each.
 - **Two sessions per chunk,** split at the human stop. The records are the handoff. At each handoff point the author says so and gives a ready-to-paste prompt for the next session (`sdlc/README.md`).
 - **The author runs no breaks; the reviewer runs them all,** for every chunk, through the full checklist. In 6 of the 9 reviewed chunks, the reviewer found gaps the author's breaks had missed: the author writes breaks with the same blind spots as the tests. Self-review found real gaps only in the bigger chunks (1.5, 1.9, 6.1a), and the reviewer still found more in each. Self-review never found something the reviewer then missed. The author keeps a three-line self-check.
@@ -220,6 +225,42 @@ A word that was a start or target is neither again for the next 90 puzzles, coun
 - Cost: each new date depends on the ones before it. Dates already in the file are kept, so a hand edit to a published date (D24) changes no other date, though its new words could repeat within the window unless 2.6b checks for it.
 - If a narrower range from 2.3 leaves a date with no puzzle, the error names its number; a shorter window is the fallback.
 - Considered: no rule (the repeats above); a few weeks, as D24 suggested; a year (above).
+
+## D31 — Process review at 3.0
+**Decided** · 2026-11-01 · amends D23, D29 · record: `sdlc/process-review-3.0.md`
+A look back over the 19 chunk records and 46 PRs at the start of Phase 3. Independent review with reviewer-only breaks, two sessions per chunk and the one human stop all stay: reviewer breaks found gaps in 8 of the 9 chunks since D29, and records have stayed within the size limits.
+- **Backlog update in the chunk PR:** its last commit moves the entry to `backlog-done.md`. 9 of the 46 PRs did only this.
+- **Fixtures tell inputs apart:** when a function takes two inputs of the same kind, the fixture makes them differ. The second most common gap reviewers found (about 9 times).
+- **Self-check quotes command output:** the changed-file list, lint and coverage. It caught no test gap since D29, and in 2.4 it said the files matched when they didn't.
+- **Re-run the reviewer's breaks after fixes:** the reviewer saves them as `breaks.json`; the author re-runs them after a fix that changes logic or should turn a break red. These are the reviewer's breaks, so D29's blind-spot reason doesn't apply.
+- **CI runs `build:words`** and fails if the committed lists differ; the tests compared lists but never ran the script. `build:schedule` isn't added.
+- **No magic numbers** is a convention (7.1 cleans up existing code, whenever).
+- **Size guide counts production code only** (`src/`, `scripts/`); test lines are given in the PR. It was exceeded 7 times and never led to a split.
+- **UI break kinds** join the checklist: remove an element or its accessible name, stale state, a control wrongly enabled, a skipped announcement.
+- **Process freeze lifted:** process changes can be made whenever they help, still in their own PR.
+- Considered: dropping the self-check; a breaks-only second reviewer for fixes (more cost for the same breaks); keeping the freeze.
+
+## D32 — Soft launch is a one-week trial
+**Decided** · 2026-11-01 · amends D14
+The soft launch runs for a week with friends, then the site goes offline while a server-managed version is considered.
+- Launch date (puzzle #1, D15) is set at 3.8, once the launch checks pass.
+- Browsers: evergreen browsers from the last two years: Safari on iOS, Chrome on Android, and desktop Chrome, Edge, Firefox and Safari.
+- No automated schedule extension and no "no puzzle today" screen: the schedule runs 365 days ahead, far past the trial. If the game continues, how puzzles are managed is decided then, with the server question.
+- **Open after the trial:** whether to add a server, and what it would manage (puzzles, stats). D1 and D2's "no backend in v1" still hold for the trial.
+
+## D33 — How UI code is tested and covered
+**Decided** · 2026-11-01 · amends D20 · set up in 3.0
+- **Most UI tests run in jsdom** with React Testing Library, finding elements by role and name, the way a player sees the page. The core tests keep running in Node.
+- **A few run in a real browser** (Vitest browser mode), for what jsdom can't show, such as layout at phone width (3.6) and the app mounting from its entry file.
+- **Coverage stays 100%** for UI code. Only the entry file that mounts the app is excluded: only the browser test runs it.
+- Considered: jsdom only (layout untestable); browser only (slower, browser download in CI for every test); a lower threshold for UI code.
+## D34 — Blocklist source: dsojevic/profanity-list, reviewed by hand
+**Decided** · 2026-11-01 · for 6.3
+`data/words/blocklist.txt` starts from dsojevic/profanity-list (MIT, © 2021 David Sojevic), filtered and added to by a human. Mild words such as hell, damn and crap stay playable; slurs and sexual terms are blocked.
+- Why: the clearest licence of the lists compared, and its severity and tags let mild words be kept deliberately. SCOWL's own taboo flag, already applied in 6.1a, covers only 5 four-letter words.
+- Known gaps: the lists match base forms, so plurals slip through, and several slurs in `accepted.txt` are in no list. The human review adds them; LDNOOBW's hits are a cross-check only, so its CC-BY credit isn't needed.
+- Licence: a notice for dsojevic/profanity-list (link, commit date, "filtered and added to by hand", the MIT text) goes in `data/words` beside the SCOWL notice.
+- Considered: LDNOOBW (CC-BY-4.0, no severity, blocks butt and suck); a Google-derived list (data licence doubtful); CMU's list (no licence, blocks fire and kill); hand-written only.
 
 ---
 

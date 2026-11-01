@@ -20,7 +20,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 
 Update the Status column when a chunk merges, and move its entry to `backlog-done.md`.
 
-Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.6a → 2.4, 2.6b → 2.3, 2.6c → 3.0 → 1.11 → 3.1–3.9. While 2.x is under way, the human-owned work (6.2, 6.3, D16) runs alongside; 6.2 and 6.3 block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
+Critical path to soft launch: 1.13 → 1.10 → 6.1a → 6.1b → 2.1, 2.5 → 2.2 → 2.6a → 2.4, 2.6b → 2.3, 2.6c → 3.0 → 1.11 → 3.1–3.9. The human-owned 6.2 and 6.3 run now, alongside 3.0–3.2, so the schedule is rebuilt once, well before 3.8 (D31 review); they block only 3.8 launch checks, not the UI work. M4 order follows feedback; pull 4.1 Share forward if friends start screenshotting results.
 
 ---
 
@@ -35,7 +35,7 @@ Done: 0.1–0.3, 0.5. Finished chunks are in `backlog-done.md` (D29).
 Done: 1.1–1.10, 1.12, 1.13. Finished chunks are in `backlog-done.md` (D29).
 
 **1.11 Load word lists (S)** · Depends: 1.2, 6.1b, 3.0 · *part of M3*
-Load the built accepted and puzzle word lists into dictionaries at app start. This is app wiring, not core logic: D21's lint bans `fetch` in `src/core/`, so it lives in `src/puzzles/` (or beside the UI, per 3.0). Done after 3.0, just before 3.1. It works with empty exclusion and block lists, so it doesn't wait for 6.2 and 6.3. The ID is kept so references stay valid.
+Load the built accepted and puzzle word lists into dictionaries at app start. Bundle them into the app at build time (Vite `?raw` imports, about 33 KB with the schedule) rather than fetching them, so there's no async loading, loading state or network error to handle (process review at 3.0). This is app wiring, not core logic: D21's lint bans `fetch` in `src/core/`, so it lives in `src/puzzles/` (or beside the UI, per 3.0). Done after 3.0, just before 3.1. It works with empty exclusion and block lists, so it doesn't wait for 6.2 and 6.3. The ID is kept so references stay valid.
 - loads accepted words and puzzle words as separate dictionaries
 - every puzzle word is also an accepted word
 
@@ -56,11 +56,10 @@ Done: 2.1–2.6c. Finished chunks are in `backlog-done.md` (D29).
 UI tests check what the player sees and can do, not component internals.
 
 **3.0 UI framework and UI testing (S)** · Depends: 2.4, 2.5, 1.10
-Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gate) and D23 (break checks) for UI code; log the decisions in `DECISIONS.md`. Set up the framework and one example test against the "coming soon" page. No game UI yet.
+D7 (React), D33 (how UI is tested and covered) and the UI break kinds (D31) were decided in the process review. Set up React with `eslint-plugin-react-hooks`, React Testing Library in jsdom for UI tests, and Vitest browser mode for a few real-browser tests; exclude only the entry file from coverage (D33). Turn the "coming soon" page into a component. No game UI yet.
 - an example UI test finds the page heading the way a player would see it
+- a browser-mode test finds the heading on the page mounted from the entry file
 - `npm run lint`, `npm run test:coverage` and `npm run build` pass with the framework added
-
-*Carried forward to the process review:* CI doesn't run `npm run build:words`, so a broken build script shows only when someone rebuilds; a CI step running it and then `git diff --exit-code data/words` would catch that and stale lists together. And when a review fix is meant to make a break go red, or changes production logic, nobody re-runs those breaks (D29: the author runs none); consider a short breaks-only re-review of the fix commit (6.1b PR discussion). Also consider a "no magic numbers" line in `CLAUDE.md` Conventions: every constant gets a name or a comment saying where it comes from (2.1 PR discussion; the existing code is 7.1).
 
 **3.1 Show today's puzzle (M)** · Depends: 3.0, 1.11
 - shows the puzzle number
@@ -79,8 +78,7 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 **3.3 Undo button (S)** · Depends: 3.2, 1.7
 - undo removes the last word from the chain shown
 - undo is unavailable when only the start word is shown
-
-*Carried forward:* undo now adds one to the score (D26), so the player should be able to see that before pressing it.
+- undo shows that it adds one to the score, before it's pressed (D26)
 
 **3.4 Give up (S)** · Depends: 3.2, 1.8, 1.9
 - giving up asks for confirmation first
@@ -106,7 +104,8 @@ Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gat
 **3.8 Launch checks (S)** · Depends: 3.1–3.7, 3.9, 6.2, 6.3, 2.6c
 - a full game can be played on a phone browser, from link to win
 - tomorrow's date shows a different puzzle with the next number
-Set the launch date (puzzle #1) here. Don't change it once results are shared (D15).
+- the link shows the game's name and a one-line description when shared
+Set the launch date (puzzle #1) here. Don't change it once results are shared (D15). The soft launch is a one-week trial on evergreen browsers from the last two years (D32).
 
 *Carried forward:* when `build:schedule` works today's puzzle number out from the date, a bad value (`NaN`, negative, a fraction) makes `getExtendedScheduleText` add nothing and still succeed; check it, or rely on 2.6c's 60-days check (2.6b review G4). 2.6c's check catches `NaN`, since it fails unless at least 60 puzzles remain; a negative number or a fraction still passes it.
 
@@ -120,6 +119,7 @@ Browser storage only; no backend.
 - a new day starts a fresh game
 - the game still works when storage is unavailable
 - a saved chain that is empty or doesn't start with the start word is not restored
+- a page left open into a new day shows the new puzzle
 
 *Carried forward:* restoring a saved game must reject a saved chain that is empty or doesn't start with the start word. `Chain` (1.12) checks only code, not JSON read from storage, so the restore code must check it at runtime, with a test. Without that check, an empty chain now makes `checkMove` throw rather than return a reason (1.6 review 6, 1.12 review 2). Once that test exists, D20's branch threshold note no longer applies.
 
@@ -169,13 +169,13 @@ Runs at build time to produce the files in `data/words/` from the SCOWL sources 
 
 Done: 6.1a, 6.1b. Finished chunks are in `backlog-done.md` (D29).
 
-**6.2 Review exclusion list (S)** · Depends: 6.1b · *human-owned*
+**6.2 Review exclusion list (S)** · Depends: 6.1b · *human-owned* · now, alongside 3.0–3.2
 The script lists candidate abbreviations (no vowels, or in SCOWL but missing from a common-words cross-check). A human confirms each one before it goes into `data/words/exclude.txt`.
 *Carried forward:* the format is one word per line, any case, with blank lines and `#` comments allowed; a line that isn't a word stops the build. Each form is matched exactly, so list `govts` as well as `govt` if both should go. The same format serves 6.3's blocklist (6.1a intent, choice 8). Prefixes on abbreviation entries make more abbreviations that Hunspell also accepts: in en_GB-large, `conc, conj, dept, intr, proa, pron, recd, rees, reis, revs, unis, univ`, and in en_GB-ise also `incs, prob`. Review these as candidates (6.1a plan, Self-review). The 6.1b lists also have vowel-less abbreviations such as `bdrm, bldg, blvd, ftps, mfrs, rcpt, shpt, shtg`, and others with vowels such as `asst, corp, dept, govt`; `psst`, `cwms` and `pwns` are vowel-less but may be real words. Abbreviations can bridge parts of the cloud and shorten shortest paths, so par ranges measured before this review (D16, 2.3) may shift after it (6.1b PR discussion).
 - every excluded word has been reviewed and is listed alphabetically
 
-**6.3 Offensive-words blocklist (S)** · Depends: 6.1b · *human-owned*
-Choose a blocklist source with a compatible licence, log it in `DECISIONS.md`, and add it as `data/words/blocklist.txt`.
+**6.3 Offensive-words blocklist (S)** · Depends: 6.1b · *human-owned* · now, alongside 3.0–3.2
+Build `data/words/blocklist.txt` from dsojevic/profanity-list, reviewed by hand, with its MIT notice in `data/words` (D34). Mild words stay playable; add the plurals and slurs the list misses.
 - no blocklisted word appears in either built list
 - no SCOWL taboo-flagged word appears in either built list
 
@@ -194,4 +194,4 @@ No unexplained numbers in the code: each constant gets a name or a one-line comm
 
 | ID | Decision | Blocks |
 |----|----------|--------|
-| D7 | UI framework | 3.0 |
+| — | Server after the one-week trial (D32) | after soft launch |

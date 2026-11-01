@@ -10,7 +10,8 @@ import committedScheduleText from "../../data/puzzles/schedule.txt?raw";
 // committed word lists, so a list change that breaks a scheduled puzzle fails
 // CI even if nobody runs build:schedule (D24).
 
-// One shortest-path search per puzzle took about 25 s for 365 puzzles.
+// One shortest-path search per puzzle took about 25 s for 365 puzzles before
+// 2.6c sped up the neighbour lookup, and about 2 s after; the timeout leaves room.
 const WHOLE_SCHEDULE_TIMEOUT_MILLISECONDS = 60_000;
 
 describe("checkSchedule on the committed files", () => {

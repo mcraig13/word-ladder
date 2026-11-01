@@ -18,6 +18,18 @@ describe("getWordsOneLetterAway", () => {
     expect(result).toEqual(["bold", "cola", "cord"]);
   });
 
+  it("finds words changed to the first or last letter of the alphabet", () => {
+    // Arrange
+    // Chunk 2.6c, review finding 5: date changes o to a, doze changes t to z.
+    const dictionary = createDictionaryFromWords(["date", "dote", "doze"]);
+
+    // Act
+    const result = getWordsOneLetterAway("dote", dictionary);
+
+    // Assert
+    expect(result).toEqual(["date", "doze"]);
+  });
+
   it("does not include the word itself", () => {
     // Arrange
     const dictionary = createDictionaryFromWords(["bold", "cold"]);

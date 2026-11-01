@@ -1,7 +1,7 @@
 // The only test that runs a script, so the only file that needs Node's types.
 /// <reference types="node" />
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -17,7 +17,9 @@ import committedScheduleText from "../../data/puzzles/schedule.txt?raw";
 // script adds back the committed line.
 
 // The script's checks run one shortest-path search per puzzle, about 25 s for
-// 365 puzzles.
+// 365 puzzles before 2.6c sped up the neighbour lookup, and about 5 s after;
+// the timeout leaves room. spawnSync can't be interrupted by Vitest, so the
+// script gets the same limit itself.
 const WHOLE_SCHEDULE_TIMEOUT_MILLISECONDS = 60_000;
 
 describe("scripts/buildSchedule.mjs", () => {
@@ -33,20 +35,24 @@ describe("scripts/buildSchedule.mjs", () => {
         0,
         swappedText.lastIndexOf("\n", swappedText.length - 2) + 1,
       );
-      const scheduleFile = join(mkdtempSync(join(tmpdir(), "schedule-")), "schedule.txt");
+      const scheduleFolder = mkdtempSync(join(tmpdir(), "schedule-"));
+      const scheduleFile = join(scheduleFolder, "schedule.txt");
       writeFileSync(scheduleFile, withoutLastLine);
 
       // Act
-      const run = spawnSync(process.execPath, [
-        "--import",
-        "tsx",
-        "scripts/buildSchedule.mjs",
-        scheduleFile,
-      ]);
+      const run = spawnSync(
+        process.execPath,
+        ["--import", "tsx", "scripts/buildSchedule.mjs", scheduleFile],
+        { timeout: WHOLE_SCHEDULE_TIMEOUT_MILLISECONDS },
+      );
+      const text = readFileSync(scheduleFile, "utf8");
+      rmSync(scheduleFolder, { recursive: true });
 
       // Assert
-      expect({ exitCode: run.status, text: readFileSync(scheduleFile, "utf8") }).toEqual({
+      // stderr is checked too, so a failure shows the script's reason.
+      expect({ exitCode: run.status, errors: run.stderr.toString(), text }).toEqual({
         exitCode: 0,
+        errors: "",
         text: swappedText,
       });
     },

@@ -139,4 +139,75 @@ describe("getExtendedScheduleText", () => {
     // Assert
     expect(result).toEqual({ ok: false, reason: "too-few-puzzles-ahead", puzzlesAhead: 2 });
   });
+
+  // Added after review (breaks finding 2): the checks run on the extended
+  // schedule with the options the build was given.
+
+  it("extending checks the new puzzles as well as the file's lines", () => {
+    // Arrange
+    // The empty file has none ahead; the three added reach exactly the fewest.
+    const options = {
+      ...ladderOptions,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 3,
+      fewestPuzzlesAhead: 3,
+    };
+
+    // Act
+    const result = getExtendedScheduleText("", options);
+
+    // Assert
+    expect(result.ok).toBe(true);
+  });
+
+  it("extending checks the file's lines with the repeat window it is given", () => {
+    // Arrange
+    // card is #1's target and #2's start, within a window of 2.
+    const options = {
+      ...ladderOptions,
+      daysBeforeWordRepeats: 2,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+    };
+
+    // Act
+    const result = getExtendedScheduleText("cord card 1\ncard ward 1\n", options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "word-repeats-too-soon", puzzleNumber: 2 });
+  });
+
+  it("extending checks the file's lines against the puzzle words, not the accepted words", () => {
+    // Arrange
+    // cord is accepted but not a puzzle word.
+    const options = {
+      ...ladderOptions,
+      puzzleWords: createDictionaryFromWords(["cold", "card", "ward", "warm"]),
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+    };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "not-a-puzzle-word", puzzleNumber: 1 });
+  });
+
+  it("extending counts the puzzles ahead from today's puzzle number", () => {
+    // Arrange
+    // Today is #1 of the file's two, so one is ahead, fewer than 2.
+    const options = {
+      ...ladderOptions,
+      todaysPuzzleNumber: 1,
+      puzzlesAhead: 1,
+      fewestPuzzlesAhead: 2,
+    };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "too-few-puzzles-ahead", puzzlesAhead: 1 });
+  });
 });

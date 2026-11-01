@@ -125,6 +125,8 @@ Set the launch date (puzzle #1) here. Don't change it once results are shared (D
 
 *Carried forward:* `npm run build:schedule` took about 65 s for 365 puzzles in 2.6a, about 15 s since 2.6c sped up `getWordsOneLetterAway`. `generatePuzzle`'s cut-off at the most moves is still untested, since dropping it costs time, not correctness; a check on the build's time would cover it (2.2 review B1, moved from 2.6c).
 
+*Carried forward:* no test shows `build:schedule` refuses fewer than 60 puzzles ahead: its `fewestPuzzlesAhead` can be set to 0 with every test green, because the script always extends 365 ahead before checking. Once today's number comes from the date, test the script with a today that leaves too few (2.6c review, breaks finding 3).
+
 **3.9 Resume today's game (S)** · Depends: 3.2 · *moved from 4.3 (D25)*
 Browser storage only; no backend.
 - reloading the page restores today's chain

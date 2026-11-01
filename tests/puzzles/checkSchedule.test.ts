@@ -131,6 +131,20 @@ describe("checkSchedule", () => {
     expect(result).toEqual({ ok: false, reason: "unsolvable", puzzleNumber: 2 });
   });
 
+  it("searches for the shortest path over the accepted words, not the puzzle words", () => {
+    // Arrange
+    // Added after review (finding 1). cord, card and ward are accepted but
+    // not puzzle words, and cold-warm needs all three (D8).
+    const options = { ...ladderOptions, puzzleWords: createDictionaryFromWords(["cold", "warm"]) };
+    const schedule = [createScheduledPuzzle("cold", "warm", 4)];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: true });
+  });
+
   it("rejects a puzzle whose shortest path has fewer moves than stored", () => {
     // Arrange
     // As if a word added to the accepted list made a shortcut: cold-warm is 4.
@@ -193,6 +207,23 @@ describe("checkSchedule", () => {
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "word-repeats-too-soon", puzzleNumber: 3 });
+  });
+
+  it("rejects a word repeated within the window near the start of the schedule", () => {
+    // Arrange
+    // Added after review (breaks finding 1). warm was #1's target, one puzzle
+    // before #2, with fewer puzzles before it than the window of 2.
+    const options = { ...ladderOptions, daysBeforeWordRepeats: 2 };
+    const schedule = [
+      createScheduledPuzzle("cold", "warm", 4),
+      createScheduledPuzzle("warm", "cord", 3),
+    ];
+
+    // Act
+    const result = checkSchedule(schedule, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "word-repeats-too-soon", puzzleNumber: 2 });
   });
 
   it("allows a word again once the repeat window has passed", () => {

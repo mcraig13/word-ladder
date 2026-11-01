@@ -89,8 +89,9 @@ const FIRST_MIXING_MULTIPLIER = 0x85ebca6b;
 const SECOND_MIXING_MULTIPLIER = 0xc2b2ae35;
 
 /**
- * MurmurHash3's finaliser. Each step (an xor with a right shift, or a multiply
- * by an odd number) can be undone, so different inputs give different outputs.
+ * MurmurHash3's finaliser, with its shifts of 16, 13 and 16 bits. Each step
+ * (an xor with a right shift, or a multiply by an odd number) can be undone,
+ * so different inputs give different outputs.
  */
 function mixBits(value: number): number {
   let mixed = value >>> 0;

@@ -43,6 +43,6 @@ Two reviewers in parallel (M chunk, D29): A everything except breaks, B breaks. 
 
 ## Changes at human review (PR)
 
-- **Seed hashed** (the human reviewer, following review A3 and B3): puzzle #N's seed is `mixBits(mixBits(scheduleSeed) ^ N)`, where `mixBits` is MurmurHash3's 32-bit finaliser with its two multipliers named. Every step can be undone, so within a schedule each number gets a different seed, and a seed one higher no longer gives the same puzzles a day later. **Test added after human review:** `a schedule seed one higher gives different puzzles, not the same ones a day later`.
+- **Seed hashed** (the human reviewer, following review A3 and B3): puzzle #N's seed is `mixBits(mixBits(scheduleSeed) ^ N)`, where `mixBits` is MurmurHash3's 32-bit finaliser with its two multipliers named. Every step can be undone, so within a schedule each number gets a different seed, and a seed one higher no longer gives the same puzzles a day later. **Test added after human review:** `a schedule seed one higher doesn't put the same puzzles on neighbouring dates` (renamed and widened after review C).
 - **Window cut from 365 to 90 days** (D30 updated). The rebuilt schedule has 674 different starts and targets, the nearest repeat is 94 days apart, and all moves are 4–6 (97 / 159 / 109).
 - Storing the moves (intent, least sure 1) kept as it is.

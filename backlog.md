@@ -74,7 +74,7 @@ Read `data/puzzles/schedule.txt` back, make `build:schedule` extend it rather th
 
 *Carried forward:* `npm run build:schedule` took about 65 s for 365 puzzles in 2.6a (each date runs `generatePuzzle` and a `findShortestPath`). `generatePuzzle`'s cut-off at the most moves is still untested, since dropping it costs time, not correctness; a check on the build's time would cover it (2.2 review B1).
 
-*Carried forward:* `createSeededRandom` doesn't check its seed (2.1 review 1). Dates no longer seed anything: `extendSchedule` seeds puzzle #N with `(scheduleSeed + N) >>> 0`, always in range. What's left is that `scheduleSeed` itself isn't checked: `0` and `0.5` build the same schedule, and `-1` is accepted (2.6a review A6).
+*Carried forward:* `createSeededRandom` doesn't check its seed (2.1 review 1). Dates no longer seed anything: `extendSchedule` seeds puzzle #N with `getPuzzleSeed`, a hash of `scheduleSeed` and N, always in range. What's left is that `scheduleSeed` itself isn't checked: `0` and `0.5` build the same schedule, and `-1` is accepted (2.6a review A6).
 
 *Carried forward:* when reading the file back, lowercase each line or reject one that isn't lowercase, and test mixed case: `extendSchedule` compares the existing schedule's words as given, so a capitalised hand edit (D24) would slip past the repeat window (2.6a reviews A2, B4).
 

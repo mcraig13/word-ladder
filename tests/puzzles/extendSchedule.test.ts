@@ -266,10 +266,13 @@ describe("extendSchedule", () => {
     expect(extendedBuild).toEqual(wholeBuild);
   });
 
-  it("a schedule seed one higher gives different puzzles, not the same ones a day later", () => {
+  it("a schedule seed one higher doesn't put the same puzzles on neighbouring dates", () => {
     // Arrange
-    // With no repeat window, a seed that only added the puzzle number would
-    // give seed 2027's puzzle N as seed 2026's puzzle N + 1.
+    // A seed that added the puzzle number would give seed 2027's puzzle N as
+    // seed 2026's puzzle N + 1; one that only xored them would give it as
+    // puzzle N - 1 or N + 1 (2027 is 2026 with its lowest bit flipped). By
+    // chance, a puzzle matches a given neighbour 1 time in 20 (ten pairs, two
+    // directions), so about 3 of 30 match one; either fault makes nearly all.
     const options = {
       ...ladderOptions,
       shortestPathMoves: { fewest: 1, most: 4 },
@@ -283,8 +286,14 @@ describe("extendSchedule", () => {
 
     // Assert
     const nextSeedSchedule = nextSeedBuild.ok ? nextSeedBuild.schedule : [];
+    const puzzlesOnANeighbouringDate = nextSeedSchedule.filter((puzzle, index) =>
+      [firstSchedule[index - 1], firstSchedule[index + 1]].some(
+        (neighbour) => neighbour?.start === puzzle.start && neighbour.target === puzzle.target,
+      ),
+    );
+    expect(firstSchedule).toHaveLength(MANY_PUZZLES);
     expect(nextSeedSchedule).toHaveLength(MANY_PUZZLES);
-    expect(nextSeedSchedule.slice(0, -1)).not.toEqual(firstSchedule.slice(1));
+    expect(puzzlesOnANeighbouringDate.length).toBeLessThan(MANY_PUZZLES / 2);
   });
 
   it("gives different puzzle numbers different puzzles", () => {

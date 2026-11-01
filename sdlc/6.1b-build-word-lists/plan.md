@@ -23,6 +23,8 @@
 | gives the same cloud, in alphabetical order, whatever order the words come in | same inputs, same output |
 | counts a word given twice once when comparing cloud sizes | cloud size counts words |
 | has no cloud when there are no words | edge case |
+| counts Cold and cold as one word when comparing cloud sizes | mixed case (added at review) |
+| leaves out entries that aren't words | edge case (added at review) |
 | accepted words are the largest 4-letter Word Cloud of the size-70 list | backlog; D8, D17 |
 | builds the lists for the word length asked for | D4 |
 | removes an excluded word before finding the cloud, so words joined only through it drop out | D17 cleaning |
@@ -32,6 +34,7 @@
 | keeps size-60 words that only size-70 words join together | puzzle words aren't limited to the size-60 cloud (D17) |
 | reports the size-70 list, file and line when its dictionary can't be read | failure names its list (carried forward) |
 | reports the size-60 list, file and line when its dictionary can't be read | failure names its list |
+| reports the size-70 list first when both dictionaries can't be read | failure order (added at review) |
 | builds the same accepted words as the committed accepted.txt | same output files; no hand edits |
 | builds the same puzzle words as the committed puzzle.txt | same output files; no hand edits |
 | makes cold, warm and high puzzle words, high being joined only through size-70 words | D17 evidence |
@@ -41,5 +44,5 @@
 
 ## Self-check
 - Files: match the list above; `backlog.md` status waits for the merge. Built: 3,318 accepted, 2,622 puzzle words (D17 measured 3,308 and 2,614 before 6.1a's cleaning). `findShortestPath` on the built list: cold → warm about 100 ms, an unreachable target (whole cloud searched) about 220 ms on a PC.
-- Lint, tests and coverage: pass, 205 tests, 100% coverage; the build takes about 1 s and prints `data/words/exclude.txt:4 invalid-word`, exit 1, for a bad exclusion line.
+- Lint, tests and coverage: pass, 208 tests after review (205 before), 100% coverage; the build takes about 1 s and prints `data/words/exclude.txt:4 invalid-word`, exit 1, for a bad exclusion line.
 - Diff against intent: as intended; the two functions stay pure and the `.mjs` entry only reads, calls and writes.

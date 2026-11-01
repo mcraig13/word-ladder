@@ -9,10 +9,10 @@ One folder per chunk of work, named `<chunk id>-<short name>`, e.g. `1.5-check-m
 | 1. Intent | AI drafts | `intent.md` |
 | 2. Plan and tests | AI writes; human reviews intent, plan and tests before implementation (the one stop) | `plan.md`, test file |
 | 3. Implement | AI | code |
-| 4. Self-check | AI: the files changed match the plan, lint and coverage pass, the diff does what the intent says. No breaks (D29) | three lines in `plan.md` |
-| 5. Independent review | Reviewer agent(s) with fresh context: see only `intent.md`, `plan.md`, the diff and `CLAUDE.md`, and run the breaks. Every chunk; two reviewers in parallel for M chunks (D29) | `review.md` |
-| 6. Respond | AI answers every finding: fixed, or why not | responses in `review.md` |
-| 7. Human review and merge | Human, via pull request linking `review.md` | merged PR |
+| 4. Self-check | AI: quotes the changed files, lint and coverage results, and says whether the diff does what the intent says. No breaks (D29, D31) | three lines in `plan.md` |
+| 5. Independent review | Reviewer agent(s) with fresh context: see only `intent.md`, `plan.md`, the diff and `CLAUDE.md`, and run the breaks. Every chunk; two reviewers in parallel for M chunks (D29) | `review.md`, `breaks.json` |
+| 6. Respond | AI answers every finding: fixed, or why not. Re-runs `breaks.json` after fixes that change logic or should turn a break red (D31) | responses in `review.md` |
+| 7. Human review and merge | Human, via pull request linking `review.md`. The PR's last commit moves the backlog entry to `backlog-done.md` (D31) | merged PR |
 
 ## Sessions and handoff points
 
@@ -57,6 +57,13 @@ The reviewer works through this list for each rule (D29). Earlier reviews found 
 - **Forget state:** stop recording what's been seen or used (visited words, the chain so far). A test needs a fixture with a loop or a repeat.
 - **Use the wrong input:** compare with the raw input instead of the normalised one, or the first word instead of the last.
 
+For UI code (D31), also:
+
+- **Remove an element** the player relies on, or its accessible name or role.
+- **Show stale state:** render from the value before the update, or skip a re-render.
+- **Leave a control enabled** that should be disabled, or the reverse.
+- **Skip an announcement** to screen readers, such as the reason a word was rejected.
+
 Keep files short: every session that touches the chunk reads them. Limits (D29): `intent.md` about 40 lines, `plan.md` about 60 lines plus one table row per test or break. Don't repeat in `plan.md` what the test file already says. If a chunk needs more, it probably needs splitting.
 
 ## Running breaks
@@ -73,6 +80,8 @@ Write the breaks as a JSON list, e.g. in a scratch folder, and run `npm run brea
 `find` must occur exactly once in the file, or the break is reported **not applied** and skipped; fix it and run it again. For each break the script lists the tests that went red, or **all green**, and always puts the file back. It exits non-zero if any break was not applied or left everything green.
 
 A break whose test run crashes (a worker out of memory, an unhandled error, a non-zero exit with no failing test, or no readable report) or hangs is reported **red** with the reason in brackets, e.g. `(test run crashed, exit 1: FATAL ERROR: … heap out of memory)` or `(test run timed out after 120 s)`. Read it: a crash is red, but it may come from the break rather than from a test catching it. The timeout is 120 s per run; set `BREAK_TIMEOUT_SECONDS` to change it.
+
+The reviewer saves the breaks it ran as `sdlc/<chunk folder>/breaks.json`, with paths relative to the repo root. After fixes that change production logic or are meant to make a break go red, the author runs `npm run break -- sdlc/<chunk folder>/breaks.json` in the repo and adds one line to `review.md`: which breaks are now red, and any still green. These are the reviewer's breaks, so this doesn't bring back the author's blind spots (D29, D31). A break whose `find` no longer matches after a fix is reported **not applied**; update its `find` to the new code and say so.
 
 ## Templates
 
@@ -114,8 +123,8 @@ A few lines on how, and why this way.
 (Inputs and expected values are in the test file; don't repeat them here.)
 
 ## Self-check
-- Files: match the list above / <what differs and why>
-- Lint, tests and coverage: pass / <what fails>
+- Files (`git diff --name-only main...HEAD`): <the list> — match the plan / <what differs and why>
+- Lint, tests and coverage: <the summary lines from `npm run lint` and `npm run test:coverage`>
 - Diff against intent: <one line>
 ```
 
@@ -145,7 +154,7 @@ For an S chunk, run one reviewer with **Focus: everything**. For an M chunk, run
 >
 > **Focus:** <everything / breaks / everything except breaks>. Skip the checks below that are outside your focus.
 >
-> **Rules for you:** don't modify anything in the repo and don't run git commands that change state. For experiments, copy `src/` and `tests/` to a scratch folder outside the repo and work there; delete it when done.
+> **Rules for you:** don't modify anything in the repo except writing `sdlc/<chunk folder>/breaks.json` (below), and don't run git commands that change state. For experiments, copy `src/` and `tests/` to a scratch folder outside the repo and work there; delete it when done.
 >
 > **Read, in order:** `CLAUDE.md`; `sdlc/README.md`; `sdlc/<chunk folder>/intent.md` and `plan.md`; the diff `<commit range>`; and any source files the change builds on.
 >
@@ -154,7 +163,7 @@ For an S chunk, run one reviewer with **Focus: everything**. For an M chunk, run
 > - Does each test meet the testing rules in `CLAUDE.md` (named after a rule, AAA, one Act, hand-worked literals, small fixtures, not tautological)? Does every acceptance criterion have a test? Are edge cases that come from the game rules missing?
 > - Naming, per `CLAUDE.md`.
 > - Correctness on awkward input. Run it rather than guessing.
-> - Break-the-code checks: for each rule the intent protects, a deliberate break of every kind on the break checklist in `sdlc/README.md` that applies. The author runs none, so these are the only breaks. Report which tests went red; group breaks that went red as expected on one line each. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`).
+> - Break-the-code checks: for each rule the intent protects, a deliberate break of every kind on the break checklist in `sdlc/README.md` that applies. The author runs none, so these are the only breaks. Report which tests went red; group breaks that went red as expected on one line each. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`). Save every break you ran, red or green, as `sdlc/<chunk folder>/breaks.json` in the repo (with two reviewers, the breaks reviewer writes it), so the author can re-run them after fixes.
 > - Type-check and lint pass. If you can't run the test runner in your environment, say so; CI is the final check.
 >
 > **Reply with only the content for `review.md`**, following the template: a verdict, numbered findings each with a severity (**blocker**, **should fix**, **nit**, **note**), what, where and why in plain language, a "*Response:*" placeholder after each, then your break-the-code checks. A **note** is something the author might act on or carry forward; observations that need no action go on the one-line **Notes** list instead. Only report what you verified.

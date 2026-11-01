@@ -46,3 +46,21 @@ Two reviewers in parallel (M chunk, D29): A everything except breaks, B breaks. 
 - **Seed hashed** (the human reviewer, following review A3 and B3): puzzle #N's seed is `mixBits(mixBits(scheduleSeed) ^ N)`, where `mixBits` is MurmurHash3's 32-bit finaliser with its two multipliers named. Every step can be undone, so within a schedule each number gets a different seed, and a seed one higher no longer gives the same puzzles a day later. **Test added after human review:** `a schedule seed one higher doesn't put the same puzzles on neighbouring dates` (renamed and widened after review C).
 - **Window cut from 365 to 90 days** (D30 updated). The rebuilt schedule has 674 different starts and targets, the nearest repeat is 94 days apart, and all moves are 4–6 (97 / 159 / 109).
 - Storing the moves (intent, least sure 1) kept as it is.
+
+## Review C: the changes at human review (`8a0979c`)
+
+**Reviewer:** independent agent, fresh context · **Verdict:** approve with changes
+
+### Findings
+1. **should fix** Dropping the inner mix (`mixBits(scheduleSeed ^ puzzleNumber)`) left every test green, yet seed 2027's puzzles then sit on seed 2026's swapped neighbouring dates (28 of 30). The new test caught only the one-day shift. — *Response:* fixed in `23d60fa`: the test (renamed `a schedule seed one higher doesn't put the same puzzles on neighbouring dates`) counts puzzles matching either neighbour and expects fewer than half; chance gives about 3 of 30, either fault nearly all. Re-run below.
+2. **should fix** The 2.6b *Carried forward* line still described the seed as `(scheduleSeed + N) >>> 0`. — *Response:* fixed: it names `getPuzzleSeed`.
+3. **nit** `mixBits`'s shifts had no comment, unlike the multipliers. — *Response:* fixed: the doc comment says they're fmix32's.
+4. **nit** If the first build failed, the test's comparison would pass on `[]`. — *Response:* fixed: both schedules' lengths are checked.
+
+**Notes:** the commit matches this file's "Changes at human review" section · records say 90 days and a hashed seed · each puzzle number gets its own seed (every step can be undone) · a fresh build matches the committed `schedule.txt`; nearest repeat 94 puzzles apart · lint clean, 261 tests pass · on the unbroken code the neighbour count is 2, 0, 4 and 2 for four seed pairs, well under 15.
+
+### Reviewer's own break-the-code checks
+- Back to the sum (S1), `mixBits(scheduleSeed + puzzleNumber)` (S11) → red. Ignore `scheduleSeed` (S4), ignore `puzzleNumber` (S5), seed from the position in the run (S13) → red.
+- Drop the inner mix (S3) → **all green** (finding 1).
+- Drop the outer mix, xor to add, a shift or multiplier changed, `puzzleNumber - 1` (S2, S6–S10, S12) → all green; these only reshuffle, which the constants' comment already says. No finding.
+- **Re-run on `23d60fa`:** S1, S3 and S11 → red (`a schedule seed one higher doesn't put the same puzzles on neighbouring dates`).

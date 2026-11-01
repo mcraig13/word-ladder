@@ -51,9 +51,20 @@ describe("getWordLists: accepted words", () => {
 
   it("builds the lists for the word length asked for", () => {
     // Arrange
-    // cat-cot-cog-dog is the largest 3-letter cloud; the 4-letter words are left out.
+    // cat-cot-cog-dog is the largest 3-letter cloud. The 4-letter cloud
+    // card-cold-cord-ward-warm is bigger, so it would win if not left out.
     const input = {
-      acceptedWordsSource: createSource("cat", "cog", "cold", "cord", "card", "cot", "dog"),
+      acceptedWordsSource: createSource(
+        "card",
+        "cat",
+        "cog",
+        "cold",
+        "cord",
+        "cot",
+        "dog",
+        "ward",
+        "warm",
+      ),
       puzzleWordsSource: createSource("cat", "cold"),
       ...emptyLists,
       wordLength: 3,
@@ -200,6 +211,28 @@ describe("getWordLists: failures", () => {
     expect(result).toEqual({
       ok: false,
       wordList: "puzzle",
+      reason: "unknown-flag",
+      file: "dictionary",
+      lineNumber: 2,
+    });
+  });
+
+  it("reports the size-70 list first when both dictionaries can't be read", () => {
+    // Arrange
+    const input = {
+      acceptedWordsSource: createSource("cold/Z"),
+      puzzleWordsSource: createSource("cold", "cord/Z"),
+      ...emptyLists,
+      wordLength: 4,
+    };
+
+    // Act
+    const result = getWordLists(input);
+
+    // Assert
+    expect(result).toEqual({
+      ok: false,
+      wordList: "accepted",
       reason: "unknown-flag",
       file: "dictionary",
       lineNumber: 2,

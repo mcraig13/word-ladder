@@ -1,10 +1,11 @@
 import { createDictionaryFromWords } from "../../src/core/createDictionaryFromWords";
 import { getWordsOneLetterAway } from "../../src/core/getWordsOneLetterAway";
+import { normaliseWord } from "../../src/core/normaliseWord";
 
 /**
  * The words of the largest Word Cloud, in alphabetical order (chunk 6.1b, D8):
  * a group where every word can reach every other by single-letter changes.
- * Lowercase words of one length are expected; [] for no words.
+ * Words of one length are expected, in any case; [] for no words.
  *
  * Clouds are found in alphabetical order of their first word, and a later
  * cloud replaces the best only if it is strictly bigger, so a tie goes to the
@@ -12,7 +13,13 @@ import { getWordsOneLetterAway } from "../../src/core/getWordsOneLetterAway";
  */
 export function getLargestWordCloud(words: readonly string[]): readonly string[] {
   const dictionary = createDictionaryFromWords(words);
-  const wordsInAlphabeticalOrder = [...new Set(words)].sort();
+  // Normalised like the dictionary's words, so Cold and cold are one word and
+  // entries that aren't words are left out.
+  const normalisedWords = words.flatMap((word) => {
+    const normalised = normaliseWord(word);
+    return normalised.ok ? [normalised.word] : [];
+  });
+  const wordsInAlphabeticalOrder = [...new Set(normalisedWords)].sort();
   const wordsInACloud = new Set<string>();
   let largestCloud: readonly string[] = [];
 

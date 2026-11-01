@@ -29,27 +29,33 @@ function getWordsFromListFile(text: string): string[] {
   return text.split("\n").filter((line) => line !== "");
 }
 
+// The file format the build writes (6.1b intent, choice 5): one word per line,
+// LF, a newline at the end, so a blank line added by hand fails the check.
+function createListFileText(words: readonly string[]): string {
+  return words.map((word) => `${word}\n`).join("");
+}
+
 describe("getWordLists on the real SCOWL files", () => {
   it("builds the same accepted words as the committed accepted.txt", () => {
     // Arrange
-    const committedAcceptedWords = getWordsFromListFile(committedAcceptedText);
+    const input = realSources;
 
     // Act
-    const result = getWordLists(realSources);
+    const result = getWordLists(input);
 
     // Assert
-    expect(result.ok && result.acceptedWords).toEqual(committedAcceptedWords);
+    expect(result.ok && createListFileText(result.acceptedWords)).toBe(committedAcceptedText);
   });
 
   it("builds the same puzzle words as the committed puzzle.txt", () => {
     // Arrange
-    const committedPuzzleWords = getWordsFromListFile(committedPuzzleText);
+    const input = realSources;
 
     // Act
-    const result = getWordLists(realSources);
+    const result = getWordLists(input);
 
     // Assert
-    expect(result.ok && result.puzzleWords).toEqual(committedPuzzleWords);
+    expect(result.ok && createListFileText(result.puzzleWords)).toBe(committedPuzzleText);
   });
 
   it("makes cold, warm and high puzzle words, high being joined only through size-70 words", () => {

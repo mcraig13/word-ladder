@@ -17,6 +17,10 @@ export interface WordListSources {
   wordLength: number;
 }
 
+/**
+ * The list being built when a read failed. The exclusion list and blocklist
+ * are shared, so a failure in one of them names the list read first, accepted.
+ */
 export type WordList = "accepted" | "puzzle";
 
 export type GetWordListsResult =

@@ -47,13 +47,39 @@ describe("getLargestWordCloud", () => {
 
   it("gives the same cloud, in alphabetical order, whatever order the words come in", () => {
     // Arrange
-    const words = ["warm", "axle", "ward", "able", "cord", "card", "cold"];
+    // The tie between cord-cold and axle-able comes in reverse alphabetical
+    // order, so a search in input order would pick cord-cold.
+    const words = ["cord", "cold", "axle", "able"];
 
     // Act
     const result = getLargestWordCloud(words);
 
     // Assert
-    expect(result).toEqual(["card", "cold", "cord", "ward", "warm"]);
+    expect(result).toEqual(["able", "axle"]);
+  });
+
+  it("counts Cold and cold as one word when comparing cloud sizes", () => {
+    // Arrange
+    // cold-cord and able-axle are both clouds of 2, so able-axle wins the tie.
+    // Counting Cold as well as cold would make cold-cord a cloud of 3.
+    const words = ["Cold", "cord", "able", "axle"];
+
+    // Act
+    const result = getLargestWordCloud(words);
+
+    // Assert
+    expect(result).toEqual(["able", "axle"]);
+  });
+
+  it("leaves out entries that aren't words", () => {
+    // Arrange
+    const words = ["co-op", "cold", ""];
+
+    // Act
+    const result = getLargestWordCloud(words);
+
+    // Assert
+    expect(result).toEqual(["cold"]);
   });
 
   it("counts a word given twice once when comparing cloud sizes", () => {

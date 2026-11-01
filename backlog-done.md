@@ -264,6 +264,16 @@ The game records how many undos the player has used, so `getScore` can add them 
 
 ---
 
+## Phase 3 — Soft launch UI (`src/ui/`)
+
+**3.0 UI framework and UI testing (S)** · Depends: 2.4, 2.5, 1.10 · React, jsdom and browser test projects; the browser test reads `index.html` itself (review, finding 1)
+D7 (React), D33 (how UI is tested and covered) and the UI break kinds (D31) were decided in the process review. Set up React with `eslint-plugin-react-hooks`, React Testing Library in jsdom for UI tests, and Vitest browser mode for a few real-browser tests; exclude only the entry file from coverage (D33). Turn the "coming soon" page into a component. No game UI yet.
+- an example UI test finds the page heading the way a player would see it
+- a browser-mode test finds the heading on the page mounted from the entry file
+- `npm run lint`, `npm run test:coverage` and `npm run build` pass with the framework added
+
+---
+
 ## Phase 6 — Word lists (build-time, `scripts/`)
 
 **6.1a Read Hunspell dictionaries (M)** · Depends: 0.1

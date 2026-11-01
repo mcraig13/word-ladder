@@ -13,7 +13,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
 | M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | Done |
-| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
+| **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | 3.0 done; 1.11 next |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
 | Tech debt | 7.1 | Clean-ups with no change in behaviour | Not started |
@@ -54,12 +54,6 @@ Done: 2.1–2.6c. Finished chunks are in `backlog-done.md` (D29).
 ## Phase 3 — Soft launch (`src/ui/`)
 
 UI tests check what the player sees and can do, not component internals.
-
-**3.0 UI framework and UI testing (S)** · Depends: 2.4, 2.5, 1.10
-D7 (React), D33 (how UI is tested and covered) and the UI break kinds (D31) were decided in the process review. Set up React with `eslint-plugin-react-hooks`, React Testing Library in jsdom for UI tests, and Vitest browser mode for a few real-browser tests; exclude only the entry file from coverage (D33). Turn the "coming soon" page into a component. No game UI yet.
-- an example UI test finds the page heading the way a player would see it
-- a browser-mode test finds the heading on the page mounted from the entry file
-- `npm run lint`, `npm run test:coverage` and `npm run build` pass with the framework added
 
 **3.1 Show today's puzzle (M)** · Depends: 3.0, 1.11
 - shows the puzzle number

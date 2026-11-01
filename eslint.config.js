@@ -61,7 +61,8 @@ export default [
       "@typescript-eslint/naming-convention": ["error", ...namingRules, booleanNamingRule],
     },
   },
-  { files: ["**/*.tsx"], ...reactHooks.configs.flat.recommended },
+  // Custom hooks may live in .ts files, e.g. useGame.ts (3.0 review, 3).
+  { files: ["**/*.tsx", "src/ui/**/*.ts"], ...reactHooks.configs.flat.recommended },
   {
     files: ["tests/**/*.tsx"],
     rules: {

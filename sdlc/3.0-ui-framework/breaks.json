@@ -1,0 +1,104 @@
+[
+  {
+    "label": "App: heading shows the old name",
+    "file": "src/ui/App.tsx",
+    "find": "<h1>Word Golf</h1>",
+    "replace": "<h1>Word Ladder</h1>"
+  },
+  {
+    "label": "App: heading demoted to level 2",
+    "file": "src/ui/App.tsx",
+    "find": "<h1>Word Golf</h1>",
+    "replace": "<h2>Word Golf</h2>"
+  },
+  {
+    "label": "App: heading loses its role (div)",
+    "file": "src/ui/App.tsx",
+    "find": "<h1>Word Golf</h1>",
+    "replace": "<div>Word Golf</div>"
+  },
+  {
+    "label": "App: heading removed",
+    "file": "src/ui/App.tsx",
+    "find": "<h1>Word Golf</h1>",
+    "replace": ""
+  },
+  {
+    "label": "App: heading hidden",
+    "file": "src/ui/App.tsx",
+    "find": "<h1>Word Golf</h1>",
+    "replace": "<h1 hidden>Word Golf</h1>"
+  },
+  {
+    "label": "App: coming-soon message removed",
+    "file": "src/ui/App.tsx",
+    "find": "<p>Coming soon.</p>",
+    "replace": ""
+  },
+  {
+    "label": "App: coming-soon message reworded",
+    "file": "src/ui/App.tsx",
+    "find": "<p>Coming soon.</p>",
+    "replace": "<p>Coming later.</p>"
+  },
+  {
+    "label": "App: coming-soon message hidden",
+    "file": "src/ui/App.tsx",
+    "find": "<p>Coming soon.</p>",
+    "replace": "<p hidden>Coming soon.</p>"
+  },
+  {
+    "label": "main: looks for the wrong root id",
+    "file": "src/main.tsx",
+    "find": "getElementById(\"app\")",
+    "replace": "getElementById(\"root\")"
+  },
+  {
+    "label": "main: renders nothing instead of App",
+    "file": "src/main.tsx",
+    "find": "    <App />",
+    "replace": "    {null}"
+  },
+  {
+    "label": "main: never renders",
+    "file": "src/main.tsx",
+    "find": "createRoot(root).render(",
+    "replace": "void createRoot(root); void ("
+  },
+  {
+    "label": "main: missing-root guard deleted",
+    "file": "src/main.tsx",
+    "find": "if (root === null) {",
+    "replace": "if (false) {"
+  },
+  {
+    "label": "index.html: root renamed",
+    "file": "index.html",
+    "find": "<main id=\"app\"></main>",
+    "replace": "<main id=\"root\"></main>"
+  },
+  {
+    "label": "index.html: script points at a missing entry file",
+    "file": "index.html",
+    "find": "src=\"/src/main.tsx\"",
+    "replace": "src=\"/src/main.ts\""
+  },
+  {
+    "label": "index.html: tab title keeps the old name",
+    "file": "index.html",
+    "find": "<title>Word Golf</title>",
+    "replace": "<title>Word Ladder</title>"
+  },
+  {
+    "label": "setup: no cleanup between UI tests",
+    "file": "tests/ui/setup.ts",
+    "find": "  cleanup();",
+    "replace": ""
+  },
+  {
+    "label": "config: UI tests lose jsdom",
+    "file": "vite.config.ts",
+    "find": "environment: \"jsdom\",",
+    "replace": ""
+  }
+]

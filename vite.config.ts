@@ -12,11 +12,16 @@ export default defineConfig({
   // Fast refresh in `npm run dev` (3.0 intent, least sure 2).
   plugins: [react()],
   test: {
-    // Disjoint file patterns, so each test runs in exactly one project.
+    // Disjoint file patterns, so each test runs in exactly one project. UI tests
+    // (.tsx, or needing the DOM) live in tests/ui/.
     projects: [
       {
         extends: true,
-        test: { name: "node", include: ["tests/**/*.test.ts"], exclude: ["tests/ui/**"] },
+        test: {
+          name: "node",
+          include: ["tests/**/*.test.ts"],
+          exclude: ["tests/ui/**", browserTests],
+        },
       },
       {
         extends: true,

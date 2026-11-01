@@ -35,6 +35,7 @@ Lint: `eslint-plugin-react-hooks` recommended flat config on `**/*.tsx`; the nam
 | shows the game's name as the page heading | D33: found by role and name, as a player sees it; D35: Word Golf |
 | tells the player the game is coming soon | backlog 3.0: the coming-soon page becomes a component |
 | shows the heading once the entry file mounts the app | D33: the app mounts from its entry file in a real browser |
+| shows the game's name in the browser tab | D35: the tab title is Word Golf (added in review, finding 2) |
 
 ## Self-check
 - Files (`git diff --name-only main...HEAD`): .github/workflows/ci.yml CLAUDE.md DECISIONS.md eslint.config.js index.html package-lock.json package.json sdlc/3.0-ui-framework/intent.md plan.md src/main.ts src/main.tsx src/ui/App.tsx tests/ui/App.test.tsx tests/ui/main.browser.test.ts tests/ui/setup.ts tsconfig.json vite.config.ts — match the plan

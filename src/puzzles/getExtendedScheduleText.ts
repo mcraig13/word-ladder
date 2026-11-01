@@ -50,6 +50,7 @@ export function getExtendedScheduleText(
   const checkResult = checkSchedule(extendResult.schedule, {
     acceptedWords: extendOptions.acceptedWords,
     puzzleWords: extendOptions.puzzleWords,
+    shortestPathMoves: extendOptions.shortestPathMoves,
     daysBeforeWordRepeats: extendOptions.daysBeforeWordRepeats,
     todaysPuzzleNumber,
     fewestPuzzlesAhead,

@@ -27,6 +27,6 @@ Add the range check to `findPuzzleFailure` in `checkSchedule`, after the shortes
 Changed tests (range only, to keep their 1- and 2-move lines passing): `leaves a file that already reaches far enough ahead as it is`, `extending reports too few puzzles ahead`, `extending checks the file's lines with the repeat window it is given`, `extending counts the puzzles ahead from today's puzzle number`.
 
 ## Self-check
-- Files:
-- Lint, tests and coverage:
-- Diff against intent:
+- Files: the three source files in the plan; tests and records as committed at the human stop. No test changed since.
+- Lint, tests and coverage: lint clean; 324 tests pass; coverage 100% statements, branches, functions and lines.
+- Diff against intent: puzzles after today's outside the range fail as `shortest-path-out-of-range`, after the changed check; `getExtendedScheduleText` passes its range. Also written so a NaN end fails, as G4.

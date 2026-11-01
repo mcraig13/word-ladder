@@ -10,10 +10,10 @@
 // after it up to a year ahead of today's (chunk 2.6b, D24). To rebuild from
 // puzzle #1, which D24 allows only before launch, delete schedule.txt and run
 // it. Before writing, it checks the whole schedule, old lines and new,
-// against the word lists, D30's repeat window and the 60 puzzles that must
-// remain after today's (chunk 2.6c, D24). On a failure it prints the
-// unreadable line, the failing puzzle's number, or how few puzzles remain,
-// and exits 1, writing nothing. A full rebuild takes about 15 s.
+// against the word lists, D30's repeat window, D16's range for puzzles after
+// today's and the 60 puzzles that must remain after today's (chunks 2.6c and
+// 2.3, D24). On a failure it prints the unreadable line, the failing puzzle's
+// number, or how few puzzles remain, and exits 1, writing nothing. A full rebuild takes about 15 s.
 
 import console from "node:console";
 import process from "node:process";
@@ -32,7 +32,8 @@ const scheduleSeed = 2026;
 const todaysPuzzleNumber = 0;
 // About a year ahead of today's puzzle (D24).
 const puzzlesAhead = 365;
-// D16's suggested range, until 2.3 agrees one.
+// A shortest path of 4-6 moves, par 6-9 (D16, D27). The checks hold every
+// puzzle after today's to it (chunk 2.3).
 const shortestPathMoves = { fewest: 4, most: 6 };
 const wordLength = 4;
 // No start or target comes back within 90 days (D30).

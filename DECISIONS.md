@@ -1,8 +1,8 @@
 # Decisions
 
-Short log of what we decided and why. Newest decisions are added at the bottom. To change a decision, add a new entry that supersedes the old one rather than editing it.
+Short log of what we decided and why. Newest decisions are added at the bottom. To change a decision, add a new entry that supersedes or amends the old one rather than editing it. The game rules as they stand now are in `CLAUDE.md`; an entry here gives the reasons.
 
-Status: **Decided**, **Open**, or **Superseded by Dn**.
+Status: **Decided**, **Open**, or **Superseded by Dn**. A later entry that amends this one is named on the status line, in both entries. Bookkeeping edits are allowed (D29): status lines, chunk numbers that a later decision moved, and a **Now:** line at the top of an amended entry saying what has changed. A superseded entry keeps a one-line summary; its full text is in git history.
 
 ---
 
@@ -11,12 +11,12 @@ Status: **Decided**, **Open**, or **Superseded by Dn**.
 Soft launch as a static web app shared by link. Friends already play web games, there's no app store review, and it can become an installable PWA later.
 
 ## D2 — Stack: TypeScript, Vite, Vitest, static hosting
-**Decided** · 2026-10-30
+**Decided** · 2026-10-30 · amended by D18 (TypeScript pinned to 6.0)
 Typed pure functions are easy to test and review in an AI-assisted loop. No backend in v1: the dictionary ships with the page and the daily puzzle is computed in the browser.
 
 ## D3 — Dictionary source
 **Superseded by D17** · was blocking 6.1
-Reference list: `english3.txt` (194,433 entries, lowercase, British). Its origin and licence are unknown, so it can't ship as-is. SCOWL (British variant) is being evaluated as a source with a known licence. Whatever we pick needs a licence that allows bundling in a public app.
+The first reference list, `english3.txt`, had no known origin or licence, so it couldn't ship; SCOWL was evaluated instead.
 
 ## D4 — Word length: 4 letters
 **Decided** · 2026-10-30
@@ -31,7 +31,7 @@ One shared puzzle per day. Comparing results with friends is what spreads a soft
 A new puzzle appears at each player's own midnight, as in Wordle. Every date maps to one puzzle, the same for everyone. The app passes the local date into the core; the core never reads the clock itself. Accepted risk: a player in a later timezone may see tomorrow's puzzle first.
 
 ## D7 — UI framework
-**Open** · decide at the start of 3.1
+**Open** · decide in 3.0 (moved from 3.1 by D25)
 
 ## D8 — Two word lists, built from the largest Word Cloud
 **Decided** · 2026-10-30 · puzzle-word source superseded by D17 (SCOWL size 60 replaces the frequency list)
@@ -45,6 +45,7 @@ Evidence from `english3.txt`: 5,361 four-letter words in 84 clouds; the largest 
 
 ## D9 — Scoring: par, shown up front
 **Decided** · 2026-10-30 · score amended by D26 (undos count), par amended by D27 (1.5 × the shortest path)
+**Now:** par is 1.5 × the moves in a shortest path, rounded up, so `cold → warm` is par 6 and a score can be below par (D27). Each undo adds one to the score (D26). Par shown up front and the end-of-game shortest path still stand.
 - **Par** is the number of moves in a shortest path. `COLD → CORD → CARD → WARD → WARM` is par 4.
 - Par is shown from the start ("COLD → WARM, par 4"). The shortest path itself is only shown when the game ends.
 - **Score** is moves in the player's final chain minus par. Par is the best possible result (shown as "par"); otherwise "+1", "+2" and so on.
@@ -60,14 +61,14 @@ Giving up ends the game, reveals a shortest path, and shares as "didn't finish" 
 
 ## D12 — Undo is free
 **Superseded by D26** · 2026-10-30
-Undo removes the last word from the chain at no cost; the score counts only the final chain. An undone word no longer counts as used, so it can be played again. Undo cannot go past the start word.
+Undo was free: the score counted only the final chain. D26 keeps the rest (an undone word can be played again; undo can't go past the start word).
 
 ## D13 — Rejected attempts are free; repeated words are banned
 **Decided** · 2026-10-30
 An invalid word is not a move: the player sees the reason and tries again. A word already in the current chain is rejected.
 
 ## D14 — Soft launch scope
-**Decided** · 2026-10-30
+**Decided** · 2026-10-30 · amended by D25 (resume today's game is in launch)
 Launch includes: today's puzzle with par, entering moves, undo, give up, win screen with the shortest path, mobile layout, how to play. After launch: hints, sharing (first, if friends start screenshotting results), stats, practice mode.
 
 ## D15 — Puzzle numbering starts at launch
@@ -97,7 +98,7 @@ Evidence (spike, before exclusion and blocklist):
 - Puzzle pool: 2,614 size-60 words inside the size-70 cloud. Every size-60 cloud word is in the size-70 cloud.
 - Size 70 reconnects 64 common words stranded at size 60 (`high`, `sign`, `able`, `idle`, `into`).
 - Some words stay outside the cloud at any sensible size (`evil`, `exam`, `hymn`, `opal/oral/oval`). They can't be reached in any puzzle, so leaving them out costs nothing.
-- From `cold`, most words are 4–6 moves away, which fits the suggested par range (D16). `cold → warm` is par 4.
+- From `cold`, most words are 4–6 moves away, which fits the suggested par range (D16). `cold → warm` has a shortest path of 4 moves (par 6, D27).
 
 ## D18 — Pin TypeScript 6.0 for now
 **Decided** · 2026-10-30 · amends D2
@@ -106,7 +107,7 @@ TypeScript 7.0 ships without the JavaScript API that typescript-eslint uses, and
 - **Revisit when** TypeScript 7.1 ships and typescript-eslint supports it.
 
 ## D19 — Per-chunk SDLC records and independent review
-**Decided** · 2026-10-31
+**Decided** · 2026-10-31 · amended by D23, D29
 Each chunk gets `sdlc/<id>-<name>/` with `intent.md`, `plan.md` and `review.md`, and is reviewed by an agent with a fresh context before the human review.
 - Why: specs were only living in chat, so the reasons behind tests weren't in the repo; and self-review is the author marking their own work.
 - Evidence from the trial on 1.4: the independent reviewer found that two breaks of the core move rule left every test green, and that `"cold "` returned `colds`. Self-review had missed both.
@@ -114,12 +115,13 @@ Each chunk gets `sdlc/<id>-<name>/` with `intent.md`, `plan.md` and `review.md`,
 
 ## D20 — Coverage gate in CI
 **Decided** · 2026-10-31 · branches raised to 100 in 1.12, which removed the empty-chain fallback instead of testing it
+**Now:** 100% on all four measures. The empty-chain note below is done (1.12); restoring a saved chain is checked in 3.9 (D25).
 CI runs the tests with V8 coverage (`@vitest/coverage-v8`) over `src/` and `scripts/` and fails below 100% statements, lines and functions, and 97% branches: the level on main when this was added.
 - Why: break-the-code checks show a test protects its rule, but only for code someone thinks to break. Coverage catches code no test runs at all, such as a new untested file, at no review cost.
 - Coverage is a floor, not the goal: a covered line can still be untested in any meaningful sense. The testing rules and break-the-code checks still apply.
 - The one uncovered branch is the empty-chain fallback in `checkMove`; raise branches to 100 once 4.3 tests restoring a game with an empty chain.
 - Considered: 100% everywhere (needs a code change first); report only (nothing stops an untested file).
-- **Revisit at** 3.1, when UI code arrives.
+- **Revisit at** 3.0, when UI code arrives (moved from 3.1 by D25).
 
 ## D21 — Stricter lint, a lint-enforced pure core, and Prettier
 **Decided** · 2026-10-31
@@ -138,7 +140,8 @@ Stryker was tried once, on 1.9 `findShortestPath`, in a scratch copy with nothin
 - **Revisit if** an independent review misses a gap that a mutant would have shown.
 
 ## D23 — One human stop, review by risk, and a process freeze
-**Decided** · 2026-10-31 · amends D19
+**Decided** · 2026-10-31 · amends D19 · amended by D28, D29
+**Now:** the author runs no breaks and no review is skipped (D29); the break checklist is the reviewer's. The one human stop, shorter reviews and the freeze still stand.
 After 1.4–1.12, a look back at how the loop actually ran.
 - **One human stop per chunk**, after intent, plan and tests, before implementing. The two stops planned for M chunks never happened: 1.5 and 1.6 put intent, plan and tests in one commit, and 1.9 had no stop before the PR.
 - **Break checklist for self-review.** The gaps reviewers found and self-review missed came from breaks that reorder checks, delete a guard on the second argument, return early or forget visited state (1.4, 1.5, 1.7, 1.9). Self-review now works through those kinds of break, so they're caught before review.
@@ -146,7 +149,7 @@ After 1.4–1.12, a look back at how the loop actually ran.
 - **Shorter reviews:** observations that need no action go on a one-line Notes list, not as numbered findings each answered "agreed, no change".
 - **Process freeze until soft launch:** only fixes to the process tooling (as `break.mjs` crash reporting was). Six of the first 18 PRs were process changes; the effort now goes to the critical path.
 - Considered: dropping the human stop and reviewing only at the PR (tests written to fit the code would be harder to spot); keeping the review for every chunk (several minutes per S chunk for notes only).
-- **Revisit at** the start of 3.1, together with D7 and D20: how UI code is tested, and whether the coverage gate and break checks still fit.
+- **Revisit at** 3.0 (moved from 3.1 by D25), together with D7 and D20: how UI code is tested, and whether the coverage gate and break checks still fit.
 - **Revisit sooner if** a skipped review lets through a gap that the human review or a later chunk finds.
 
 ## D24 — Keeping puzzles fixed when a word list changes
@@ -189,6 +192,18 @@ Par is 1.5 × the moves in a shortest path, rounded up. `cold → warm` has a sh
 - An exception to D23's process freeze, made by the human reviewer: it changes a template, not how chunks run, and costs a few lines per chunk.
 - The independent reviewer also reads `intent.md`, so it sees the list. That's accepted: the brief still asks for its own breaks, and checking named doubts is cheap. If reviews start only answering the list, revisit at 3.0.
 - Considered: waiting for the 3.0 process review (another ten or so chunks reviewed without it); a full risk register per chunk (too heavy for S chunks).
+
+## D29 — Two sessions per chunk, reviewer-only breaks, and reading less
+**Decided** · 2026-11-01 · amends D19, D23
+The 6.1a session's context grew very large. A look at the last three sessions' transcripts showed the code is a small part of it (`src/core/` is about 15k characters). Most came from reading whole documents at the start (20–27k characters each time: `backlog.md`, `DECISIONS.md`, an earlier chunk's records), writing and editing ever longer records (1.4's intent and plan were about 4k together, 6.1a's 33k), and running breaks in the main session (22 in 1.10). Reviewer agents returned 1–4k characters each.
+- **Two sessions per chunk,** split at the human stop. The records are the handoff. At each handoff point the author says so and gives a ready-to-paste prompt for the next session (`sdlc/README.md`).
+- **The author runs no breaks; the reviewer runs them all,** for every chunk, through the full checklist. In 6 of the 9 reviewed chunks, the reviewer found gaps the author's breaks had missed: the author writes breaks with the same blind spots as the tests. Self-review found real gaps only in the bigger chunks (1.5, 1.9, 6.1a), and the reviewer still found more in each. Self-review never found something the reviewer then missed. The author keeps a three-line self-check.
+- **No more skipped reviews.** D23's skip depended on self-review breaks, and saved one review (1.13). The reviewer costs the main session a few thousand characters.
+- **Two reviewers in parallel for M chunks,** one on breaks only and one on everything else, as the two kinds of work find different gaps.
+- **Read less:** finished chunks move to `backlog-done.md`; read only the backlog entries and decisions a chunk cites; size limits for `intent.md` and `plan.md`; research and, from Phase 3, browser checks go to subagents.
+- Another exception to D23's process freeze, made by the human reviewer: without it, every chunk until 3.0 pays the same context cost.
+- Considered: keeping self-review breaks but running them in a subagent (cheaper for the main session, but still the author's blind spots, and the reviewer then repeats them); dropping self-review entirely (the self-check costs almost nothing and catches, before review, the kind of slip reviewers found in 1.4, a file outside the chunk's scope, and 6.1a, a listed file not committed).
+- **Revisit at** 3.0 with D23. **Revisit sooner if** the human finds a gap at PR review that author breaks would plausibly have caught, or session B often needs to reread session A's chat.
 
 ---
 

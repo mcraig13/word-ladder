@@ -61,6 +61,7 @@ data/
 scripts/       # Build-time scripts, e.g. building word lists from a source dictionary
 tests/         # Mirrors src/ structure
 DECISIONS.md   # Short log of decisions and why
+backlog.md     # Chunks still to do; finished ones are in backlog-done.md
 ```
 
 ## Commands
@@ -79,18 +80,19 @@ CI (`.github/workflows/ci.yml`) runs lint, tests with coverage and build on ever
 
 Every chunk follows this loop, recorded in `sdlc/<chunk id>-<short name>/` (templates in `sdlc/README.md`):
 
-1. **Intent** — write `intent.md`: what and why, rules protected, acceptance criteria as test names, what you're least sure of, out of scope. The PR description repeats the least-sure list, updated after self-review (D28).
-2. **Plan and tests** — write `plan.md` (approach, files, each test with the rule it protects) and the tests. Stop once and show intent, plan and tests for human review before implementing (D23).
-3. **Implement** — make the tests pass with the smallest change that does it.
-4. **Self-review** — check the diff against the intent; flag anything uncertain. Then **break the code on purpose**: for each rule, make a small deliberate change that breaks it and confirm a test goes red, working through the break checklist in `sdlc/README.md` (change in place, move a statement, delete a guard, return early). Restore the code afterwards. If no test fails, the test isn't protecting its rule: strengthen it and tell the reviewer what changed and why. Run the breaks with `npm run break` (see `sdlc/README.md`), which skips any break whose edit didn't apply and always restores the code. Record the breaks in `plan.md`.
-5. **Independent review** — run a reviewer agent with a fresh context, using the brief in `sdlc/README.md`. It sees only the intent, plan, diff and this file, never the author's reasoning, and runs its own breaks. Its findings go in `review.md`.
-   **Skipped** for an S chunk that follows an existing pattern, has no search or loop logic, and whose self-review breaks all went red. The PR then links `plan.md` and says why there's no review. The human reviewer can always ask for one (D23).
+1. **Intent** — write `intent.md`: what and why, rules protected, acceptance criteria as test names, what you're least sure of, out of scope. The PR description repeats the least-sure list, updated after review (D28).
+2. **Plan and tests** — write `plan.md` (approach, files, each test with the rule it protects) and the tests. Stop once and show intent, plan and tests for human review before implementing (D23). This ends the first session (D29).
+3. **Implement** — in a new session, make the tests pass with the smallest change that does it.
+4. **Self-check** — the files changed match the plan, lint and coverage pass, and the diff does what the intent says. Three lines in `plan.md`. The author runs no breaks (D29).
+5. **Independent review** — for every chunk, run a reviewer agent with a fresh context, using the brief in `sdlc/README.md`; two in parallel for an M chunk. It sees only the intent, plan, diff and this file, never the author's reasoning, and runs the breaks with `npm run break`. Its findings go in `review.md`.
 6. **Respond** — answer every finding in `review.md`: fixed (with the test or change), or not changed and why. A test changed after human review is always called out.
-7. **Human review and merge** — via a pull request that links `review.md` (or `plan.md` when step 5 was skipped). CI must be green.
+7. **Human review and merge** — via a pull request that links `review.md`. CI must be green.
 
-Process changes (this file, `sdlc/README.md`) go in their own branch and pull request, never inside a code chunk. Until soft launch, process changes are limited to fixing the process tooling; the next planned process review is in 3.0 (D23, D25). D28 is an exception the human reviewer made.
+**Sessions and context (D29):** at each handoff point in `sdlc/README.md`, tell the human it's a good point for a new session and give a ready-to-paste prompt for it (template in `sdlc/README.md`). Read only the parts of `backlog.md` and `DECISIONS.md` the chunk needs, keep records within the size limits in `sdlc/README.md`, and send research to a subagent.
 
-Backlog and chunk IDs live in `backlog.md`. A review finding left for a later chunk goes on that chunk's backlog entry as a *Carried forward* line, so the next session finds it there. Decisions and their reasons live in `DECISIONS.md`.
+Process changes (this file, `sdlc/README.md`) go in their own branch and pull request, never inside a code chunk. Until soft launch, process changes are limited to fixing the process tooling; the next planned process review is in 3.0 (D23, D25). D28 and D29 are exceptions the human reviewer made.
+
+Chunks still to do, with their IDs, live in `backlog.md`; finished ones move to `backlog-done.md`. A review finding left for a later chunk goes on that chunk's backlog entry as a *Carried forward* line, so the next session finds it there. Decisions and their reasons live in `DECISIONS.md`.
 
 ## Conventions
 

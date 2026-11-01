@@ -9,16 +9,46 @@ One folder per chunk of work, named `<chunk id>-<short name>`, e.g. `1.5-check-m
 | 1. Intent | AI drafts | `intent.md` |
 | 2. Plan and tests | AI writes; human reviews intent, plan and tests before implementation (the one stop) | `plan.md`, test file |
 | 3. Implement | AI | code |
-| 4. Self-review | AI: check against intent, then break the code on purpose, using the checklist below, and confirm a test goes red | notes in `plan.md` |
-| 5. Independent review | Reviewer agent with fresh context: sees only `intent.md`, `plan.md`, the diff and `CLAUDE.md`. Skipped for some S chunks (see below) | `review.md` |
+| 4. Self-check | AI: the files changed match the plan, lint and coverage pass, the diff does what the intent says. No breaks (D29) | three lines in `plan.md` |
+| 5. Independent review | Reviewer agent(s) with fresh context: see only `intent.md`, `plan.md`, the diff and `CLAUDE.md`, and run the breaks. Every chunk; two reviewers in parallel for M chunks (D29) | `review.md` |
 | 6. Respond | AI answers every finding: fixed, or why not | responses in `review.md` |
-| 7. Human review and merge | Human, via pull request linking `review.md` (or `plan.md`) | merged PR |
+| 7. Human review and merge | Human, via pull request linking `review.md` | merged PR |
 
-**When to skip step 5 (D23):** only when all of these hold: the chunk is S, it follows an existing pattern, it has no search, loop or recursion logic, and every self-review break went red. Otherwise run the reviewer. If in doubt, run it.
+## Sessions and handoff points
+
+A chunk runs in two sessions, so neither carries the other's context (D29). The records are the handoff: a new session needs nothing from the old one's chat.
+
+- **Session A:** steps 1–2. Ends at the human stop.
+- **Session B:** steps 3–7. Starts by reading `CLAUDE.md`, the chunk's `intent.md` and `plan.md`, the test file, and the source files the plan lists.
+
+At each handoff point the author's closing message says "Good point for a new session", then gives a prompt for it in a fenced block, ready to paste:
+
+```text
+Chunk <id> <name>, branch <branch>. Continue from step <n> (<step name>) of the loop in CLAUDE.md.
+Read first: sdlc/<chunk folder>/intent.md, plan.md<, review.md>; <test file>; <source files>.
+State: <one or two lines: what's done, what the human decided at the stop, anything changed since>.
+Next: <what to do, and where to stop>.
+```
+
+The prompt says only what the records don't; if it needs more than a few lines, the records are missing something, so fix them instead.
+
+- **After step 2**, always: the human stop.
+- **After step 6**, when a second review round is needed, or when session B has run long (several rounds of test fixes, a large rewrite). The new session reads the records, `review.md` and the diff.
+- **Mid-step**, only if the author can't finish the step without rereading large parts of the chat: say so, write what's left into `plan.md` under **Left to do**, and stop.
+
+The author can't measure its own context exactly, so these are step boundaries plus judgement, not a size limit. The human can always start a new session sooner.
+
+## Reading only what's needed
+
+- `backlog.md`: the chunk's own entry, and the entries it depends on. Finished chunks are in `backlog-done.md`; read them only when a chunk refers to one.
+- `DECISIONS.md`: only the decisions the chunk cites, e.g. `grep -A12 "^## D16"`.
+- Earlier chunks' records: only to copy a pattern, and then one file, not the folder.
+- Research (a file format, a library, how earlier chunks did something) goes to an Explore agent that returns a short summary, not into the main session.
+- From Phase 3, checking the app in a browser goes to a subagent that reports what it saw: screenshots are large.
 
 ## Break checklist
 
-Earlier reviews found the gaps self-review missed came from breaks that move or delete code, not just change it in place (1.4, 1.5, 1.7, 1.9). For each rule, try breaks of every kind that applies:
+The reviewer works through this list for each rule (D29). Earlier reviews found that the gaps that slipped through came from breaks that move or delete code, not just change it in place (1.4, 1.5, 1.7, 1.9). For each rule, try breaks of every kind that applies:
 
 - **Change in place:** flip a comparison, an off-by-one, skip a lowercase or trim.
 - **Reorder:** swap the order two checks run in, where both could apply to one input. A test needs an input that fails both.
@@ -27,7 +57,7 @@ Earlier reviews found the gaps self-review missed came from breaks that move or 
 - **Forget state:** stop recording what's been seen or used (visited words, the chain so far). A test needs a fixture with a loop or a repeat.
 - **Use the wrong input:** compare with the raw input instead of the normalised one, or the first word instead of the last.
 
-Keep files short. A small chunk should need a few lines per file, not pages.
+Keep files short: every session that touches the chunk reads them. Limits (D29): `intent.md` about 40 lines, `plan.md` about 60 lines plus one table row per test or break. Don't repeat in `plan.md` what the test file already says. If a chunk needs more, it probably needs splitting.
 
 ## Running breaks
 
@@ -79,10 +109,14 @@ A few lines on how, and why this way.
 - path — what changes
 
 ## Tests
-| Test | Input | Expected | Rule |
+| Test | Rule |
 
-## Self-review
-- Break: <deliberate change> → <which tests went red>
+(Inputs and expected values are in the test file; don't repeat them here.)
+
+## Self-check
+- Files: match the list above / <what differs and why>
+- Lint, tests and coverage: pass / <what fails>
+- Diff against intent: <one line>
 ```
 
 ### review.md
@@ -105,7 +139,11 @@ A few lines on how, and why this way.
 
 Give the reviewer agent this brief, filling in the chunk details. Don't add your own explanation of the work: the point is a fresh view.
 
+For an S chunk, run one reviewer with **Focus: everything**. For an M chunk, run two reviewers in parallel, one with **Focus: breaks** (only the break-the-code checks and the tests they expose) and one with **Focus: everything except breaks**, and put both replies in `review.md` under their own headings (D29).
+
 > You are an independent reviewer for this repo. Judge the work only on what is in the repo, not on any explanation from its author. Be rigorous and specific; if the work is good, say so briefly.
+>
+> **Focus:** <everything / breaks / everything except breaks>. Skip the checks below that are outside your focus.
 >
 > **Rules for you:** don't modify anything in the repo and don't run git commands that change state. For experiments, copy `src/` and `tests/` to a scratch folder outside the repo and work there; delete it when done.
 >
@@ -116,7 +154,7 @@ Give the reviewer agent this brief, filling in the chunk details. Don't add your
 > - Does each test meet the testing rules in `CLAUDE.md` (named after a rule, AAA, one Act, hand-worked literals, small fixtures, not tautological)? Does every acceptance criterion have a test? Are edge cases that come from the game rules missing?
 > - Naming, per `CLAUDE.md`.
 > - Correctness on awkward input. Run it rather than guessing.
-> - Your **own** break-the-code checks: at least three deliberate breaks of different rules, different from those in `plan.md` where you can, using the break checklist in `sdlc/README.md`. Report which tests went red. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`).
+> - Break-the-code checks: for each rule the intent protects, a deliberate break of every kind on the break checklist in `sdlc/README.md` that applies. The author runs none, so these are the only breaks. Report which tests went red; group breaks that went red as expected on one line each. A break that leaves every test green is a finding. `scripts/break.mjs` can run them in your scratch copy (see "Running breaks" in `sdlc/README.md`).
 > - Type-check and lint pass. If you can't run the test runner in your environment, say so; CI is the final check.
 >
 > **Reply with only the content for `review.md`**, following the template: a verdict, numbered findings each with a severity (**blocker**, **should fix**, **nit**, **note**), what, where and why in plain language, a "*Response:*" placeholder after each, then your break-the-code checks. A **note** is something the author might act on or carry forward; observations that need no action go on the one-line **Notes** list instead. Only report what you verified.

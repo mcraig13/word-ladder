@@ -1,4 +1,4 @@
-// Break-the-code runner for self-review and independent review (sdlc/README.md).
+// Break-the-code runner for the independent review (sdlc/README.md).
 //
 //   npm run break -- <breaks.json>
 //

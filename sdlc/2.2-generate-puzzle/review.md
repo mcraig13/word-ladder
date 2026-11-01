@@ -38,3 +38,11 @@ All in `src/puzzles/generatePuzzle.ts`, timeout 40 s per run.
 
 ## Re-run of breaks after the fixes
 
+Breaks-only reviewer, fresh context, on d88e223 · **Verdict:** the fix works.
+
+- Depth-first search (R1) → red: only `measures a target by its shortest path when a longer route also reaches it`, so the new test closes A1
+- Moves overwritten when a word is reached again (R2), most moves kept (R3), visited words forgotten (R4) → red: closer than fewest; measures by shortest path; tries another start; reports failure when no puzzle fits
+- Moves recorded from the queue's last entry (R6) → red: closer than fewest; measures by shortest path
+- New fixture's expected value checked by hand; the comment fix and the added `result.ok` assertion weaken nothing
+
+1. **note** Re-exploring a word when a shorter route turns up stays green, as it should: it still finds the fewest moves. — *Response:* no change needed.

@@ -37,6 +37,6 @@ About 75 lines of `src/` and `scripts/` and 250 of tests, against the ~200 guide
 | reports the puzzle number with no puzzle in range | Expected failures return a reason (CLAUDE.md, Conventions) |
 
 ## Self-check
-- Files:
-- Lint, tests and coverage:
-- Diff against intent:
+- Files: match the list above. `src/` 84 lines with doc comments, `scripts/` 28 added, 14 removed
+- Lint, tests and coverage: pass (277 tests). `build:schedule` leaves the committed file unchanged; deleted, it rebuilds byte for byte; a capital on line 3 prints `line 3: unreadable-line`, exits 1, writes nothing
+- Diff against intent: reads strictly, extends by appending only, script extends rather than rebuilds; no checks added (2.6c)

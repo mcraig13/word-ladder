@@ -95,6 +95,8 @@ The centred column, letter tiles and Clubhouse colours in D36. Layout tests run 
 Keys and tiles type into the real "Next word" input from 3.2; the phone's own keyboard stays closed (D36).
 - tapping a tile and then a letter key changes that letter in the next word
 - the on-screen Play key plays the word, and nothing plays before it's pressed
+- Backspace puts back the last word's letter on the selected tile
+- only the changed tile flips when a move is played, and nothing flips when the player prefers reduced motion
 - a hardware keyboard can still type and play a word
 - the phone's own keyboard does not open
 - a screen reader user can still enter a move through the labelled input

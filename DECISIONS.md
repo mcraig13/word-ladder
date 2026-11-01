@@ -270,10 +270,11 @@ Players see the name Word Golf: the page heading and the browser tab title. The 
 
 ## D36 — The look: letter tiles, an on-screen keyboard, Clubhouse colours
 **Decided** · 2026-11-01 · in 3.2 (prefilled input), 3.3, 3.4, 3.6a, 3.6b
-A clean centred column in the style of daily word games, not a copy of any one game's look or branding.
+A clean centred column in the style of daily word games, not a copy of any one game's look or branding. The aim: someone who has played Wordle feels at home straight away (tile rows, a QWERTY keyboard, one puzzle a day) but can tell it's a different game (its own colours, a prefilled word, the target on screen, par).
 - **Chain:** each word is a row of letter tiles. The letter that changed from the word before is filled with the accent colour. Colour marks only that, never right or wrong letters.
 - **Next word:** the input starts as a copy of the last word in the chain. The player taps a tile, then a letter, then Play or Enter. Nothing plays before that, because a real word played by mistake costs a move and undoing it costs +1 (D26).
-- **On-screen keyboard:** QWERTY, with Play at the end of the bottom row. Tiles and keys type into the real labelled "Next word" input, so screen readers, hardware keyboards and the role-and-name tests (D33) keep working. The phone's own keyboard stays closed (`inputmode="none"`). Needed for the soft launch.
+- **On-screen keyboard:** QWERTY, with Play (Enter) at the left of the bottom row and Backspace at the right, where Wordle players expect them. Backspace puts back the last word's letter on the selected tile. Tiles and keys type into the real labelled "Next word" input, so screen readers, hardware keyboards and the role-and-name tests (D33) keep working. The phone's own keyboard stays closed (`inputmode="none"`). Needed for the soft launch.
+- **Playing a move:** only the changed tile flips as the new row is added, unless the player prefers reduced motion.
 - **Header:** the name, puzzle number, `start → target`, Par and Moves. Golf words stay light: Par and Moves, not Strokes or Hole.
 - **Target:** in the header, and as a dashed row of tiles below the chain.
 - **Long chains:** the chain scrolls to keep the input row in view; the header and keyboard stay put. Nothing collapses.
@@ -283,7 +284,7 @@ A clean centred column in the style of daily word games, not a copy of any one g
 - **Dark mode:** follows the device setting. No toggle for launch.
 - Why: tiles and keys feel like a daily word game on a phone, where the phone's own keyboard would cover half the screen. Prefilling the last word turns the one-letter rule into the way you play: two taps a move.
 - Cost: the keyboard is an M chunk (3.6b) on the path to launch, and the hidden-input wiring has to work with screen readers.
-- Considered: a plain text field with the phone's keyboard; a golf scorecard list (cheapest, looks least like a game); typing all four letters each move; playing a move as soon as a letter is tapped; Fairway (cream and green, too close to Wordle's tiles) and Flag (black and white with red, which reads as wrong) palettes; folding older words away; a toast that fades; Undo on the keyboard with Give up in the header or a menu; a dark-mode toggle.
+- Considered: a plain text field with the phone's keyboard; a golf scorecard list (cheapest, looks least like a game); typing all four letters each move; playing a move as soon as a letter is tapped; Fairway (cream and green, too close to Wordle's tiles) and Flag (black and white with red, which reads as wrong) palettes; folding older words away; a toast that fades; Undo on the keyboard with Give up in the header or a menu; a dark-mode toggle; Play at the right with no Backspace; flipping the whole row, or no animation.
 
 ---
 

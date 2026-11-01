@@ -223,6 +223,34 @@ The game records how many undos the player has used, so `getScore` can add them 
 - reports an unreadable line with its line number
 - reports the puzzle number with no puzzle in range
 
+**2.6c Check the schedule (M)** · Depends: 2.6b · shortest path checked for every date, not only published ones (intent); `getWordsOneLetterAway` sped up after the committed-files test overran under coverage (agreed after implementing); 2.6a review A6 dropped, 2.2 review B1 moved to 3.8
+- finds words changed to the first or last letter of the alphabet
+- passes a schedule that meets every check
+- rejects a start that isn't a puzzle word, naming the puzzle
+- rejects a target that isn't a puzzle word, naming the puzzle
+- rejects a puzzle whose start and target are the same word
+- rejects a puzzle with no path over the accepted words
+- searches for the shortest path over the accepted words, not the puzzle words
+- rejects a puzzle whose shortest path has fewer moves than stored
+- rejects a puzzle whose shortest path has more moves than stored
+- rejects a start that was a target within the repeat window
+- rejects a target that was a start within the repeat window
+- rejects a word repeated within the window near the start of the schedule
+- allows a word again once the repeat window has passed
+- allows any repeat when the repeat window is 0
+- reports the first puzzle that fails
+- rejects a schedule with fewer puzzles after today's than the fewest allowed
+- passes a schedule with exactly the fewest puzzles allowed after today's
+- rejects a today's puzzle number that isn't a number as too few puzzles ahead
+- extending reports a line already in the file that fails the checks
+- extending reports too few puzzles ahead
+- extending checks the new puzzles as well as the file's lines
+- extending checks the file's lines with the repeat window it is given
+- extending checks the file's lines against the puzzle words, not the accepted words
+- extending counts the puzzles ahead from today's puzzle number
+- the committed schedule passes the checks with the committed word lists
+- the build script keeps the lines of the file it reads rather than rebuilding them
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4, 2.5, 2.6a, 2.6b done; 2.3, 2.6c next |
+| M2 Daily puzzle | 2.1–2.6c | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.4–2.6c done; 2.3 next (waits on D16) |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -47,20 +47,11 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
 
-Done: 2.1, 2.2, 2.4, 2.5, 2.6a, 2.6b. Finished chunks are in `backlog-done.md` (D29).
+Done: 2.1, 2.2, 2.4, 2.5, 2.6a, 2.6b, 2.6c. Finished chunks are in `backlog-done.md` (D29).
 
 **2.3 Daily par range (S)** · Depends: 2.6b, **D16**
 Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).
 - every scheduled puzzle's shortest path is within the agreed range (par follows from it, D27)
-
-**2.6c Check the schedule (M)** · Depends: 2.6b
-Add the build checks, run by `build:schedule` before it writes and by a test on the committed files.
-- every scheduled start and target is a puzzle word
-- every scheduled puzzle is solvable with the current accepted words
-- the check fails when fewer than 60 days of schedule remain
-- the check fails when a list change alters the shortest path of a published date
-
-*Answered in 2.6c:* the repeat window is checked (2.6a review A1), start and target must differ (2.6b review G3), and a test runs the script on a copy of the file (2.6b review B4). The shortest path is checked for every date, not only published ones (2.6c intent, least sure 1). Checking `scheduleSeed` (2.6a review A6) is dropped: a bad value still builds a schedule the checks pass. The build-time check (2.2 review B1) moved to 3.8.
 
 ---
 

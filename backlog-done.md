@@ -136,6 +136,23 @@ The game records how many undos the player has used, so `getScore` can add them 
 - picks every item in a short list and nothing else
 - picking from an empty list finds nothing
 
+**2.5 Puzzle number (S)** · Depends: 0.1
+- the launch date is puzzle #1
+- the day after launch is puzzle #2
+- counts across a month boundary
+- counts across a year boundary
+- counts February 29 in a leap year
+- goes straight from February 28 to March 1 in a year that isn't a leap year
+- counts a leap year as 366 days
+- counts whole days across a change to summer time
+- the day before launch has no puzzle number
+- rejects February 29 in a year that isn't a leap year
+- rejects month 13
+- rejects a day that isn't a whole number
+- rejects an invalid launch date
+- reports an invalid date before launch as invalid, not before launch
+- rejects an invalid date that is the same as the launch date
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

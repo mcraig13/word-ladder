@@ -189,6 +189,17 @@ The game records how many undos the player has used, so `getScore` can add them 
 - writes one line per puzzle, in order, as start, target and moves
 - writes an empty file for an empty schedule
 
+**2.4 Puzzle for a date (S)** · Depends: 2.5, 2.6a
+- the launch date gets the first puzzle in the schedule
+- the day after launch gets the puzzle on the second line
+- the last scheduled date gets the last puzzle in the schedule
+- the day after the schedule ends has no puzzle
+- an empty schedule has no puzzle on the launch date
+- a date before launch has no puzzle, with the reason from getPuzzleNumber
+- an invalid date has no puzzle, with the reason from getPuzzleNumber
+- a date before launch has no puzzle even when the schedule is empty
+- an invalid launch date has no puzzle, even on the launch date itself
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

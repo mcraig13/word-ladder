@@ -127,6 +127,17 @@ The game records how many undos the player has used, so `getScore` can add them 
 
 ---
 
+## Phase 2 — Daily puzzle (`src/puzzles/`)
+
+**2.1 Seeded random (S)** · Depends: 0.1
+- the same seed picks the same sequence
+- seeds one apart pick different sequences
+- seed 2026 picks the same sequence it always has
+- picks every item in a short list and nothing else
+- picking from an empty list finds nothing
+
+---
+
 ## Phase 6 — Word lists (build-time, `scripts/`)
 
 **6.1a Read Hunspell dictionaries (M)** · Depends: 0.1

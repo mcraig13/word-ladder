@@ -50,8 +50,11 @@ UI tests check what the player sees and can do, not component internals.
 - a valid word is added to the chain
 - an invalid word shows a message that explains the reason
 - an invalid word does not change the move count
-- the input clears after a valid move
+- the input shows the start word before the first move (D36)
+- the input shows the new word after a valid move (D36)
 - the reason for a rejected word is announced to screen readers
+
+Plain semantic HTML; the tiles and on-screen keyboard come in 3.6a and 3.6b, typing into this same input (D36).
 
 *Carried forward:* clean up input such as `İ` and zero-width spaces here; `checkMove` reports them as `wrong-length` (1.5 review 6).
 
@@ -62,19 +65,41 @@ UI tests check what the player sees and can do, not component internals.
 - undo is unavailable when only the start word is shown
 - undo shows that it adds one to the score, before it's pressed (D26)
 
+The button reads "Undo (+1)", in a row with Give up between the chain and the keyboard (D36).
+
 **3.4 Give up (S)** · Depends: 3.2, 1.8, 1.9
 - giving up asks for confirmation first
 - after giving up, a shortest path is shown
 - after giving up, no more moves can be entered
+
+The Give up button sits beside Undo (+1), between the chain and the keyboard (D36).
 
 **3.5 Win screen (S)** · Depends: 3.2, 1.10
 - reaching the target shows a win message
 - shows the score as "par", "−N" or "+N"
 - shows the player's chain beside a shortest path
 
-**3.6 Mobile layout (S)** · Depends: 3.2
+**3.6a Look and tiles (S)** · Depends: 3.2 · *split from 3.6 Mobile layout (D36)*
+The centred column, letter tiles and Clubhouse colours in D36. Layout tests run in Vitest browser mode (D33).
+- each word in the chain is shown as a row of letter tiles
+- the letter that changed from the word before is marked
+- the target is shown in the header and as a row below the chain
 - playable at phone width without horizontal scrolling
-- the on-screen keyboard does not hide the input
+- the header and the input row stay in view when the chain is longer than the screen
+- a rejection reason shows under the input row until a letter is changed
+- rejected tiles don't shake when the player prefers reduced motion
+- colours follow the device's light or dark setting
+- text and tile colours meet WCAG AA contrast in light and dark
+
+**3.6b On-screen keyboard (M)** · Depends: 3.6a · *split from 3.6 Mobile layout (D36)*
+Keys and tiles type into the real "Next word" input from 3.2; the phone's own keyboard stays closed (D36).
+- tapping a tile and then a letter key changes that letter in the next word
+- the on-screen Play key plays the word, and nothing plays before it's pressed
+- Backspace puts back the last word's letter on the selected tile
+- only the changed tile flips when a move is played, and nothing flips when the player prefers reduced motion
+- a hardware keyboard can still type and play a word
+- the phone's own keyboard does not open
+- a screen reader user can still enter a move through the labelled input
 
 **3.7 How to play (S)** · Depends: 3.1
 - first-time players see the rules with a worked example
@@ -83,7 +108,9 @@ UI tests check what the player sees and can do, not component internals.
 
 *Carried forward:* the rules say each undo adds one to the score (D26).
 
-**3.8 Launch checks (S)** · Depends: 3.1–3.7, 3.9, 6.2, 6.3, 2.6c
+*Carried forward:* the worked example shows a move as tapping a tile, then a letter, then Play (D36).
+
+**3.8 Launch checks (S)** · Depends: 3.1–3.7 (including 3.6a and 3.6b), 3.9, 6.2, 6.3, 2.6c
 - a full game can be played on a phone browser, from link to win
 - tomorrow's date shows a different puzzle with the next number
 - the link shows the game's name and a one-line description when shared

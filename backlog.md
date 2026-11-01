@@ -11,7 +11,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 |-----------|--------|---------|--------|
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
-| Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a done; 6.1b next |
+| Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
 | M2 Daily puzzle | 2.1–2.5 | A solvable, numbered puzzle for any date | Not started; 2.2 blocked by D24 |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
@@ -37,6 +37,8 @@ Done: 1.1–1.10, 1.12, 1.13. Finished chunks are in `backlog-done.md` (D29).
 Load the built accepted and puzzle word lists into dictionaries at app start. This is app wiring, not core logic: D21's lint bans `fetch` in `src/core/`, so it lives in `src/puzzles/` (or beside the UI, per 3.0). Done after 3.0, just before 3.1. It works with empty exclusion and block lists, so it doesn't wait for 6.2 and 6.3. The ID is kept so references stay valid.
 - loads accepted words and puzzle words as separate dictionaries
 - every puzzle word is also an accepted word
+
+*Carried forward:* `data/words/accepted.txt` and `puzzle.txt` are one lowercase word per line, LF, a newline at the end, no comments or blank lines, in alphabetical order (6.1b intent, choice 5).
 
 ---
 
@@ -81,6 +83,8 @@ UI tests check what the player sees and can do, not component internals.
 Decide D7 (UI framework) and how UI code is tested, and review D20 (coverage gate) and D23 (break checks) for UI code; log the decisions in `DECISIONS.md`. Set up the framework and one example test against the "coming soon" page. No game UI yet.
 - an example UI test finds the page heading the way a player would see it
 - `npm run lint`, `npm run test:coverage` and `npm run build` pass with the framework added
+
+*Carried forward to the process review:* CI doesn't run `npm run build:words`, so a broken build script shows only when someone rebuilds; a CI step running it and then `git diff --exit-code data/words` would catch that and stale lists together. And when a review fix is meant to make a break go red, or changes production logic, nobody re-runs those breaks (D29: the author runs none); consider a short breaks-only re-review of the fix commit (6.1b PR discussion).
 
 **3.1 Show today's puzzle (M)** · Depends: 3.0, 1.11
 - shows the puzzle number
@@ -177,22 +181,13 @@ Browser storage only; no backend. Resuming today's game moved to 3.9 (D25).
 
 Runs at build time to produce the files in `data/words/` from the SCOWL sources in `data/source/scowl/` (D17). Not shipped as app code, but tested like it.
 
-`scripts/build-words` reads both Hunspell dictionaries and writes `accepted-4.txt` and `puzzle-4.txt`. Takes the exclusion list and blocklist as input files (they can start empty). Split in two because Hunspell suffix rules (strip, add, condition) are a chunk on their own. Tests use tiny hand-written `.dic`/`.aff` fixtures, not the real dictionaries.
+`npm run build:words` reads both Hunspell dictionaries and writes `accepted.txt` and `puzzle.txt`. Takes the exclusion list and blocklist as input files (they can start empty). Split in two because Hunspell suffix rules (strip, add, condition) are a chunk on their own. Tests use tiny hand-written `.dic`/`.aff` fixtures, not the real dictionaries.
 
-Done: 6.1a. Finished chunks are in `backlog-done.md` (D29).
-
-**6.1b Build the word list files (M)** · Depends: 6.1a, 1.4
-*Carried forward:* read the four files as UTF-8 text and call `getWordsFromHunspell` once per dictionary (`en_GB-large`, `en_GB-ise`) with the same exclusion list and blocklist; it returns words of every length, so keep the 4-letter ones here (D4). On an `ok: false` result, stop the build and print the file and line. The entry script lives outside `scripts/words/`, which D21's purity lint covers; decide here how it runs (Node's type stripping needs `.ts` import extensions, which `tsconfig.json` doesn't allow yet) (6.1a intent, choices 1 and 2).
-- accepted words are the largest 4-letter Word Cloud of the size-70 list
-- puzzle words are size-60 words that are also accepted words
-- every pair of puzzle words is connected through accepted words
-- the same inputs always produce the same output files
-
-*Carried forward:* time `findShortestPath` on the built accepted list (worst case: a target it can't reach) and record it. On a synthetic list, 1.9 measured about 310 ms for 4,096 words on a PC, so about 200 ms for 3,300 words (1.9 review 5). If it's too slow for 2.2, or for loading a game on a phone (`createGame` runs one search per game, 1.10), speed up `getWordsOneLetterAway` behind its 1.4 tests (1.9 intent choice 3).
+Done: 6.1a, 6.1b. Finished chunks are in `backlog-done.md` (D29).
 
 **6.2 Review exclusion list (S)** · Depends: 6.1b · *human-owned*
 The script lists candidate abbreviations (no vowels, or in SCOWL but missing from a common-words cross-check). A human confirms each one before it goes into `data/words/exclude.txt`.
-*Carried forward:* the format is one word per line, any case, with blank lines and `#` comments allowed; a line that isn't a word stops the build. Each form is matched exactly, so list `govts` as well as `govt` if both should go. The same format serves 6.3's blocklist (6.1a intent, choice 8). Prefixes on abbreviation entries make more abbreviations that Hunspell also accepts: in en_GB-large, `conc, conj, dept, intr, proa, pron, recd, rees, reis, revs, unis, univ`, and in en_GB-ise also `incs, prob`. Review these as candidates (6.1a plan, Self-review).
+*Carried forward:* the format is one word per line, any case, with blank lines and `#` comments allowed; a line that isn't a word stops the build. Each form is matched exactly, so list `govts` as well as `govt` if both should go. The same format serves 6.3's blocklist (6.1a intent, choice 8). Prefixes on abbreviation entries make more abbreviations that Hunspell also accepts: in en_GB-large, `conc, conj, dept, intr, proa, pron, recd, rees, reis, revs, unis, univ`, and in en_GB-ise also `incs, prob`. Review these as candidates (6.1a plan, Self-review). The 6.1b lists also have vowel-less abbreviations such as `bdrm, bldg, blvd, ftps, mfrs, rcpt, shpt, shtg`, and others with vowels such as `asst, corp, dept, govt`; `psst`, `cwms` and `pwns` are vowel-less but may be real words. Abbreviations can bridge parts of the cloud and shorten shortest paths, so par ranges measured before this review (D16, 2.3) may shift after it (6.1b PR discussion).
 - every excluded word has been reviewed and is listed alphabetically
 
 **6.3 Offensive-words blocklist (S)** · Depends: 6.1b · *human-owned*

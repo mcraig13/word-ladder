@@ -26,6 +26,11 @@ const ladderOptions = {
 // Two lines generation wouldn't pick for a range of 4 moves.
 const EXISTING_TEXT = "cord card 1\nward cord 2\n";
 
+// Chunk 2.3. The file's lines are 1 and 2 moves, so after today's they pass
+// the range check only with a range that takes them in. Tests that use it
+// add no puzzles, so it doesn't change what generation picks.
+const RANGE_FOR_EXISTING_LINES = { fewest: 1, most: 4 };
+
 function getLines(text: string): string[] {
   return text.split("\n").filter((line) => line !== "");
 }
@@ -59,7 +64,12 @@ describe("getExtendedScheduleText", () => {
   it("leaves a file that already reaches far enough ahead as it is", () => {
     // Arrange
     // Today is #0, so 1 ahead needs only #1; the file has two.
-    const options = { ...ladderOptions, todaysPuzzleNumber: 0, puzzlesAhead: 1 };
+    const options = {
+      ...ladderOptions,
+      shortestPathMoves: RANGE_FOR_EXISTING_LINES,
+      todaysPuzzleNumber: 0,
+      puzzlesAhead: 1,
+    };
 
     // Act
     const result = getExtendedScheduleText(EXISTING_TEXT, options);
@@ -128,6 +138,7 @@ describe("getExtendedScheduleText", () => {
     // nothing is added, and 2 is fewer than 3.
     const options = {
       ...ladderOptions,
+      shortestPathMoves: RANGE_FOR_EXISTING_LINES,
       todaysPuzzleNumber: 0,
       puzzlesAhead: 1,
       fewestPuzzlesAhead: 3,
@@ -165,6 +176,7 @@ describe("getExtendedScheduleText", () => {
     // card is #1's target and #2's start, within a window of 2.
     const options = {
       ...ladderOptions,
+      shortestPathMoves: RANGE_FOR_EXISTING_LINES,
       daysBeforeWordRepeats: 2,
       todaysPuzzleNumber: 0,
       puzzlesAhead: 1,
@@ -199,6 +211,7 @@ describe("getExtendedScheduleText", () => {
     // Today is #1 of the file's two, so one is ahead, fewer than 2.
     const options = {
       ...ladderOptions,
+      shortestPathMoves: RANGE_FOR_EXISTING_LINES,
       todaysPuzzleNumber: 1,
       puzzlesAhead: 1,
       fewestPuzzlesAhead: 2,
@@ -209,5 +222,17 @@ describe("getExtendedScheduleText", () => {
 
     // Assert
     expect(result).toEqual({ ok: false, reason: "too-few-puzzles-ahead", puzzlesAhead: 1 });
+  });
+
+  it("extending checks the file's lines against the shortest-path range it is given", () => {
+    // Arrange
+    // Chunk 2.3. #1, cord-card, is 1 move, outside the range of exactly 4.
+    const options = { ...ladderOptions, todaysPuzzleNumber: 0, puzzlesAhead: 1 };
+
+    // Act
+    const result = getExtendedScheduleText(EXISTING_TEXT, options);
+
+    // Assert
+    expect(result).toEqual({ ok: false, reason: "shortest-path-out-of-range", puzzleNumber: 1 });
   });
 });

@@ -8,7 +8,8 @@ import committedScheduleText from "../../data/puzzles/schedule.txt?raw";
 
 // Chunk 2.6c. The committed schedule still passes the build checks with the
 // committed word lists, so a list change that breaks a scheduled puzzle fails
-// CI even if nobody runs build:schedule (D24).
+// CI even if nobody runs build:schedule (D24). Chunk 2.3: and every puzzle
+// after today's is within D16's range.
 
 // One shortest-path search per puzzle took about 25 s for 365 puzzles before
 // 2.6c sped up the neighbour lookup, and about 2 s after; the timeout leaves room.
@@ -25,6 +26,8 @@ describe("checkSchedule on the committed files", () => {
       const options = {
         acceptedWords: createDictionaryFromWords(acceptedText.split("\n")),
         puzzleWords: createDictionaryFromWords(puzzleText.split("\n")),
+        // D16, so every puzzle after today's is 4-6 moves (par 6-9).
+        shortestPathMoves: { fewest: 4, most: 6 },
         // D30.
         daysBeforeWordRepeats: 90,
         // Before launch today is #0; 3.8 works it out from the date here too.

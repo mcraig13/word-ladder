@@ -1,0 +1,3 @@
+# Words removed from both built lists, one per line, any case (chunk 6.1b).
+# Abbreviations and other non-words; reviewed and filled in 6.2.
+# Blank lines and lines starting with # are skipped. Rebuild with npm run build:words.

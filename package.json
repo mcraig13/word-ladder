@@ -12,7 +12,8 @@
     "lint": "tsc --noEmit && eslint . --max-warnings=0 && prettier --check .",
     "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
-    "break": "node scripts/break.mjs"
+    "break": "node scripts/break.mjs",
+    "build:words": "node scripts/buildWordLists.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

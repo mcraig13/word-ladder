@@ -1,0 +1,3 @@
+# Offensive words removed from both built lists, one per line, any case (chunk 6.1b).
+# Source and licence are chosen in 6.3 and logged in DECISIONS.md.
+# Blank lines and lines starting with # are skipped. Rebuild with npm run build:words.

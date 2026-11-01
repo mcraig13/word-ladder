@@ -40,6 +40,6 @@
 | finds a 4-move shortest path from cold to warm over the committed accepted words | CLAUDE.md example; par 6 (D27) |
 
 ## Self-check
-- Files:
-- Lint, tests and coverage:
-- Diff against intent:
+- Files: match the list above; `backlog.md` status waits for the merge. Built: 3,318 accepted, 2,622 puzzle words (D17 measured 3,308 and 2,614 before 6.1a's cleaning). `findShortestPath` on the built list: cold → warm about 100 ms, an unreachable target (whole cloud searched) about 220 ms on a PC.
+- Lint, tests and coverage: pass, 205 tests, 100% coverage; the build takes about 1 s and prints `data/words/exclude.txt:4 invalid-word`, exit 1, for a bad exclusion line.
+- Diff against intent: as intended; the two functions stay pure and the `.mjs` entry only reads, calls and writes.

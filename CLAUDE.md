@@ -73,6 +73,7 @@ backlog.md     # Chunks still to do; finished ones are in backlog-done.md
 - `npm run build` — type-check, then production build to `dist/`
 - `npm run lint` — type-check, ESLint, then Prettier check; fails on any error, warning or unformatted file
 - `npm run format` — format code and config with Prettier
+- `npm run build:words` — build `data/words/accepted.txt` and `puzzle.txt` from the SCOWL sources, exclusion list and blocklist. Commit the rebuilt lists; a test fails if they don't match a fresh build
 
 CI (`.github/workflows/ci.yml`) runs lint, tests with coverage and build on every pull request and push to `main`. A pull request can only merge when CI is green.
 

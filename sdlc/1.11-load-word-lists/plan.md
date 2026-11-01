@@ -34,3 +34,6 @@ Two small files in `src/puzzles/`, split so the logic is tested with fixtures an
 The bundled tests use counts and the rules' example rather than the first schedule line, so they stay true when 6.2 and 6.3 rebuild the lists and schedule.
 
 ## Self-check
+- Files (`git diff --name-only origin/main...HEAD`; local `main` is behind): `sdlc/1.11-load-word-lists/intent.md`, `plan.md`, `src/puzzles/createGameDataFromText.ts`, `src/puzzles/getBundledGameData.ts`, `tests/puzzles/createGameDataFromText.test.ts`, `getBundledGameData.test.ts` — match the plan. 63 production lines
+- Lint, tests and coverage: "All matched files use Prettier code style!"; "Tests  339 passed (339)"; "Statements : 100% ( 407/407 )", "Branches : 100% ( 237/237 )"
+- Diff against intent: both functions have the intent's signatures; `createGameDataFromText` also exports `GameDataTexts`, the type of its argument

@@ -12,7 +12,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | M0 Walking skeleton | 0.1–0.3, 0.5 | Empty app deployed to a live URL with CI | Done |
 | M1 Rules engine | 1.1–1.10, 1.12, 1.13 | All game rules enforced and tested; solver and scoring work | Done |
 | Word lists | 6.1a, 6.1b, 6.2, 6.3 | Built accepted and puzzle lists in `data/words/` | 6.1a, 6.1b done; 6.2, 6.3 next (human-owned) |
-| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.5 done; 2.2 next |
+| M2 Daily puzzle | 2.1–2.6 | A solvable, numbered puzzle for any date | 2.1, 2.2, 2.5 done; 2.6 next |
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
@@ -47,18 +47,7 @@ Load the built accepted and puzzle word lists into dictionaries at app start. Th
 
 ## Phase 2 — Daily puzzle (`src/puzzles/`)
 
-Done: 2.1, 2.5. Finished chunks are in `backlog-done.md` (D29).
-
-**2.2 `generatePuzzle` (M)** · Depends: 1.9, 2.1, 6.1b
-Given accepted words, puzzle words, a range of shortest-path lengths and a seed. Run at build time by 2.6's schedule script, not in the browser (D24); it stays a pure function in `src/puzzles/`.
-*Design note:* don't call `findShortestPath` once per candidate target. It takes about 200 ms on a PC and maybe 0.6–1 s on a phone (1.9 review 5). One breadth-first search from the start word gives the distance to every word, so every target with a shortest path in range comes from a single search.
-- start and target are both puzzle words
-- the puzzle's shortest path is inside the requested range
-- every generated puzzle is solvable
-- the same seed produces the same puzzle
-- reports failure when no puzzle fits the range
-
-*Carried forward:* a puzzle needs only start and target: `createGame(start, target, dictionary)` works out par itself and rejects a start or target that isn't an accepted word, or can't be reached (1.10 intent choice 3).
+Done: 2.1, 2.2, 2.5. Finished chunks are in `backlog-done.md` (D29).
 
 **2.3 Daily par range (S)** · Depends: 2.6, **D16**
 Regenerate the schedule with the agreed range; before launch, the whole schedule can be rebuilt (D24).

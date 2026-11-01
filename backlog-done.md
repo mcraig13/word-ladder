@@ -136,6 +136,21 @@ The game records how many undos the player has used, so `getScore` can add them 
 - picks every item in a short list and nothing else
 - picking from an empty list finds nothing
 
+**2.2 `generatePuzzle` (M)** · Depends: 1.9, 2.1, 6.1b
+- start and target are both puzzle words
+- never picks a puzzle word that isn't an accepted word
+- never picks a target closer than the fewest moves
+- never picks a target farther than the most moves
+- measures a target by its shortest path when a longer route also reaches it
+- every generated puzzle is solvable
+- never picks the start as its own target, even when the range starts at 0 moves
+- tries another start when the first one picked has no target in range
+- the same seed produces the same puzzle
+- picks words of the requested length
+- reports failure when no puzzle fits the range
+- reports failure when there are no puzzle words of the requested length
+- a puzzle from the real word lists has a shortest path in the requested range
+
 **2.5 Puzzle number (S)** · Depends: 0.1
 - the launch date is puzzle #1
 - the day after launch is puzzle #2

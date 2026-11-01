@@ -16,6 +16,7 @@ Ticket-sized chunks for AI-assisted delivery. Each chunk follows the loop in `CL
 | **M3 Soft launch** | 3.0–3.9, 1.11 | Friends can play today's puzzle from a link | Not started |
 | M4 After launch | 4.1–4.3 | Share, hints, stats | Not started |
 | M5 Later | 5.1 | Practice mode | Not started |
+| Tech debt | 7.1 | Clean-ups with no change in behaviour | Not started |
 
 Update the Status column when a chunk merges, and move its entry to `backlog-done.md`.
 
@@ -194,6 +195,17 @@ The script lists candidate abbreviations (no vowels, or in SCOWL but missing fro
 Choose a blocklist source with a compatible licence, log it in `DECISIONS.md`, and add it as `data/words/blocklist.txt`.
 - no blocklisted word appears in either built list
 - no SCOWL taboo-flagged word appears in either built list
+
+---
+
+## Phase 7 — Tech debt
+
+Clean-ups that change no behaviour. Pick them up between chunks; each one still follows the loop in `CLAUDE.md`.
+
+**7.1 Explain magic numbers (S)** · Depends: 2.1
+No unexplained numbers in the code: each constant gets a name or a one-line comment saying where it comes from and what it does. Start with `createSeededRandom` (2.1): mulberry32's increment `0x6d2b79f5`, the shifts `15`, `7` and `14`, the multipliers `| 1` and `| 61`, and `2 ** 32`. Link the published mulberry32 so the code can still be checked against it line by line, which is how the 2.1 review confirmed the pinned sequence. Then go through `src/` and `scripts/` for others.
+- seed 2026 picks the same sequence it always has (2.1's existing test, unchanged: the constants must not change)
+- all existing tests pass unchanged
 
 ## Decisions needed before their chunks
 

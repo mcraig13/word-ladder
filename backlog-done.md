@@ -200,6 +200,29 @@ The game records how many undos the player has used, so `getScore` can add them 
 - a date before launch has no puzzle even when the schedule is empty
 - an invalid launch date has no puzzle, even on the launch date itself
 
+**2.6b Read back and extend the schedule (M)** · Depends: 2.6a · split at intent; the checks are 2.6c · lines must be strictly lowercase (PR review)
+- reads each line as a puzzle, in order
+- reads an empty file as an empty schedule
+- rejects a line with a capital letter, giving its line number
+- rejects a line with a part missing
+- rejects a line with an extra part
+- rejects moves of zero
+- rejects negative moves
+- rejects moves that aren't a whole number
+- rejects moves with a leading zero
+- rejects parts not separated by a single space
+- rejects a blank line
+- rejects a Windows line ending
+- rejects a last line with no newline
+- reports the first unreadable line when the last line has no newline too
+- reads the committed schedule file back
+- extending the schedule adds puzzles up to the requested number ahead of today's
+- keeps the file's existing lines exactly as they are
+- leaves a file that already reaches far enough ahead as it is
+- builds a schedule from an empty file
+- reports an unreadable line with its line number
+- reports the puzzle number with no puzzle in range
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

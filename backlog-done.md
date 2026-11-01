@@ -251,6 +251,17 @@ The game records how many undos the player has used, so `getScore` can add them 
 - the committed schedule passes the checks with the committed word lists
 - the build script keeps the lines of the file it reads rather than rebuilding them
 
+**2.3 Daily par range (S)** · Depends: 2.6b, D16 · D16 decided as 4–6 moves (par 6–9) for now; only puzzles after today's are range-checked, since published dates don't change (intent, least sure 1); no regeneration, as the committed schedule was already 4–6
+- rejects a puzzle after today's whose shortest path is shorter than the range allows
+- rejects a puzzle after today's whose shortest path is longer than the range allows
+- passes puzzles at exactly the fewest and the most moves the range allows
+- leaves today's and earlier puzzles out of the range check
+- range-checks the first puzzle after today's
+- reports a changed shortest path as changed, not out of range
+- rejects a puzzle after today's when an end of the range isn't a number
+- extending checks the file's lines against the shortest-path range it is given
+- the committed schedule passes the checks with the committed word lists
+
 ---
 
 ## Phase 6 — Word lists (build-time, `scripts/`)

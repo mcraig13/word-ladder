@@ -51,3 +51,6 @@ App takes the date and data as props, not reading them itself, so jsdom tests us
 Changed from 3.0: "tells the player the game is coming soon" is deleted, since the page no longer says it.
 
 ## Self-check
+- Files (`git diff --name-only main...HEAD`): `sdlc/3.1-show-todays-puzzle/intent.md`, `plan.md`, `src/main.tsx`, `src/puzzles/findGameForDate.ts`, `launchDate.ts`, `src/ui/App.tsx`, `getLocalCalendarDate.ts`, `tests/puzzles/findGameForDate.test.ts`, `tests/ui/App.test.tsx`, `getLocalCalendarDate.test.ts`, `main.browser.test.ts` — match the plan. 92 production lines added, 7 removed
+- Lint, tests and coverage: "All matched files use Prettier code style!"; "Tests  354 passed (354)"; "Statements : 100% ( 421/421 )", "Branches : 100% ( 245/245 )". Checked the test set-ups take effect: with UTC getters, 2 `getLocalCalendarDate` tests fail; with the launch date moved to March and `setSystemTime` commented out, "shows puzzle #1" fails
+- Diff against intent: the functions and `App` props match the intent's signatures; `findGameForDate.ts` also exports `FindGameForDateResult` and `App.tsx` exports `AppProps`

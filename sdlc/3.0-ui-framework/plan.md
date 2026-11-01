@@ -37,3 +37,6 @@ Lint: `eslint-plugin-react-hooks` recommended flat config on `**/*.tsx`; the nam
 | shows the heading once the entry file mounts the app | D33: the app mounts from its entry file in a real browser |
 
 ## Self-check
+- Files (`git diff --name-only main...HEAD`): .github/workflows/ci.yml CLAUDE.md DECISIONS.md eslint.config.js index.html package-lock.json package.json sdlc/3.0-ui-framework/intent.md plan.md src/main.ts src/main.tsx src/ui/App.tsx tests/ui/App.test.tsx tests/ui/main.browser.test.ts tests/ui/setup.ts tsconfig.json vite.config.ts — match the plan
+- Lint, tests and coverage: "All matched files use Prettier code style!"; "Tests 328 passed (328)"; "Statements 100% (402/402), Branches 100% (235/235), Functions 100% (64/64), Lines 100% (389/389)"
+- Diff against intent: App renders "Word Golf" and "Coming soon.", main.tsx mounts it into `#app`, and tests run in node, jsdom and Chromium projects; no game UI added
